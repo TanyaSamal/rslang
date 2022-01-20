@@ -8,6 +8,9 @@ module.exports = {
     'airbnb-base',
     'prettier',
     'plugin:import/typescript',
+    'eslint:recommended',
+    'plugin:@typescript-eslint/eslint-recommended',
+    'plugin:@typescript-eslint/recommended'
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -20,5 +23,8 @@ module.exports = {
     'import',
   ],
   rules: {
+    'import/extensions': 'off',
+    'import/prefer-default-export': 'off',
+    'no-param-reassign': [2, { 'props': false }]
   },
 };
