@@ -1,0 +1,113 @@
+@import url('https://fonts.googleapis.com/css2?family=Marmelad&family=Nunito:wght@200;300;400&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  color: black;
+  background-color: #F2F2F2;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    background-color: #818181;
+  }
+
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #71dec5;
+    border-radius: 8px;
+    box-shadow: inset 1px 1px 10px #f3faf7;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #258fb9;
+    cursor: pointer;
+  }
+}
+
+.container {
+  width: 1780px;
+  margin: 0 auto;
+
+  @media (max-width: 1800px) {
+    width: 1600px;
+  }
+
+  @media (max-width: 1620px) {
+    width: 1400px;
+  }
+
+  @media (max-width: 1440px) {
+    width: 1024px;
+  }
+
+  @media (max-width: 1048px) {
+    width: 760px;
+  }
+
+  @media (max-width: 780px) {
+    width: 560px;
+  }
+
+  @media (max-width: 560px) {
+    width: 360px;
+  }
+}
+
+.fill-btn {
+  font-size: 1.2rem;
+  border: none;
+  background-color: #FE8366;
+  border-radius: 42px;
+  color: white;
+  transition: .3s;
+
+  @media (max-width: 780px) {
+    font-size: 1rem;
+  }
+
+  &:hover {
+    color: #FE8366;
+    background-color: white;
+    border: 1px solid #FE8366;
+    cursor: pointer;
+  }
+}
+
+.empty-btn {
+  font-size: 1.2rem;
+  border: 1px solid #FE8366;
+  border-radius: 42px;
+  color: #FE8366;
+  transition: .3s;
+
+  @media (max-width: 780px) {
+    font-size: 1rem;
+  }
+  
+  svg {
+    width: 30px;
+    height: 16px;
+
+    @media (max-width: 1440px) {
+      width: 40px;
+      height: 17px;
+    }
+
+    @media (max-width: 1048px) {
+      width: 25px;
+      height: 13px;
+    }
+  }
+
+  &:hover {
+    color: white;
+    background-color: #FE8366;
+    cursor: pointer;
+  }
+}
