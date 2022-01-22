@@ -52,10 +52,22 @@ header {
 
       .cross {
         display: none;
+        width: 30px;
+        height: 30px;
       }
   
       @media (max-width: 780px) {
         display: block;
+      }
+    }
+
+    @media (max-width: 780px) {
+      .open > .cross {
+        display: block;
+      }
+
+      .open > .hamburger-inner {
+        display: none;
       }
     }
   
@@ -89,7 +101,7 @@ header {
       align-items: center;
       justify-content: start;
       position: absolute;
-      top: 45px;
+      top: 40px;
       left: 0;
       z-index: 5;
       margin-left: -50%;
