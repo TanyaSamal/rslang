@@ -1,0 +1,74 @@
+footer {
+  background-color: #FFCB74;
+  font-size: 18px;
+
+  &::before {
+    content: '';
+    position: relative;
+    top: -44px;
+    display: block;
+    background: url('../../../assets/Mask2.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 216px;
+    transform: rotate(180deg);
+  }
+
+  .footer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+
+    .logo {
+      background: url('../../../assets/logo.png');
+      background-repeat: no-repeat;
+      background-size: contain;
+      width: 176px;
+      height: 42px;
+    }
+
+    .authors {
+      display: flex;
+      align-items: center;
+
+      p {
+        margin-right: 30px;
+      }
+
+      a {
+        display: flex;
+        align-items: center;
+        color: black;
+        text-decoration: none;
+        transition: .3s;
+
+        &:hover {
+          color: #727272;
+
+          svg {
+            filter: invert(48%) sepia(13%) saturate(3%) hue-rotate(345deg) brightness(89%) contrast(86%);
+          }
+        }
+
+        svg {
+          margin: 0 30px 0 10px;
+        }
+      }
+    }
+
+    .rs-link {
+      display: inline-block;
+      background: url('../../../assets/rs_school_js.svg');
+      background-repeat: no-repeat;
+      background-size: contain;
+      width: 100px;
+      height: 40px;
+      transition: .3s;
+
+      &:hover {
+        filter: invert(48%) sepia(13%) saturate(3%) hue-rotate(345deg) brightness(89%) contrast(86%);
+      }
+    }
+  }
+}

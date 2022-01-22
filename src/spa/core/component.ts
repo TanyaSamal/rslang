@@ -5,7 +5,7 @@ export default class Component implements IComponent {
 
   selector: string;
 
-  components: [];
+  components: IComponent[];
 
   private el: NodeListOf<HTMLElement>;
 

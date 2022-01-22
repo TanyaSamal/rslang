@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Marmelad&family=Nunito:wght@200;300;400&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  color: black;
+  background-color: #F2F2F2;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    background-color: #818181;
+  }
+
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #71dec5;
+    border-radius: 8px;
+    box-shadow: inset 1px 1px 10px #f3faf7;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #258fb9;
+    cursor: pointer;
+  }
+}
+
+.container {
+  width: 1780px;
+  margin: 0 auto;
+}

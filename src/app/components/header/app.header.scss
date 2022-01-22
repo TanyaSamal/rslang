@@ -1,0 +1,126 @@
+@mixin flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header {
+  padding: 15px;
+  background-color: white;
+  font-size: 24px;
+
+  .header-container {
+    @include flex-between;
+  }
+
+  .logo {
+    background: url('../../../assets/logo.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: 176px;
+    height: 42px;
+  }
+
+  .right-header {
+    @include flex-between;
+
+    .header-menu {
+      list-style: none;
+      @include flex-between;
+
+      .menu-element {
+        position: relative;
+        padding: 10px 0;
+        margin: 0 25px;
+        cursor: pointer;
+
+        &::before {
+          content: '';
+          display: block;
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          width: 0;
+          height: 2px;
+          background-color: #FE8366;
+          transition: .5s;
+        }
+
+        &:hover::before {
+          width: 100%;
+        }
+      }
+
+      .sub-element{
+        position: relative;
+
+        &::before {
+          content: none;
+        }
+
+        &:hover > .submenu {
+          transform: scaleY(1);
+        }
+
+        &::after {
+          content: '';
+          top: 22px;
+          position: absolute;
+          margin-left: 5px;
+          background: url('../../../assets/menu_arrow.svg');
+          background-repeat: no-repeat;
+          background-size: contain;
+          width: 22px;
+          height: 12px;
+        }
+      }
+
+      .submenu {
+        transform: scaleY(0);
+        list-style: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        z-index: 1;
+        background-color: #FE8366;
+        color: white;
+        transition: .5s ease-in-out;
+        cursor: pointer;
+
+        li {
+          padding: 10px;
+          border-bottom: 1px solid white;
+          transition: .5s;
+
+          &:last-child {
+            border-bottom: none;
+          }
+
+          &:hover {
+            background-color: white;
+            color: #FE8366;
+          }
+        }
+      }
+    }
+
+    .auth-btn {
+      margin-left: 25px;
+      font-size: 24px;
+      width: 180px;
+      height: 56px;
+      color: white;
+      border: none;
+      background-color: #FE8366;
+      border-radius: 28px;
+      transition: .5s;
+      cursor: pointer;
+
+      &:hover {
+        background-color: white;
+        border: 2px solid #FE8366;
+        color: #FE8366;
+      }
+    }
+  }
+}

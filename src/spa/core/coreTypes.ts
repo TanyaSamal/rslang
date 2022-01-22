@@ -11,7 +11,7 @@ export type ComponentEvent = {
 export interface IComponent {
   template: string,
   selector: string,
-  components: [],
+  components: IComponent[],
   events?: () => ComponentEvent[],
   render: (selector: string) => void,
   afterInit?: () => void,
@@ -21,7 +21,7 @@ export interface IComponent {
 export interface IComponentConfig {
   template: string,
   selector: string,
-  components?: []
+  components?: IComponent[]
 }
 
 export interface IRoute {
