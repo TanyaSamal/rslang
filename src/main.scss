@@ -63,6 +63,10 @@ a {
   @media (max-width: 560px) {
     width: 360px;
   }
+
+  @media (max-width: 360px) {
+    width: 300px;
+  }
 }
 
 .fill-btn {
