@@ -4,7 +4,7 @@
 }
 
 .auth-page {
-  height: calc(100vh - 262px);
+  min-height: calc(100vh - 262px);
 
   .registration-container {
     display: flex;
@@ -36,7 +36,7 @@
       }
 
       .registration-block {
-        display: flex;
+        display: none;
         flex-direction: column;
         align-items: center;
 
@@ -64,7 +64,7 @@
 
 
       .authorization-block {
-        display: none;
+        display: block;
         flex-direction: column;
         align-items: center;
 
