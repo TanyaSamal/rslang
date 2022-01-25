@@ -12,27 +12,29 @@
           <h2>Войти в аккаунт</h2>
           <h3>и улучшить прогресс в английском!</h3>
         </div>
+        <span class="errorMsg">Неправильный e-mail или пароль</span>
       </div>
       <div class="form-fields">
-        <input type="text" id="name" required name="username" placeholder="Имя" class="registration-block">
-        <input type="email" name="email" required placeholder="E-mail*">
-        <input type="password" id="pwd" name="password" required placeholder="Пароль*">
+        <input type="text" id="name" name="username" placeholder="Имя" class="registration-block">
+        <div class="email-field field">
+          <input type="email" id="email" name="email" required placeholder="E-mail*">
+          <span>Поле заполнено неверно!</span>
+        </div>
+        <div class="pwd-field field">
+          <input type="password" id="pwd" name="password" required placeholder="Пароль*" minlength="8">
+          <span>Минимальная длина пароля - 8 символов</span>
+        </div>
       </div>
       <p>* - поля, обязательные для заполнения</p>
       <div class="registration-block">
-        <button class="registration-btn fill-btn" type="submit">Зарегистрироваться</button>
+        <a class="registration-btn fill-btn disabled">Зарегистрироваться</a>
         <div class="auth-link">
           <span>Уже зарегистрированы?</span>
           <button class="link-btn login-link" type="button">Да, войти!</button>
         </div>
       </div>
       <div class="authorization-block">
-        <a class="empty-btn authorization-btn">
-          <svg width="54" height="24" viewBox="0 0 54 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M52.6624 13.0607C53.2482 12.4749 53.2482 11.5251 52.6624 10.9393L43.1165 1.3934C42.5307 0.807611 41.581 0.807611 40.9952 1.3934C40.4094 1.97919 40.4094 2.92893 40.9952 3.51472L49.4804 12L40.9952 20.4853C40.4094 21.0711 40.4094 22.0208 40.9952 22.6066C41.581 23.1924 42.5307 23.1924 43.1165 22.6066L52.6624 13.0607ZM0 13.5H51.6018V10.5H0V13.5Z" fill="#FE8366"/>
-          </svg>
-          Войти
-        </a>
+        <a class="empty-btn authorization-btn disabled">Войти</a>
         <div class="registration-link">
           <span>Нет аккаунта?</span>
           <button class="link-btn reg-link" type="button">Зарегистрироваться</button>
