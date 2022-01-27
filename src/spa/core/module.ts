@@ -1,6 +1,7 @@
 import { IComponent, IModule, IRoute, IModuleConfig } from './coreTypes';
 import { router } from '../tools/router';
 
+
 export default class Module implements IModule {
   routes: IRoute[];
 
@@ -12,16 +13,20 @@ export default class Module implements IModule {
     this.components = config.components;
     this.bootstrapComponent = config.bootstrapComponent;
     this.routes = config.routes;
-  }
+ }
 
   static renderComponent(comp: IComponent): void  {
     if (typeof comp.onInit !== 'undefined') comp.onInit();
 
     comp.render(comp.selector);
+    if (typeof comp.beforeInit !== 'undefined') comp.beforeInit();
     if (comp.components) {
-      comp.components.forEach((c: IComponent) => c.render(c.selector));
+      comp.components.forEach((c: IComponent) => {
+        if (typeof c.beforeInit !== 'undefined') c.beforeInit();
+        c.render(c.selector);
+        if (typeof c.afterInit !== 'undefined') c.afterInit();
+      });
     }
-
     if (typeof comp.afterInit !== 'undefined') comp.afterInit();
   }
 

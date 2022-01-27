@@ -1,4 +1,5 @@
 import { IComponent, IComponentConfig, ComponentEvent } from './coreTypes';
+import Observable from '../tools/observer';
 
 export default class Component implements IComponent {
   template: string;
@@ -9,6 +10,10 @@ export default class Component implements IComponent {
 
   private el: NodeListOf<HTMLElement>;
 
+  token: string;
+
+  observable: Observable;
+
   events: () => ComponentEvent[];
 
   constructor(config: IComponentConfig) {
@@ -17,6 +22,8 @@ export default class Component implements IComponent {
     this.components = config.components;
     this.el = null;
     this.events = null;
+    this.token = null;
+    this.observable = new Observable();
   }
 
   render(selector: string): void {

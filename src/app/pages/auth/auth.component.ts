@@ -5,7 +5,7 @@ import { appHeader } from '../../components/header/app.header';
 import { appFooter } from '../../components/footer/app.footer';
 import { ComponentEvent } from '../../../spa/core/coreTypes';
 import Controller from '../../../spa/tools/controller';
-import { IUser, IAuth } from '../../../spa/tools/controllerTypes';
+import { IAuth } from '../../../spa/tools/controllerTypes';
 
 const LOGIN = 'login';
 const REGISTRATION = 'registration';
@@ -110,7 +110,8 @@ class AuthComponent extends Component {
     const res = await this.controller.loginUser({email: userEmail, password: userPwd});
     if (res.status !== 404 && res.status !== 403) {
       const content: Promise<IAuth> = await res.json();
-      console.log(content);
+      const { token } = await content;
+      this.observable.notify(token);
       if (content) router.navigate('textbook');
     } else {
       const errorMessage = <HTMLSpanElement>document.querySelector('.errorMsg');
@@ -124,8 +125,7 @@ class AuthComponent extends Component {
   async registration(): Promise<void> {
     const email = <HTMLInputElement>document.querySelector('#email');
     const password = <HTMLInputElement>document.querySelector('#pwd');
-    const user = await this.controller.createUser({email: email.value, password: password.value});
-    console.log(user);
+    await this.controller.createUser({email: email.value, password: password.value});
     this.loginUser(email.value, password.value);
   }
 
@@ -144,3 +144,6 @@ export const authComponent = new AuthComponent({
   ],
   template: Auth,
 });
+
+
+authComponent.observable.subscribe(appHeader);

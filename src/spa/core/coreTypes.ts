@@ -15,7 +15,9 @@ export interface IComponent {
   events?: () => ComponentEvent[],
   render: (selector: string) => void,
   afterInit?: () => void,
-  onInit?: () => void
+  beforeInit?: () => void,
+  onInit?: () => void,
+  update?: (token: string) => void
 }
 
 export interface IComponentConfig {
