@@ -237,5 +237,12 @@ header {
         margin-left: 0;
       }
     }
+
+    .logout-btn {
+      display: none;
+      text-decoration: underline;
+      padding: 15px 0;
+      cursor: pointer;
+    }
   }
 }

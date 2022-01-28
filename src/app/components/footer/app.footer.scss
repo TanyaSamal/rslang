@@ -9,17 +9,35 @@ footer {
   &::before {
     content: '';
     position: relative;
-    top: -44px;
+    top: -10px;
     display: block;
     background: url('../../../assets/Mask2.png');
     background-repeat: no-repeat;
-    background-size: cover;
-    height: 216px;
+    background-size: contain;
+    height: 110px;
     transform: rotate(180deg);
 
-    @media (max-width: 780px) {
-      top: -100px;
+    @media (max-width: 1440px) {
+      top: -38px;
     }
+
+    @media (max-width: 1048px) {
+      top: -60px;
+    }
+
+    @media (max-width: 780px) {
+      top: -75px;
+    }
+
+    @media (max-width: 560px) {
+      top: -45px;
+      height: 70px;
+    }
+
+    @media (max-width: 360px) {
+      top: -52px;
+    }
+
   }
 
   .footer-container {
