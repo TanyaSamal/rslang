@@ -17,7 +17,7 @@ class AppHeader extends Component {
   }
 
   afterInit() {
-    console.log(`token from header - ${this.token}`);
+    if (window.localStorage.getItem('userToken')) this.token = window.localStorage.getItem('userToken');
     if (this.token && this.token !== '') {
       this.isLoggedIn = true;
       this.changeLoginStatus();

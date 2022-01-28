@@ -112,6 +112,7 @@ class AuthComponent extends Component {
       const content: Promise<IAuth> = await res.json();
       const { token } = await content;
       this.observable.notify(token);
+      window.localStorage.setItem('userToken', token);
       if (content) router.navigate('textbook');
     } else {
       const errorMessage = <HTMLSpanElement>document.querySelector('.errorMsg');
@@ -144,6 +145,5 @@ export const authComponent = new AuthComponent({
   ],
   template: Auth,
 });
-
 
 authComponent.observable.subscribe(appHeader);
