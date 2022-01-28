@@ -9,6 +9,17 @@ class AppHeader extends Component {
 
   isLoggedIn = false;
 
+  events = (): ComponentEvent[] =>  [{
+    event: 'click',
+    className: '.hamburger',
+    listener: this.toggleMenu,
+  },
+  {
+    event: 'click',
+    className: '.logout-btn',
+    listener: this.logout,
+  }];
+
   changeLoginStatus() {
     const loginBtn = <HTMLAnchorElement>document.querySelector('.auth-btn');
     const logoutBtn = <HTMLAnchorElement>document.querySelector('.logout-btn');
@@ -24,17 +35,6 @@ class AppHeader extends Component {
     }
   }
 
-  events = (): ComponentEvent[] =>  [{
-    event: 'click',
-    className: '.hamburger',
-    listener: this.toggleMenu,
-  },
-  {
-    event: 'click',
-    className: '.logout-btn',
-    listener: this.logout,
-  }];
-
   toggleMenu(e: Event): void {
     const target = <HTMLDivElement>e.currentTarget;
     if (target.classList.contains('hamburger')) {
@@ -45,10 +45,17 @@ class AppHeader extends Component {
     }
   }
 
+  showHomePageLoginForm(): void {
+    const regSection = <HTMLDivElement>document.querySelector('.registration-container');
+    if (regSection) regSection.style.display = 'flex';
+  }
+
   logout(): void {
     this.isLoggedIn = false;
     this.token = '';
+    window.localStorage.removeItem('userToken');
     this.changeLoginStatus();
+    this.showHomePageLoginForm();
   }
 
   update(token: string) {

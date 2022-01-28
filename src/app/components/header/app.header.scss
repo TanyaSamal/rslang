@@ -240,8 +240,9 @@ header {
 
     .logout-btn {
       display: none;
+      text-decoration: underline;
+      padding: 15px 0;
       cursor: pointer;
-      text-decoration: underline  ;
     }
   }
 }

@@ -22,7 +22,7 @@ export default class Component implements IComponent {
     this.components = config.components;
     this.el = null;
     this.events = null;
-    this.token = null;
+    this.token = '';
     this.observable = new Observable();
   }
 

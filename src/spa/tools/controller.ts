@@ -18,7 +18,6 @@ export default class Controller {
       },
       body: JSON.stringify(user)
     });
-    console.log(rawResponse);
     const content = await rawResponse.json();
     return content;
   }
