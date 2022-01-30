@@ -1,3 +1,15 @@
+@mixin colorTheme($color) {
+  .word-detail .word-content .word-actions button {
+    background-color: $color;
+    border: 1px solid $color;
+
+    &:hover {
+      background-color: white;
+      border: 1px solid $color;
+    }
+  }
+}
+
 .word-detail {
   background-color: white;
   width: 400px;
@@ -91,4 +103,28 @@
       }
     }
   }
+}
+
+.colorTheme-0 {
+  @include colorTheme(#8bd884);
+}
+
+.colorTheme-1 {
+  @include colorTheme(#71DEC5);
+}
+
+.colorTheme-2 {
+  @include colorTheme(#fff174);
+}
+
+.colorTheme-3 {
+  @include colorTheme(#ffcb74);
+}
+
+.colorTheme-4 {
+  @include colorTheme(#FE8366);
+}
+
+.colorTheme-5 {
+  @include colorTheme(#d34747);
 }

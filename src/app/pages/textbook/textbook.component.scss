@@ -5,6 +5,16 @@
   justify-content: space-between;
 }
 
+@mixin colorTheme($color) {
+  .word-card:hover {
+    background-color: $color;
+  }
+
+  .active-card {
+    background-color: $color;
+  }
+}
+
 .textbook-page {
 
   .textbook-header {
@@ -90,27 +100,27 @@
       }
     }
 
-    .level-a2 .level-color {
+    #level-1 .level-color {
       background-color: #71DEC5;
     }
 
-    .level-b1 .level-color {
+    #level-2 .level-color {
       background-color: #fff174;
     }
 
-    .level-b2 .level-color {
+    #level-3 .level-color {
       background-color: #ffcb74;
     }
 
-    .level-c1 .level-color {
+    #level-4 .level-color {
       background-color: #FE8366;
     }
 
-    .level-c2 .level-color {
+    #level-5 .level-color {
       background-color: #d34747;
     }
 
-    .active-card {
+    .active-level {
       opacity: 1;
       filter: grayscale(0);
     }
@@ -165,5 +175,29 @@
       width: 1300px;
       padding-bottom: 20px;
     }
+  }
+
+  .colorTheme-0 {
+    @include colorTheme(#8bd884);
+  }
+
+  .colorTheme-1 {
+    @include colorTheme(#71DEC5);
+  }
+
+  .colorTheme-2 {
+    @include colorTheme(#fff174);
+  }
+
+  .colorTheme-3 {
+    @include colorTheme(#ffcb74);
+  }
+
+  .colorTheme-4 {
+    @include colorTheme(#FE8366);
+  }
+
+  .colorTheme-5 {
+    @include colorTheme(#d34747);
   }
 }
