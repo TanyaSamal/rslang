@@ -68,8 +68,48 @@
       </div>
     </template>
     <div class="words-content">
-      <div class="word-description"></div>
-      <div class="words-container"></div>
+      <div class="words-meaning">
+        <div class="word-description"></div>
+        <div class="words-container"></div>
+      </div>
+      <div class="pagination">
+        <nav class="textbook-pagination">
+          <ul class="pagination-list">
+            <li>
+              <button class="pag-arrow prev-page" disabled tabindex="-1" type="button" aria-label="Go to previous page">&lt</button>
+            </li>
+            <div class="first-part hide">
+              <li>
+                <button class="pag-number" tabindex="0" type="button" aria-label="page 1" aria-current="true">1</button>
+              </li>
+              <li>
+                <div class="ellipsis">…</div>
+              </li>
+            </div>
+            <li>
+              <button class="pag-number current-page" tabindex="0" type="button" aria-label="page 1" aria-current="true">1</button>
+            </li>
+            <li>
+              <button class="pag-number" tabindex="0" type="button">2</button>
+            </li>
+            <li>
+              <button class="pag-number" tabindex="0" type="button">3</button>
+            </li>
+            <li>
+              <div class="ellipsis">…</div>
+            </li>
+            <li>
+              <button class="pag-number" tabindex="0" type="button">29</button>
+            </li>
+            <li>
+              <button class="pag-number" tabindex="0" type="button" aria-label="Go to page 30">30</button>
+            </li>
+            <li>
+              <button class="pag-arrow next-page" tabindex="0" type="button" aria-label="Go to next page">&gt</button>
+            </li>
+          </ul>
+        </nav>
+      </div>
     </div>
   </div>
 </main>

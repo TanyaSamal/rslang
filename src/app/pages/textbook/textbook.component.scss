@@ -13,6 +13,18 @@
   .active-card {
     background-color: $color;
   }
+
+  .pagination .pagination-list li .current-page {
+    background-color: $color;
+
+    &:hover {
+      background-color: darken($color, 20%);
+    }
+  }
+
+  .pagination .pagination-list li .pag-number:hover {
+    background-color: $color;
+  }
 }
 
 .textbook-page {
@@ -165,15 +177,83 @@
   }
 
   .words-content {
-    @include flex-between;
-    flex-wrap: nowrap;
 
-    .words-container {
+    .words-meaning {
+      @include flex-between;
+      flex-wrap: nowrap;
+
+      .words-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        width: 1300px;
+        padding-bottom: 20px;
+      }
+    }
+
+    .pagination {
       display: flex;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-      width: 1300px;
-      padding-bottom: 20px;
+      justify-content: center;
+      margin: 30px 0 40px;
+
+      .pagination-list {
+        display: flex;
+        list-style-type: none;
+
+        .first-part {
+          display: flex;
+        }
+        
+        .hide {
+          display: none;
+        }
+
+        li {
+          margin: 5px;
+
+          .ellipsis {
+            font-size: 1rem;
+          }
+
+          button {
+            min-width: 32px;
+            height: 32px;
+            margin: 0 3px;
+            padding: 0 6px;
+            font-size: 0.875rem;
+            box-sizing: border-box;
+            text-align: center;
+            border-radius: 16px;
+            border: none;
+            cursor: pointer;
+            transition: .3s;
+
+            &:disabled:hover {
+              background-color: transparent;
+            }
+          }
+
+          .pag-number:hover {
+            background-color: #8bd884;
+          }
+
+          .current-page {
+            background-color: #8bd884;
+
+            &:hover {
+              background-color: darken(#8bd884, 20%);
+            }
+          }
+
+          .pag-arrow {
+            background-color: transparent;
+
+            &:hover {
+              background-color: #d3d3d3;
+            }
+          }
+        }
+      }
     }
   }
 

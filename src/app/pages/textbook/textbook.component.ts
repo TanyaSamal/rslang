@@ -6,17 +6,107 @@ import { appFooter } from '../../components/footer/app.footer';
 import { AppWord } from '../../components/word/app.word';
 import Word from '../../components/word/app.word.html';
 import { IWord } from '../../../spa/tools/controllerTypes';
+import { ComponentEvent } from '../../../spa/core/coreTypes';
 
 const BASE_URL = 'https://rslang-2022.herokuapp.com/';
 
 class TextbookComponent extends Component {
   private controller = new Controller();
 
-  private currentPage = '0';
+  private currentPage = 0;
 
   private currentLevel = '0';
 
   private pageWords : IWord[] = [];
+
+  events = (): ComponentEvent[] =>  [{
+    event: 'click',
+    className: '.pagination-list',
+    listener: this.changePage,
+  },
+  {
+    event: 'click',
+    className: '.prev-page',
+    listener: this.goToPrevPage,
+  },
+  {
+    event: 'click',
+    className: '.next-page',
+    listener: this.goToNextPage,
+  }];
+
+  channgePaginationView(): void {
+    const pagination = <HTMLUListElement>document.querySelector('.pagination-list');
+    const oldCurrPage = <HTMLButtonElement>pagination.querySelector('.current-page');
+    const firstPart = <HTMLButtonElement>pagination.querySelector('.first-part');
+    if (oldCurrPage) oldCurrPage.classList.remove('current-page');
+    if (this.currentPage < 27 && this.currentPage > 0) {
+      firstPart.classList.remove('hide');
+      if (this.currentPage === 1 && !firstPart.classList.contains('hide')) firstPart.classList.add('hide');
+      if (this.currentPage === 2) {
+        (<HTMLButtonElement>pagination.children[1].lastElementChild).classList.add('hide');
+      } else {
+        (<HTMLButtonElement>pagination.children[1].lastElementChild).classList.remove('hide');
+      }
+      if (this.currentPage === 26) {
+        (<HTMLButtonElement>pagination.children[5]).classList.add('hide');
+      } else {
+        (<HTMLButtonElement>pagination.children[5]).classList.remove('hide');
+      }
+      pagination.children[2].firstElementChild.textContent = `${this.currentPage}`;
+      pagination.children[3].firstElementChild.textContent = `${this.currentPage + 1}`;
+      pagination.children[4].firstElementChild.textContent = `${this.currentPage + 2}`;
+      (<HTMLButtonElement>pagination.children[3].firstElementChild).classList.add('current-page');
+    }
+    if (this.currentPage === 0) {
+      firstPart.classList.add('hide');
+      if ((<HTMLButtonElement>pagination.children[5]).classList.contains('hide'))
+        (<HTMLButtonElement>pagination.children[5]).classList.remove('hide');
+      (<HTMLButtonElement>pagination.children[2].firstElementChild).classList.add('current-page');
+      pagination.children[2].firstElementChild.textContent = `${this.currentPage + 1}`;
+      pagination.children[3].firstElementChild.textContent = `${this.currentPage + 2}`;
+      pagination.children[4].firstElementChild.textContent = `${this.currentPage + 3}`;
+    }
+    if (this.currentPage >= 27) {
+      if(this.currentPage === 27) {
+        (<HTMLButtonElement>pagination.children[4].firstElementChild).classList.add('current-page');
+        (<HTMLButtonElement>pagination.children[5]).classList.add('hide');
+      } else {
+        (<HTMLButtonElement>pagination.children[this.currentPage - 22].firstElementChild).classList.add('current-page');
+        pagination.children[2].firstElementChild.textContent = `${this.currentPage - 2}`;
+        pagination.children[3].firstElementChild.textContent = `${this.currentPage - 1}`;
+        pagination.children[4].firstElementChild.textContent = `${this.currentPage}`;
+        (<HTMLButtonElement>pagination.children[5]).classList.add('hide');
+        firstPart.classList.remove('hide');
+      }
+    }
+    (<HTMLButtonElement>pagination.lastElementChild.firstElementChild).disabled = (this.currentPage === 29);
+    (<HTMLButtonElement>pagination.firstElementChild.firstElementChild).disabled = (this.currentPage === 0);
+  }
+
+  async changePage(event: MouseEvent) {
+    const target = <HTMLButtonElement>event.target;
+    if (target.classList.contains('pag-number')) {
+      this.currentPage = Number(target.textContent) - 1;
+      this.channgePaginationView();
+      await this.initLevelWords();
+      this.addLevelListeners();
+    }
+  }
+
+  async goToPrevPage() {
+    this.currentPage -= 1;
+    this.channgePaginationView();
+    await this.initLevelWords();
+    this.addLevelListeners();
+  }
+
+  async goToNextPage() {
+    this.currentPage += 1;
+    this.channgePaginationView();
+    await this.initLevelWords();
+    this.addLevelListeners();
+  }
 
   addAudio(idx: number): void {
     const playAudio = (src: string) => {
@@ -82,7 +172,7 @@ class TextbookComponent extends Component {
 
   async initLevelWords(): Promise<void> {
     this.pageWords.length = 0;
-    this.pageWords = await this.controller.getWords(this.currentPage, this.currentLevel);
+    this.pageWords = await this.controller.getWords(this.currentLevel, this.currentPage.toString());
     this.pageWords.sort((wordItem1, wordItem2) => {
       if (wordItem1.word > wordItem2.word) return 1;
       if (wordItem1.word < wordItem2.word) return -1;
