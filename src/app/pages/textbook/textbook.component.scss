@@ -1,0 +1,169 @@
+@mixin flex-between {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.textbook-page {
+
+  .textbook-header {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+
+    .title-separator {
+      font-size: 2rem;
+      padding: 0 10px;
+      color: grey;
+    }
+
+    .header-title {
+      color: #b6b6b6;
+      transition: .3s;
+      cursor: pointer;
+
+      &:hover {
+        color: #FE8366;
+      }
+    }
+
+    .active-textbook {
+      color: black;
+    }
+  }
+
+  .difficulty,
+  .users-difficulty {
+    text-align: center;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+  }
+
+  .users-difficulty {
+    display: none;
+  }
+
+  .difficulty-levels {
+    @include flex-between;
+    flex-direction: row;
+    margin-bottom: 2rem;
+
+    .difficulty-level {
+      height: 70px;
+      width: 220px;
+      background-color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      border-radius: 10px;
+      padding: 10px;
+      opacity: .6;
+      filter: grayscale(1);
+      cursor: pointer;
+      transition: .5s;
+      overflow: hidden;
+
+      &:hover {
+        opacity: 1;
+        filter: grayscale(0);
+      }
+
+      .level-name {
+        font-size: 1.2rem;
+      }
+
+      .level-abbr {
+        font-size: 1.4rem;
+        z-index: 2;
+      }
+
+      .level-color {
+        background-color: #8bd884;
+        height: 110px;
+        width: 110px;
+        position: absolute;
+        transform: skewX(-20deg);
+        top: -1rem;
+        right: -3rem;
+      }
+    }
+
+    .level-a2 .level-color {
+      background-color: #71DEC5;
+    }
+
+    .level-b1 .level-color {
+      background-color: #fff174;
+    }
+
+    .level-b2 .level-color {
+      background-color: #ffcb74;
+    }
+
+    .level-c1 .level-color {
+      background-color: #FE8366;
+    }
+
+    .level-c2 .level-color {
+      background-color: #d34747;
+    }
+
+    .active-card {
+      opacity: 1;
+      filter: grayscale(0);
+    }
+  }
+
+  .word-card {
+    position: relative;
+    width: 180px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: 1rem;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: white;
+    cursor: pointer;
+    transition: 0.3s;
+
+    &:hover {
+      background-color: #8bd884;
+    }
+
+    .word-en {
+      font-size: 1.3rem;
+    }
+
+    .word-ru {
+      font-size: 1rem;
+    }
+
+    svg {
+      display: none;
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+    }
+  }
+
+  .active-card {
+    background-color: #8bd884;
+  }
+
+  .words-content {
+    @include flex-between;
+    flex-wrap: nowrap;
+
+    .words-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      width: 1300px;
+      padding-bottom: 20px;
+    }
+  }
+}

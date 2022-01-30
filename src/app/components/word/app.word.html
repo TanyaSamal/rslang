@@ -2,10 +2,10 @@
     <div class="word-image"></div>
     <div class="word-content">
       <div>
-        <h2 class="word-title">boat</h2>
-        <h3 class="word-translate">лодка</h3>
+        <h2 class="word-title">{{ word }}</h2>
+        <h3 class="word-translate">{{ wordTranslate }}</h3>
         <div class="word-transcription">
-          <span class="word-transcription">[bout]</span>
+          <span class="word-transcription">{{ transcription }}</span>
           <svg width="100" height="82" viewBox="0 0 100 82" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M15.3846 23.7389H0V58.039H15.3846L44.4725 79.6447C44.4725 79.6447 49.7688 84.1004 49.7688 79.4766C49.7688 74.8528 49.7688 5.83219 49.7688 1.62874C49.7688 -1.98622 45.061 1.54467 45.061 1.54467L15.3846 23.7389Z" fill="#929292"/>
             <path d="M65.3942 21.9039C64.1728 20.6908 62.1372 20.6908 60.9158 21.9039C59.6944 23.1171 59.6944 25.139 60.9158 26.3521C64.987 30.3959 67.0226 35.6529 67.0226 40.9772C67.0226 46.3016 64.987 51.5585 60.9158 55.6023C59.6944 56.8155 59.6944 58.8374 60.9158 60.0505C61.5265 60.6571 62.3407 60.9941 63.155 60.9941C63.9692 60.9941 64.7835 60.7245 65.3942 60.0505C70.6868 54.7936 73.3331 47.8517 73.3331 40.9772C73.3331 34.0354 70.6868 27.1609 65.3942 21.9039Z" fill="#929292"/>
@@ -14,17 +14,17 @@
           </svg>
         </div>
       </div>
-      <div class="word-actions">
-          <button type="button" class="add-in-hard">+ в сложные слова</button>
-          <button type="button" class="delete-word">изучено</button>
-      </div>
       <div class="word-description">
           <h3 class="word-subheading">Значение</h3>
-          <p>A <em>boat</em> is a vehicle that moves across water.</p>
-          <p>Лодка - это транспортное средство, которое движется по воде</p>
+          <p>{{ textMeaning }}</p>
+          <p>{{ textMeaningTranslate }}</p>
           <h3 class="word-subheading">Пример</h3>
-          <p>There is a small <strong>boat</strong> on the lake.</p>
-          <p>На озере есть маленькая лодка</p>
+          <p>{{ textExample }}</p>
+          <p>{{ textExampleTranslate }}</p>
+      </div>
+      <div class="word-actions">
+        <button type="button" class="add-in-hard">+ в сложные слова</button>
+        <button type="button" class="delete-word">изучено</button>
       </div>
     </div>
 </div>

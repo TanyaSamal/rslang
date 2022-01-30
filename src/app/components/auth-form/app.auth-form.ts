@@ -1,9 +1,8 @@
 import './app.auth-form.scss';
 import AuthForm from './app.auth-form.html';
 import { ComponentEvent } from '../../../spa/core/coreTypes';
-import Controller from '../../../spa/tools/controller';
 import { IAuth } from '../../../spa/tools/controllerTypes';
-import { Component, router } from '../../../spa';
+import { Component, router, Controller } from '../../../spa';
 
 const LOGIN = 'login';
 const REGISTRATION = 'registration';

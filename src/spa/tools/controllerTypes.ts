@@ -27,4 +27,14 @@ export interface IWord {
   wordTranslate: string;
   textMeaningTranslate: string;
   textExampleTranslate: string;
+  [key: string]: string | number;
+}
+
+interface IUserWordOptions {
+  status: string  // изучено, сложное? сделать Type?
+}
+
+export interface IUserWord {
+  difficulty: string,
+  optional?: IUserWordOptions
 }

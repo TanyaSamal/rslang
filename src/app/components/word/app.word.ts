@@ -1,11 +1,11 @@
 import './app.word.scss';
-import Word from './app.word.html';
-
 import { Component } from '../../../spa';
+import { IComponentConfig } from '../../../spa/core/coreTypes';
 
-class AppWord extends Component {}
+export class AppWord extends Component {
 
-export const appWord = new AppWord({
-  selector: 'app-word',
-  template: Word,
-});
+  constructor(config: IComponentConfig) {
+    super(config);
+    this.wordData = {...config.wordData};
+  }
+}
