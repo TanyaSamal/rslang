@@ -84,6 +84,18 @@ class TextbookComponent extends Component {
     (<HTMLButtonElement>pagination.firstElementChild.firstElementChild).disabled = (this.currentPage === 0);
   }
 
+  changeLevelView(): void {
+    document.querySelector('.active-level').classList.remove('active-level');
+    document.querySelector(`#level-${this.currentLevel}`).classList.add('active-level');
+  }
+
+  savePageInLocalStorage(): void {
+    localStorage.setItem('currentPage', JSON.stringify({
+      level: this.currentLevel,
+      page: this.currentPage
+    }));
+  }
+
   async changePage(event: MouseEvent) {
     const target = <HTMLButtonElement>event.target;
     if (target.classList.contains('pag-number')) {
@@ -91,6 +103,7 @@ class TextbookComponent extends Component {
       this.channgePaginationView();
       await this.initLevelWords();
       this.addLevelListeners();
+      this.savePageInLocalStorage();
     }
   }
 
@@ -99,6 +112,7 @@ class TextbookComponent extends Component {
     this.channgePaginationView();
     await this.initLevelWords();
     this.addLevelListeners();
+    this.savePageInLocalStorage();
   }
 
   async goToNextPage() {
@@ -106,6 +120,7 @@ class TextbookComponent extends Component {
     this.channgePaginationView();
     await this.initLevelWords();
     this.addLevelListeners();
+    this.savePageInLocalStorage();
   }
 
   addAudio(idx: number): void {
@@ -225,6 +240,14 @@ class TextbookComponent extends Component {
   }
 
   async afterInit() {
+    if (localStorage.getItem('currentPage')) {
+      const storageData = JSON.parse(localStorage.getItem('currentPage'));
+      this.currentPage = storageData.page;
+      this.currentLevel = storageData.level;
+      this.changeLevelView();
+      this.changeColorTheme();
+      this.channgePaginationView();
+    }
     await this.initLevelWords();
     this.addLevelListeners();
   }
