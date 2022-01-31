@@ -27,6 +27,14 @@
   }
 }
 
+@mixin bg-image($url) {
+  width: 200px;
+  height: 200px;
+  background: url($url);
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
 .textbook-page {
 
   .textbook-header {
@@ -279,5 +287,67 @@
 
   .colorTheme-5 {
     @include colorTheme(#d34747);
+  }
+
+  .games-link {
+
+    .game-link__descriprion {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.1rem;
+    }
+
+    .english-games {
+      @include flex-between;
+      justify-content: start;
+      margin-bottom: 30px;
+
+      .gotoGame {
+        text-align: start;
+      }
+
+      .link-container {
+        @include flex-between;
+        align-items: center;
+        width: 600px;
+        padding: 10px;
+        background-color: white;
+        border-radius: 10px;
+        transition: .3s;
+        cursor: pointer;
+
+        &:hover {
+          transform: scale(1.03);
+        }
+      }
+
+      .game-content {
+        display: flex;
+        flex-direction: column;
+
+        width: 350px;
+
+        .game-title {
+          margin-bottom: 10px;
+        }
+
+        .training {
+          display: inline-block;
+          padding: 5px 15px;
+          border-radius: 20px;
+          align-self: center;
+          background-color: #ffcb74;
+          margin-bottom: 10px;
+        }
+      }
+
+      .game-audiocall .game-image {
+        @include bg-image('../../../assets/audiocall.png');
+      }
+
+      .game-sprint .game-image {
+        @include bg-image('../../../assets/sprint.png');
+      }
+    }
   }
 }
