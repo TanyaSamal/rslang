@@ -5,19 +5,23 @@ import { appHeader } from '../../components/header/app.header';
 import { appFooter } from '../../components/footer/app.footer';
 import { AppWord } from '../../components/word/app.word';
 import Word from '../../components/word/app.word.html';
-import { IWord } from '../../../spa/tools/controllerTypes';
+import { IAuth, IUserWordInfo, IWord, WordStatus } from '../../../spa/tools/controllerTypes';
 import { ComponentEvent } from '../../../spa/core/coreTypes';
 
 const BASE_URL = 'https://rslang-2022.herokuapp.com/';
+const DICTIONARY = 'dictionary';
+const TEXTBOOK = 'textbook';
 
 class TextbookComponent extends Component {
   private controller = new Controller();
-
   private currentPage = 0;
-
+  private currentMode = TEXTBOOK;
   private currentLevel = '0';
-
-  private pageWords : IWord[] = [];
+  private pageWords: IWord[] = [];
+  private userWords: IWord[] = [];
+  private difficultWords: IUserWordInfo[] = [];
+  private learntWords: IUserWordInfo[] = [];
+  private userWordsInfo: IUserWordInfo[] = [];
 
   events = (): ComponentEvent[] =>  [{
     event: 'click',
@@ -33,7 +37,124 @@ class TextbookComponent extends Component {
     event: 'click',
     className: '.next-page',
     listener: this.goToNextPage,
-  }];
+  },
+  {
+    event: 'click',
+    className: '#dictionary-title',
+    listener: this.showDictionary,
+  },
+  {
+    event: 'click',
+    className: '#textbook-title',
+    listener: this.showTextbook,
+  },
+  {
+    event: 'click',
+    className: '.difficult-words',
+    listener: this.showDifficultWords,
+  },
+  {
+    event: 'click',
+    className: '.learnt-words',
+    listener: this.showLearntWords,
+  }
+];
+
+  drawDictionaryWords() {
+    const dictionaryContainer = document.querySelector('.dictionary-words__container');
+    dictionaryContainer.innerHTML = '';
+    const fragment = this.createFragment(this.userWords);
+    dictionaryContainer.appendChild(fragment);
+    this.addWordsListeners();
+    document.querySelector('.dictionary-word__description').innerHTML = '';
+    document.querySelector('.dictionary-word__description').insertAdjacentHTML('afterbegin',
+      `<app-word></app-word>`);
+    this.drawActiveWord(0);
+  }
+
+  async getFilteredDictionary(arr: IUserWordInfo[]) {
+    this.userWords.length = 0;
+    const wordIDs: string[] = [];
+    arr.forEach((word) => wordIDs.push(word.wordId));
+    const promices = wordIDs.map((id) => this.controller.getWordById(id));
+    this.userWords = await Promise.all(promices);
+  }
+
+  async showDifficultWords(event?: MouseEvent) {
+    if (event) {
+      const activeState = <HTMLDivElement>document.querySelector('.active-state');
+      activeState.classList.remove('active-state');
+      const target = <HTMLDivElement>event.target;
+      target.closest('.user-words').classList.add('active-state');
+    }
+    const usersDifficulty = document.querySelectorAll('.users-difficulty');
+    (<HTMLParagraphElement>usersDifficulty[0]).classList.remove('hide');
+    (<HTMLParagraphElement>usersDifficulty[1]).classList.add('hide');
+
+    await this.getFilteredDictionary(this.difficultWords);
+    this.drawDictionaryWords();
+  }
+
+  async showLearntWords(event?: MouseEvent) {
+    const activeState = <HTMLDivElement>document.querySelector('.active-state');
+    activeState.classList.remove('active-state');
+    const target = <HTMLDivElement>event.target;
+    target.closest('.user-words').classList.add('active-state');
+    const usersDifficulty = document.querySelectorAll('.users-difficulty');
+    (<HTMLParagraphElement>usersDifficulty[0]).classList.add('hide');
+    (<HTMLParagraphElement>usersDifficulty[1]).classList.remove('hide');
+
+    await this.getFilteredDictionary(this.learntWords);
+    this.drawDictionaryWords();
+  }
+
+  async getDictionaryWords() {
+    const userInfo: IAuth = JSON.parse(localStorage.getItem('userInfo'));
+    this.userWordsInfo = await this.controller.getUserWords(userInfo.userId, userInfo.token);
+  }
+
+  switchMode(mode: string): void {
+    const isDictionary = (mode === DICTIONARY) ? 'flex' : 'none';
+    const isTextbook = (mode === TEXTBOOK) ? 'block' : 'none';
+    const dictBlocks = document.querySelectorAll('.dictionary-view');
+    dictBlocks.forEach((dictEl: HTMLDivElement) => {
+      dictEl.style.display = isDictionary;
+    });
+    const textbookBlock = <HTMLDivElement>document.querySelector('.words-content');
+    textbookBlock.style.display = isTextbook;
+    const headersTitles = document.querySelectorAll('.header-title');
+    if (mode === TEXTBOOK) headersTitles[0].classList.add('active-textbook');
+      else headersTitles[0].classList.remove('active-textbook');
+    if (mode === DICTIONARY) headersTitles[1].classList.add('active-textbook');
+      else headersTitles[1].classList.remove('active-textbook');
+    this.learntWords.length = 0;
+    this.difficultWords.length = 0;
+    this.learntWords = this.userWordsInfo.filter((word) =>
+      word.difficulty === this.currentLevel && word.optional.status === WordStatus.learnt);
+    this.difficultWords = this.userWordsInfo.filter((word) =>
+      word.difficulty === this.currentLevel && word.optional.status === WordStatus.difficult);
+    const difficultCount = document.querySelector('.difficult-words .word__count span');
+    difficultCount.textContent = String(this.difficultWords.length);
+    const learntCount = document.querySelector('.learnt-words .word__count span');
+    learntCount.textContent = String(this.learntWords.length);
+  }
+
+  showTextbook(): void {
+    this.switchMode(TEXTBOOK);
+    this.currentMode = TEXTBOOK;
+    document.querySelector('.dictionary-word__description').innerHTML = '';
+    const activeWord = JSON.parse(localStorage.getItem('activeWord'));
+    this.drawActiveWord(+activeWord);
+  }
+
+  async showDictionary() {
+    await this.getDictionaryWords();
+    this.switchMode(DICTIONARY);
+    this.currentMode = DICTIONARY;
+    document.querySelector('.active-state').classList.remove('active-state');
+    document.querySelector('.difficult-words').classList.add('active-state');
+    await this.showDifficultWords();
+  }
 
   channgePaginationView(): void {
     const pagination = <HTMLUListElement>document.querySelector('.pagination-list');
@@ -84,16 +205,17 @@ class TextbookComponent extends Component {
     (<HTMLButtonElement>pagination.firstElementChild.firstElementChild).disabled = (this.currentPage === 0);
   }
 
-  changeLevelView(): void {
-    document.querySelector('.active-level').classList.remove('active-level');
-    document.querySelector(`#level-${this.currentLevel}`).classList.add('active-level');
-  }
-
   savePageInLocalStorage(): void {
     localStorage.setItem('currentPage', JSON.stringify({
       level: this.currentLevel,
       page: this.currentPage
     }));
+  }
+
+  changeLevelView(): void {
+    document.querySelector('.active-level').classList.remove('active-level');
+    document.querySelector(`#level-${this.currentLevel}`).classList.add('active-level');
+    this.savePageInLocalStorage();
   }
 
   async changePage(event: MouseEvent) {
@@ -127,13 +249,14 @@ class TextbookComponent extends Component {
     const playAudio = (src: string) => {
       const audio = new Audio(`${BASE_URL + src}`);
       audio.play();
+      const currentWord = (this.currentMode === TEXTBOOK) ? this.pageWords[idx] : this.userWords[idx];
       audio.onended = () => {
         switch (src) {
-          case this.pageWords[idx].audio:
-            playAudio(this.pageWords[idx].audioMeaning);
+          case currentWord.audio:
+            playAudio(currentWord.audioMeaning);
             break;
-          case this.pageWords[idx].audioMeaning:
-            playAudio(this.pageWords[idx].audioExample);
+          case currentWord.audioMeaning:
+            playAudio(currentWord.audioExample);
             break;
           default:
             break;
@@ -142,7 +265,8 @@ class TextbookComponent extends Component {
     }
 
     const playAudios = (): void => {
-      playAudio(this.pageWords[idx].audio);
+      const currentAudio = (this.currentMode === TEXTBOOK) ? this.pageWords[idx].audio : this.userWords[idx].audio;
+      playAudio(currentAudio);
     }
 
     const audioBtn = document.querySelector('.play-audio');
@@ -152,22 +276,31 @@ class TextbookComponent extends Component {
   drawActiveWord(idx: number): void {
     const wordTepmlate = document.querySelector('app-word');
     wordTepmlate.innerHTML = '';
+    const modeWordData: IWord = (this.currentMode === TEXTBOOK) ? this.pageWords[idx] : this.userWords[idx]
     const appWord = new AppWord({
       selector: 'app-word',
       template: Word,
-      wordData: {...this.pageWords[idx]},
+      wordData: {...modeWordData},
     });
     const word = document.querySelector('app-word');
     word.innerHTML = appWord.template;
     appWord.render('app-word');
+    appWord.afterInit();
 
     const wordImage = <HTMLDivElement>document.querySelector('.word-image');
-    wordImage.style.backgroundImage = `url('${BASE_URL + this.pageWords[idx].image}')`;
+    wordImage.style.backgroundImage = `url('${BASE_URL + modeWordData.image}')`;
+
+    if (this.currentMode === DICTIONARY) {
+      (<HTMLDivElement>document.querySelector('.word-actions')).style.display = 'none';
+    } else {
+      window.localStorage.setItem('activeWord', JSON.stringify(idx));
+    }
 
     const activeWord = <HTMLDivElement>document.querySelector('.active-card');
     if (activeWord) activeWord.classList.remove('active-card');
-    const wordLink = <HTMLDivElement>document.querySelector(`#word${idx}`);
+    const wordLink = <HTMLDivElement>document.querySelector(`#${this.currentMode + idx}`);
     wordLink.classList.add('active-card');
+    window.localStorage.setItem('activeWordID', JSON.stringify(modeWordData.id));
 
     this.addAudio(idx);
   }
@@ -175,9 +308,9 @@ class TextbookComponent extends Component {
   addWordsListeners(): void {
     const showWordInfo = (event: MouseEvent): void => {
       const target = <HTMLDivElement>event.target;
-      const parentDiv = <HTMLDivElement>target.closest('div');
+      const parentDiv = <HTMLDivElement>target.closest('.word-card');
       if (parentDiv && parentDiv.contains(target)) {
-        const targetId = Number(parentDiv.id.slice(parentDiv.id.indexOf('word') + 4));
+        const targetId = Number(parentDiv.id.slice(parentDiv.id.indexOf(this.currentMode) + this.currentMode.length));
         this.drawActiveWord(targetId);
       }
     }
@@ -204,6 +337,10 @@ class TextbookComponent extends Component {
   changeColorTheme(): void {
     const wordsContainer = document.querySelector('.words-content');
     wordsContainer.className = `words-content colorTheme-${this.currentLevel}`;
+    const userWords = document.querySelector('.dictionary-container');
+    userWords.className = `dictionary-container colorTheme-${this.currentLevel}`;
+    const userContent = document.querySelector('.dictionary-words');
+    userContent.className = `dictionary-words dictionary-view colorTheme-${this.currentLevel}`;
   }
 
   addLevelListeners(): void {
@@ -212,9 +349,7 @@ class TextbookComponent extends Component {
       const parentDiv = <HTMLDivElement>target.closest('.difficulty-level');
       if (parentDiv && parentDiv.contains(target)) {
         this.currentLevel = parentDiv.id.slice(parentDiv.id.length - 1);
-        const activLevel = document.querySelector('.active-level');
-        if (activLevel) activLevel.classList.remove('active-level');
-        parentDiv.classList.add('active-level');
+        this.changeLevelView();
         await this.initLevelWords();
         this.changeColorTheme();
       }
@@ -223,18 +358,22 @@ class TextbookComponent extends Component {
     levelsContainer.addEventListener('click', changeLevel); 
   }
 
-  drawWords(): void {
+  createFragment(arr: IWord[]): DocumentFragment {
     const fragment = document.createDocumentFragment() as DocumentFragment;
     const wordItemTemp = document.querySelector('#word-item-temp') as HTMLTemplateElement;
 
-    this.pageWords.forEach((item: IWord, idx: number): void => {
+    arr.forEach((item: IWord, idx: number): void => {
         const newsClone = <HTMLElement>wordItemTemp.content.cloneNode(true);
-        newsClone.querySelector('.word-card').id=`word${idx}`;
+        newsClone.querySelector('.word-card').id=`${this.currentMode + idx}`;
         newsClone.querySelector('.word-en').textContent = item.word;
         newsClone.querySelector('.word-ru').textContent = item.wordTranslate;
         fragment.append(newsClone);
     });
+    return fragment;
+  }
 
+  drawWords(): void {
+    const fragment = this.createFragment(this.pageWords);
     document.querySelector('.words-container').innerHTML = '';
     document.querySelector('.words-container').appendChild(fragment);
   }

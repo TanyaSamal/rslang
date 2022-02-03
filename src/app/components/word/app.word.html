@@ -22,9 +22,28 @@
           <p>{{ textExample }}</p>
           <p>{{ textExampleTranslate }}</p>
       </div>
-      <div class="word-actions">
-        <button type="button" class="add-in-hard">+ в сложные слова</button>
-        <button type="button" class="delete-word">изучено</button>
+      <div class="word-actions only-authorized">
+        <button type="button" class="add-in-difficult">+ в сложные слова</button>
+        <button type="button" class="add-in-lernt">изучено</button>
+      </div>
+      <div class="game-answers only-authorized">
+        <h3>Статистика ответов в играх</h3>
+        <div class="answers-container">
+          <div class="game-answer">
+            <div class="game-name audiocall-progress">Аудовызов</div>
+            <div class="answer-statistic">
+              <p class="right-answer">Верно: <span class="audiocall-right">0</span></p>
+              <p class="wrong-answer">Неверно: <span class="audiocall-wrong">0</span></p>
+            </div>
+          </div>
+          <div class="game-answer">
+            <div class="game-name sprint-progress">Спринт</div>
+            <div class="answer-statistic">
+              <p class="right-answer">Верно: <span class="spring-right">0</span></p>
+              <p class="wrong-answer">Неверно: <span class="sprint-wrong">0</span></p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 </div>

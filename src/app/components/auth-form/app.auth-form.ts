@@ -107,9 +107,9 @@ class AppAuthForm extends Component {
     const res = await this.controller.loginUser({email: userEmail, password: userPwd});
     if (res.status !== 404 && res.status !== 403) {
       const content: Promise<IAuth> = await res.json();
+      window.localStorage.setItem("userInfo", JSON.stringify(content));
       const { token } = await content;
       this.observable.notify(token);
-      window.localStorage.setItem('userToken', token);
       if (content) router.navigate('textbook');
     } else {
       const errorMessage = <HTMLSpanElement>document.querySelector('.errorMsg');

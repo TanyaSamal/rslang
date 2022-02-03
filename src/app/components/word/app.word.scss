@@ -8,6 +8,27 @@
       border: 1px solid $color;
     }
   }
+
+  .word-detail .word-content .answers-container .game-name {
+    background-color: $color;
+  }
+}
+
+@mixin beforeIcon($src) {
+  position: relative;
+  margin-left: 20px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: -20px;
+    display: block;
+    width: 18px;
+    height: 18px;
+    background: url($src);
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
 }
 
 .word-detail {
@@ -100,6 +121,31 @@
           background-color: white;
           border: 1px solid #8bd884;
         }
+      }
+    }
+
+    .only-authorized {
+      display: none;
+    }
+
+    .answers-container {
+      display: flex;
+      justify-content: center;
+      gap: 4rem;
+
+      .game-name {
+        background-color: #8bd884;
+        padding: 5px 15px;
+        border-radius: 15px;
+        margin: 10px 0;
+      }
+
+      .right-answer {
+        @include beforeIcon('../../../assets/correct-answer.svg');
+      }
+
+      .wrong-answer {
+        @include beforeIcon('../../../assets/cross.svg');
       }
     }
   }

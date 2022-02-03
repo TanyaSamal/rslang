@@ -5,8 +5,22 @@
   justify-content: space-between;
 }
 
+@mixin blockColor {
+  background-color: #8bd884;
+  height: 110px;
+  width: 110px;
+  position: absolute;
+  transform: skewX(-20deg);
+  top: -1rem;
+  right: -3rem;
+}
+
 @mixin colorTheme($color) {
   .word-card:hover {
+    background-color: $color;
+  }
+
+  .word-card .word-status .status-color {
     background-color: $color;
   }
 
@@ -23,6 +37,10 @@
   }
 
   .pagination .pagination-list li .pag-number:hover {
+    background-color: $color;
+  }
+
+  .dictionary-states .user-words .word__color {
     background-color: $color;
   }
 }
@@ -65,13 +83,13 @@
 
   .difficulty,
   .users-difficulty {
-    text-align: center;
+    text-align: left;
     font-size: 1.2rem;
-    margin-bottom: 20px;
+    margin: 20px 0;
   }
 
-  .users-difficulty {
-    display: none;
+  .difficulty {
+    text-align: center;
   }
 
   .difficulty-levels {
@@ -110,13 +128,7 @@
       }
 
       .level-color {
-        background-color: #8bd884;
-        height: 110px;
-        width: 110px;
-        position: absolute;
-        transform: skewX(-20deg);
-        top: -1rem;
-        right: -3rem;
+        @include blockColor;
       }
     }
 
@@ -148,12 +160,13 @@
 
   .word-card {
     position: relative;
-    width: 180px;
+    width: 189px;
     height: 100px;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding-left: 1rem;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1rem;
     border-radius: 10px;
     overflow: hidden;
     background-color: white;
@@ -172,11 +185,19 @@
       font-size: 1rem;
     }
 
-    svg {
+
+    .word-status {
       display: none;
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
+
+      .status-info {
+        font-size: 1.2rem;
+        position: relative;
+      }
+
+      .status-color {
+        @include blockColor;
+        top: 0;
+      }
     }
   }
 
@@ -193,7 +214,7 @@
       .words-container {
         display: flex;
         flex-wrap: wrap;
-        gap: 1.5rem;
+        gap: 3rem;
         width: 1300px;
         padding-bottom: 20px;
       }
@@ -262,6 +283,86 @@
           }
         }
       }
+    }
+  }
+
+  .dictionary-words {
+    @include flex-between;
+    flex-wrap: nowrap;
+
+    .dictionary-words__container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3rem;
+      width: 1300px;
+      padding-bottom: 20px;
+    }
+  }
+
+  .only-authorized {
+    display: none;
+  }
+
+  .dictionary-view {
+    display: none;
+  }
+
+  .user-dictionary {
+
+    .dictionary-states {
+      display: flex;
+      justify-content: start;
+      gap: 4rem;
+
+      .user-words {
+        height: 70px;
+        width: 220px;
+        background-color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        border-radius: 10px;
+        padding: 10px;
+        opacity: .6;
+        filter: grayscale(1);
+        cursor: pointer;
+        transition: .5s;
+        overflow: hidden;
+
+        &:hover {
+          opacity: 1;
+          filter: grayscale(0);
+        }
+
+        .word__name {
+          font-size: 1.2rem;
+        }
+
+        .word__abbr {
+          font-size: 1.4rem;
+          z-index: 2;
+        }
+
+        .word__color {
+          background-color: #8bd884;
+          height: 110px;
+          width: 110px;
+          position: absolute;
+          transform: skewX(20deg);
+          top: -1rem;
+          left: -3rem;
+        }
+      }
+
+      .active-state {
+        opacity: 1;
+        filter: grayscale(0);
+      }
+    }
+
+    .hide {
+      display: none;
     }
   }
 

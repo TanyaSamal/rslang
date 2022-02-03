@@ -1,7 +1,7 @@
 import './app.header.scss';
 import Header from './app.header.html';
 
-import { Component } from '../../../spa';
+import { Component, router } from '../../../spa';
 import { ComponentEvent } from '../../../spa/core/coreTypes';
 
 class AppHeader extends Component {
@@ -28,7 +28,8 @@ class AppHeader extends Component {
   }
 
   afterInit() {
-    if (window.localStorage.getItem('userToken')) this.token = window.localStorage.getItem('userToken');
+    if (window.localStorage.getItem('userInfo'))
+      this.token = JSON.parse(window.localStorage.getItem('userInfo')).token;
     if (this.token && this.token !== '') {
       this.isLoggedIn = true;
       this.changeLoginStatus();
@@ -53,7 +54,9 @@ class AppHeader extends Component {
   logout(): void {
     this.isLoggedIn = false;
     this.token = '';
-    window.localStorage.removeItem('userToken');
+    router.navigate('#');
+    window.localStorage.removeItem("userInfo");
+    window.localStorage.removeItem("currentPage"); // clear?
     this.changeLoginStatus();
     this.showHomePageLoginForm();
   }
@@ -67,3 +70,4 @@ export const appHeader = new AppHeader({
   selector: 'app-header',
   template: Header,
 });
+

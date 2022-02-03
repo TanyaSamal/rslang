@@ -1,3 +1,20 @@
+export enum WordStatus {
+  learnt = 'learnt',
+  difficult = 'difficult',
+  inProgress = 'inProgress' // для изучаемых через игры, придумать логику, когда они переходят в статус выученных
+}
+
+export enum UrlPath {
+  USERS = 'users',
+  WORDS = 'words',
+  SIGNIN = 'signin'
+}
+
+export enum HttpMethod {
+  GET = 'GET',
+  POST = 'POST'
+}
+
 export interface IUser {
   name?: string;
   email: string;
@@ -9,7 +26,7 @@ export interface IAuth {
   token: string;
   refreshToken: string;
   userId: string;
-  name: string;
+  name?: string;
 }
 
 export interface IWord {
@@ -30,11 +47,29 @@ export interface IWord {
   [key: string]: string | number;
 }
 
-interface IUserWordOptions {
-  status: string  // изучено, сложное? сделать Type?
+export interface IUserWordOptions {
+  updatedDate: string;  // для статистики
+  status: WordStatus; // для словаря
+  gameProgress: { // для карточки слова
+    sprint: {
+      right: number;
+      wrong: number;
+    };
+    audiocall: {
+      right: number;
+      wrong: number;
+    };
+  }
 }
 
 export interface IUserWord {
-  difficulty: string,
+  difficulty: string, // 0-6 для определения уровня
   optional?: IUserWordOptions
+}
+
+export interface IUserWordInfo {
+  difficulty: string;
+  id: string;
+  optional?: IUserWordOptions;
+  wordId: string;
 }
