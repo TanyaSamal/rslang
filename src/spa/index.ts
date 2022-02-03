@@ -11,5 +11,5 @@ export {
   Controller,
   Observable,
   bootstrap,
-  router,
+  router
 };

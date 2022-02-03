@@ -60,30 +60,34 @@ class TextbookComponent extends Component {
   }
 ];
 
-  drawDictionaryWords() {
+  drawDictionaryWords(wordsArr: IUserWordInfo[]) {
     const dictionaryContainer = document.querySelector('.dictionary-words__container');
-    dictionaryContainer.innerHTML = '';
-    const fragment = this.createFragment(this.userWords);
-    dictionaryContainer.appendChild(fragment);
-    this.addWordsListeners();
-    document.querySelector('.dictionary-word__description').innerHTML = '';
-    document.querySelector('.dictionary-word__description').insertAdjacentHTML('afterbegin',
-      `<app-word></app-word>`);
-    this.drawActiveWord(0);
+    if (wordsArr.length !== 0) {
+      dictionaryContainer.innerHTML = '';
+      const fragment = this.createFragment(this.userWords);
+      dictionaryContainer.appendChild(fragment);
+      this.addWordsListeners();
+      document.querySelector('.dictionary-word__description').innerHTML = '';
+      document.querySelector('.dictionary-word__description').insertAdjacentHTML('afterbegin',
+        `<app-word></app-word>`);
+      this.drawActiveWord(0);
+    } else {
+      dictionaryContainer.innerHTML = 'В разделе пока нет слов.';
+      document.querySelector('.dictionary-word__description').innerHTML = '';
+    }
   }
 
-  async getFilteredDictionary(arr: IUserWordInfo[]) {
+  async getFilteredDictionary(arr: IUserWordInfo[]): Promise<IWord[]> {
     this.userWords.length = 0;
     const wordIDs: string[] = [];
     arr.forEach((word) => wordIDs.push(word.wordId));
     const promices = wordIDs.map((id) => this.controller.getWordById(id));
-    this.userWords = await Promise.all(promices);
+    return Promise.all(promices);
   }
 
   async showDifficultWords(event?: MouseEvent) {
     if (event) {
-      const activeState = <HTMLDivElement>document.querySelector('.active-state');
-      activeState.classList.remove('active-state');
+      document.querySelector('.active-state').classList.remove('active-state');
       const target = <HTMLDivElement>event.target;
       target.closest('.user-words').classList.add('active-state');
     }
@@ -91,26 +95,34 @@ class TextbookComponent extends Component {
     (<HTMLParagraphElement>usersDifficulty[0]).classList.remove('hide');
     (<HTMLParagraphElement>usersDifficulty[1]).classList.add('hide');
 
-    await this.getFilteredDictionary(this.difficultWords);
-    this.drawDictionaryWords();
+    this.userWords = await this.getFilteredDictionary(this.difficultWords);
+    this.drawDictionaryWords(this.difficultWords);
   }
 
-  async showLearntWords(event?: MouseEvent) {
-    const activeState = <HTMLDivElement>document.querySelector('.active-state');
-    activeState.classList.remove('active-state');
+  async showLearntWords(event: MouseEvent) {
+    document.querySelector('.active-state').classList.remove('active-state');
     const target = <HTMLDivElement>event.target;
     target.closest('.user-words').classList.add('active-state');
     const usersDifficulty = document.querySelectorAll('.users-difficulty');
     (<HTMLParagraphElement>usersDifficulty[0]).classList.add('hide');
     (<HTMLParagraphElement>usersDifficulty[1]).classList.remove('hide');
 
-    await this.getFilteredDictionary(this.learntWords);
-    this.drawDictionaryWords();
+    this.userWords = await this.getFilteredDictionary(this.learntWords);
+    this.drawDictionaryWords(this.learntWords);
   }
 
   async getDictionaryWords() {
     const userInfo: IAuth = JSON.parse(localStorage.getItem('userInfo'));
     this.userWordsInfo = await this.controller.getUserWords(userInfo.userId, userInfo.token);
+  }
+
+  getFilteredWords() {
+    this.learntWords.length = 0;
+    this.difficultWords.length = 0;
+    this.learntWords = this.userWordsInfo.filter((word) =>
+      word.difficulty === this.currentLevel && word.optional.status === WordStatus.learnt);
+    this.difficultWords = this.userWordsInfo.filter((word) =>
+      word.difficulty === this.currentLevel && word.optional.status === WordStatus.difficult);
   }
 
   switchMode(mode: string): void {
@@ -127,21 +139,18 @@ class TextbookComponent extends Component {
       else headersTitles[0].classList.remove('active-textbook');
     if (mode === DICTIONARY) headersTitles[1].classList.add('active-textbook');
       else headersTitles[1].classList.remove('active-textbook');
-    this.learntWords.length = 0;
-    this.difficultWords.length = 0;
-    this.learntWords = this.userWordsInfo.filter((word) =>
-      word.difficulty === this.currentLevel && word.optional.status === WordStatus.learnt);
-    this.difficultWords = this.userWordsInfo.filter((word) =>
-      word.difficulty === this.currentLevel && word.optional.status === WordStatus.difficult);
+    this.getFilteredWords();
     const difficultCount = document.querySelector('.difficult-words .word__count span');
     difficultCount.textContent = String(this.difficultWords.length);
     const learntCount = document.querySelector('.learnt-words .word__count span');
     learntCount.textContent = String(this.learntWords.length);
   }
 
-  showTextbook(): void {
+  async showTextbook() {
     this.switchMode(TEXTBOOK);
     this.currentMode = TEXTBOOK;
+    await this.initLevelWords();
+    this.addLevelListeners();
     document.querySelector('.dictionary-word__description').innerHTML = '';
     const activeWord = JSON.parse(localStorage.getItem('activeWord'));
     this.drawActiveWord(+activeWord);
@@ -314,8 +323,31 @@ class TextbookComponent extends Component {
         this.drawActiveWord(targetId);
       }
     }
+
     const wordsContainer = document.querySelector('.words-container');
     wordsContainer.addEventListener('click', showWordInfo);
+    const dictionaryContainer = document.querySelector('.dictionary-words__container');
+    dictionaryContainer.addEventListener('click', showWordInfo);
+  }
+
+  createFragment(arr: IWord[]): DocumentFragment {
+    const fragment = document.createDocumentFragment() as DocumentFragment;
+    const wordItemTemp = document.querySelector('#word-item-temp') as HTMLTemplateElement;
+
+    arr.forEach((item: IWord, idx: number): void => {
+        const newsClone = <HTMLElement>wordItemTemp.content.cloneNode(true);
+        newsClone.querySelector('.word-card').id=`${this.currentMode + idx}`;
+        newsClone.querySelector('.word-en').textContent = item.word;
+        newsClone.querySelector('.word-ru').textContent = item.wordTranslate;
+        fragment.append(newsClone);
+    });
+    return fragment;
+  }
+
+  drawWords(): void {
+    const fragment = this.createFragment(this.pageWords);
+    document.querySelector('.words-container').innerHTML = '';
+    document.querySelector('.words-container').appendChild(fragment);
   }
 
   async initLevelWords(): Promise<void> {
@@ -327,6 +359,28 @@ class TextbookComponent extends Component {
       return 0;
     });
     this.drawWords();
+    if (localStorage.getItem('userInfo')) {
+      await this.getDictionaryWords();
+      this.getFilteredWords();
+      const difficult = await this.getFilteredDictionary(this.difficultWords);
+      const learnt = await this.getFilteredDictionary(this.learntWords);
+      difficult.forEach((word) => {
+        const idx = this.pageWords.findIndex((pageWord) => pageWord.id === word.id);
+        if (idx !== -1) {
+          const activBlock = <HTMLDivElement>document.querySelector(`#textbook${idx} .word-status`);
+          activBlock.style.display = 'block';
+          activBlock.lastElementChild.textContent = 'С';
+        }
+      });
+      learnt.forEach((word) => {
+        const idx = this.pageWords.findIndex((pageWord) => pageWord.id === word.id);
+        if (idx !== -1) {
+          const activBlock = <HTMLDivElement>document.querySelector(`#textbook${idx} .word-status`);
+          activBlock.style.display = 'block';
+          activBlock.lastElementChild.textContent = 'И';
+        }
+      });
+    }
     this.addWordsListeners();
     document.querySelector('.word-description').innerHTML = '';
     document.querySelector('.word-description').insertAdjacentHTML('afterbegin',
@@ -350,32 +404,24 @@ class TextbookComponent extends Component {
       if (parentDiv && parentDiv.contains(target)) {
         this.currentLevel = parentDiv.id.slice(parentDiv.id.length - 1);
         this.changeLevelView();
-        await this.initLevelWords();
         this.changeColorTheme();
+        if (this.currentMode === TEXTBOOK) {
+          await this.initLevelWords();
+        } else {
+          document.querySelector('.active-state').classList.remove('active-state');
+          document.querySelector('.difficult-words').classList.add('active-state');
+          this.getFilteredWords();
+          await this.showDifficultWords();
+          const difficultCount = document.querySelector('.difficult-words .word__count span');
+          difficultCount.textContent = String(this.difficultWords.length);
+          const learntCount = document.querySelector('.learnt-words .word__count span');
+          learntCount.textContent = String(this.learntWords.length);
+        }
       }
     }
+
     const levelsContainer = document.querySelector('.difficulty-levels');
     levelsContainer.addEventListener('click', changeLevel); 
-  }
-
-  createFragment(arr: IWord[]): DocumentFragment {
-    const fragment = document.createDocumentFragment() as DocumentFragment;
-    const wordItemTemp = document.querySelector('#word-item-temp') as HTMLTemplateElement;
-
-    arr.forEach((item: IWord, idx: number): void => {
-        const newsClone = <HTMLElement>wordItemTemp.content.cloneNode(true);
-        newsClone.querySelector('.word-card').id=`${this.currentMode + idx}`;
-        newsClone.querySelector('.word-en').textContent = item.word;
-        newsClone.querySelector('.word-ru').textContent = item.wordTranslate;
-        fragment.append(newsClone);
-    });
-    return fragment;
-  }
-
-  drawWords(): void {
-    const fragment = this.createFragment(this.pageWords);
-    document.querySelector('.words-container').innerHTML = '';
-    document.querySelector('.words-container').appendChild(fragment);
   }
 
   async afterInit() {
