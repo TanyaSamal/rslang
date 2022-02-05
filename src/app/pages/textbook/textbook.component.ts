@@ -125,29 +125,8 @@ class TextbookComponent extends Component {
       word.difficulty === this.currentLevel && word.optional.status === WordStatus.difficult);
   }
 
-  switchMode(mode: string): void {
-    const isDictionary = (mode === DICTIONARY) ? 'flex' : 'none';
-    const isTextbook = (mode === TEXTBOOK) ? 'block' : 'none';
-    const dictBlocks = document.querySelectorAll('.dictionary-view');
-    dictBlocks.forEach((dictEl: HTMLDivElement) => {
-      dictEl.style.display = isDictionary;
-    });
-    const textbookBlock = <HTMLDivElement>document.querySelector('.words-content');
-    textbookBlock.style.display = isTextbook;
-    const headersTitles = document.querySelectorAll('.header-title');
-    if (mode === TEXTBOOK) headersTitles[0].classList.add('active-textbook');
-      else headersTitles[0].classList.remove('active-textbook');
-    if (mode === DICTIONARY) headersTitles[1].classList.add('active-textbook');
-      else headersTitles[1].classList.remove('active-textbook');
-    this.getFilteredWords();
-    const difficultCount = document.querySelector('.difficult-words .word__count span');
-    difficultCount.textContent = String(this.difficultWords.length);
-    const learntCount = document.querySelector('.learnt-words .word__count span');
-    learntCount.textContent = String(this.learntWords.length);
-  }
-
   async showTextbook() {
-    this.switchMode(TEXTBOOK);
+    utils.switchMode(TEXTBOOK);
     this.currentMode = TEXTBOOK;
     await this.initLevelWords();
     this.addLevelListeners();
@@ -158,103 +137,56 @@ class TextbookComponent extends Component {
 
   async showDictionary() {
     await this.getDictionaryWords();
-    this.switchMode(DICTIONARY);
+    utils.switchMode(DICTIONARY);
     this.currentMode = DICTIONARY;
+    this.getFilteredWords();
+    const difficultCount = document.querySelector('.difficult-words .word__count span');
+    difficultCount.textContent = String(this.difficultWords.length);
+    const learntCount = document.querySelector('.learnt-words .word__count span');
+    learntCount.textContent = String(this.learntWords.length);
     document.querySelector('.active-state').classList.remove('active-state');
     document.querySelector('.difficult-words').classList.add('active-state');
+    const gameLinks = document.querySelectorAll('.link-container');
+    gameLinks.forEach((link: HTMLDivElement) => {
+      if (link.classList.contains('disabled')) link.classList.remove('disabled');
+    });
     await this.showDifficultWords();
-  }
-
-  channgePaginationView(): void {
-    const pagination = <HTMLUListElement>document.querySelector('.pagination-list');
-    const oldCurrPage = <HTMLButtonElement>pagination.querySelector('.current-page');
-    const firstPart = <HTMLButtonElement>pagination.querySelector('.first-part');
-    if (oldCurrPage) oldCurrPage.classList.remove('current-page');
-    if (this.currentPage < 27 && this.currentPage > 0) {
-      firstPart.classList.remove('hide');
-      if (this.currentPage === 1 && !firstPart.classList.contains('hide')) firstPart.classList.add('hide');
-      if (this.currentPage === 2) {
-        (<HTMLButtonElement>pagination.children[1].lastElementChild).classList.add('hide');
-      } else {
-        (<HTMLButtonElement>pagination.children[1].lastElementChild).classList.remove('hide');
-      }
-      if (this.currentPage === 26) {
-        (<HTMLButtonElement>pagination.children[5]).classList.add('hide');
-      } else {
-        (<HTMLButtonElement>pagination.children[5]).classList.remove('hide');
-      }
-      pagination.children[2].firstElementChild.textContent = `${this.currentPage}`;
-      pagination.children[3].firstElementChild.textContent = `${this.currentPage + 1}`;
-      pagination.children[4].firstElementChild.textContent = `${this.currentPage + 2}`;
-      (<HTMLButtonElement>pagination.children[3].firstElementChild).classList.add('current-page');
-    }
-    if (this.currentPage === 0) {
-      firstPart.classList.add('hide');
-      if ((<HTMLButtonElement>pagination.children[5]).classList.contains('hide'))
-        (<HTMLButtonElement>pagination.children[5]).classList.remove('hide');
-      (<HTMLButtonElement>pagination.children[2].firstElementChild).classList.add('current-page');
-      pagination.children[2].firstElementChild.textContent = `${this.currentPage + 1}`;
-      pagination.children[3].firstElementChild.textContent = `${this.currentPage + 2}`;
-      pagination.children[4].firstElementChild.textContent = `${this.currentPage + 3}`;
-    }
-    if (this.currentPage >= 27) {
-      if(this.currentPage === 27) {
-        (<HTMLButtonElement>pagination.children[4].firstElementChild).classList.add('current-page');
-        (<HTMLButtonElement>pagination.children[5]).classList.add('hide');
-      } else {
-        (<HTMLButtonElement>pagination.children[this.currentPage - 22].firstElementChild).classList.add('current-page');
-        pagination.children[2].firstElementChild.textContent = `${this.currentPage - 2}`;
-        pagination.children[3].firstElementChild.textContent = `${this.currentPage - 1}`;
-        pagination.children[4].firstElementChild.textContent = `${this.currentPage}`;
-        (<HTMLButtonElement>pagination.children[5]).classList.add('hide');
-        firstPart.classList.remove('hide');
-      }
-    }
-    (<HTMLButtonElement>pagination.lastElementChild.firstElementChild).disabled = (this.currentPage === 29);
-    (<HTMLButtonElement>pagination.firstElementChild.firstElementChild).disabled = (this.currentPage === 0);
-  }
-
-  savePageInLocalStorage(): void {
-    localStorage.setItem('currentPage', JSON.stringify({
-      level: this.currentLevel,
-      page: this.currentPage
-    }));
   }
 
   changeLevelView(): void {
     document.querySelector('.active-level').classList.remove('active-level');
     document.querySelector(`#level-${this.currentLevel}`).classList.add('active-level');
-    this.savePageInLocalStorage();
+    utils.savePageInLocalStorage(this.currentLevel, this.currentPage);
   }
 
   async changePage(event: MouseEvent) {
     const target = <HTMLButtonElement>event.target;
     if (target.classList.contains('pag-number')) {
       this.currentPage = Number(target.textContent) - 1;
-      this.channgePaginationView();
       await this.initLevelWords();
       this.addLevelListeners();
-      this.savePageInLocalStorage();
+      utils.channgePaginationView(this.currentPage);
       utils.checkPageProgress();
+      utils.savePageInLocalStorage(this.currentLevel, this.currentPage);
     }
   }
 
   async goToPrevPage() {
     this.currentPage -= 1;
-    this.channgePaginationView();
     await this.initLevelWords();
     this.addLevelListeners();
-    this.savePageInLocalStorage();
+    utils.channgePaginationView(this.currentPage);
     utils.checkPageProgress();
+    utils.savePageInLocalStorage(this.currentLevel, this.currentPage);
   }
 
   async goToNextPage() {
     this.currentPage += 1;
-    this.channgePaginationView();
     await this.initLevelWords();
     this.addLevelListeners();
-    this.savePageInLocalStorage();
     utils.checkPageProgress();
+    utils.channgePaginationView(this.currentPage);
+    utils.savePageInLocalStorage(this.currentLevel, this.currentPage);
   }
 
   addAudio(idx: number): void {
@@ -391,15 +323,6 @@ class TextbookComponent extends Component {
     this.drawActiveWord(0);
   }
 
-  changeColorTheme(): void {
-    const wordsContainer = document.querySelector('.words-content');
-    wordsContainer.className = `words-content colorTheme-${this.currentLevel}`;
-    const userWords = document.querySelector('.dictionary-container');
-    userWords.className = `dictionary-container colorTheme-${this.currentLevel}`;
-    const userContent = document.querySelector('.dictionary-words');
-    userContent.className = `dictionary-words dictionary-view colorTheme-${this.currentLevel}`;
-  }
-
   addLevelListeners(): void {
     const changeLevel = async (event: MouseEvent) => {
       const target = <HTMLDivElement>event.target;
@@ -407,19 +330,19 @@ class TextbookComponent extends Component {
       if (parentDiv && parentDiv.contains(target)) {
         this.currentLevel = parentDiv.id.slice(parentDiv.id.length - 1);
         this.changeLevelView();
-        this.changeColorTheme();
+        utils.changeColorTheme(this.currentLevel);
         if (this.currentMode === TEXTBOOK) {
           await this.initLevelWords();
           utils.checkPageProgress();
         } else {
           document.querySelector('.active-state').classList.remove('active-state');
           document.querySelector('.difficult-words').classList.add('active-state');
-          this.getFilteredWords();
-          await this.showDifficultWords();
           const difficultCount = document.querySelector('.difficult-words .word__count span');
           difficultCount.textContent = String(this.difficultWords.length);
           const learntCount = document.querySelector('.learnt-words .word__count span');
           learntCount.textContent = String(this.learntWords.length);
+          this.getFilteredWords();
+          await this.showDifficultWords();
         }
       }
     }
@@ -434,8 +357,8 @@ class TextbookComponent extends Component {
       this.currentPage = storageData.page;
       this.currentLevel = storageData.level;
       this.changeLevelView();
-      this.changeColorTheme();
-      this.channgePaginationView();
+      utils.changeColorTheme(this.currentLevel);
+      utils.channgePaginationView(this.currentPage);
     }
     await this.initLevelWords();
     utils.checkPageProgress();
