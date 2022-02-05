@@ -61,4 +61,28 @@ export default class Controller {
     return rawResponse.json();
   }
 
+  async getUserWordById(userId: string, token: string, wordId: string): Promise<IUserWordInfo> {
+    const rawResponse = await fetch(`${this.baseUrl + UrlPath.USERS}/${userId}/${UrlPath.WORDS}/${wordId}`, {
+      method: HttpMethod.GET,
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+    });
+    return rawResponse.json();
+  }
+
+  async updateUserWord(userId: string, token: string, wordId: string, word: IUserWord) {
+    await fetch(`${this.baseUrl + UrlPath.USERS}/${userId}/${UrlPath.WORDS}/${wordId}`, {
+      method: HttpMethod.PUT,
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(word)
+    });
+  }
+
 }

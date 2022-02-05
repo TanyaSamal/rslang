@@ -60,13 +60,35 @@ class TextbookComponent extends Component {
   }
 ];
 
+  async deleteFromDifficult(target: Element) {
+    const wordCard = <HTMLDivElement>target.closest('.word-card');
+    const wordIdx = wordCard.id.slice(DICTIONARY.length);
+    const wordId = this.userWords[+wordIdx].id;
+    const userInfo: IAuth = JSON.parse(window.localStorage.getItem('userInfo'));
+    const userWordInfo: IUserWordInfo = await this.controller.getUserWordById(userInfo.userId, userInfo.token, wordId);
+    userWordInfo.optional.status = WordStatus.learnt;
+    userWordInfo.optional.updatedDate = new Date().toLocaleDateString();
+    delete userWordInfo.id;
+    delete userWordInfo.wordId;
+    await this.controller.updateUserWord(userInfo.userId, userInfo.token, wordId, userWordInfo);
+    const deletedWordInfo = this.difficultWords.filter((word) => word.wordId === wordId);
+    if (deletedWordInfo[0]) this.learntWords.push(deletedWordInfo[0]);
+    this.difficultWords = this.difficultWords.filter((word) => word.wordId !== wordId);
+    this.userWords = this.userWords.filter((word) => word.id !== wordId);
+    this.drawDictionaryWords(this.difficultWords);
+    const deleteDifficultBtn = document.querySelectorAll('.delete-difficult');
+    deleteDifficultBtn.forEach((deleteBtn: SVGElement) => {
+      deleteBtn.style.display = 'block';
+    });
+    utils.changeUserWordsCount(this.difficultWords.length, this.learntWords.length);
+  }
+
   drawDictionaryWords(wordsArr: IUserWordInfo[]) {
     const dictionaryContainer = document.querySelector('.dictionary-words__container');
     if (wordsArr.length !== 0) {
       dictionaryContainer.innerHTML = '';
       const fragment = this.createFragment(this.userWords);
       dictionaryContainer.appendChild(fragment);
-      this.addWordsListeners();
       document.querySelector('.dictionary-word__description').innerHTML = '';
       document.querySelector('.dictionary-word__description').insertAdjacentHTML('afterbegin',
         `<app-word></app-word>`);
@@ -97,6 +119,10 @@ class TextbookComponent extends Component {
 
     this.userWords = await this.getFilteredDictionary(this.difficultWords);
     this.drawDictionaryWords(this.difficultWords);
+    const deleteDifficultBtn = document.querySelectorAll('.delete-difficult');
+    deleteDifficultBtn.forEach((deleteBtn: SVGElement) => {
+      deleteBtn.style.display = 'block';
+    });
   }
 
   async showLearntWords(event: MouseEvent) {
@@ -129,7 +155,6 @@ class TextbookComponent extends Component {
     utils.switchMode(TEXTBOOK);
     this.currentMode = TEXTBOOK;
     await this.initLevelWords();
-    this.addLevelListeners();
     document.querySelector('.dictionary-word__description').innerHTML = '';
     const activeWord = JSON.parse(localStorage.getItem('activeWord'));
     this.drawActiveWord(+activeWord);
@@ -140,10 +165,7 @@ class TextbookComponent extends Component {
     utils.switchMode(DICTIONARY);
     this.currentMode = DICTIONARY;
     this.getFilteredWords();
-    const difficultCount = document.querySelector('.difficult-words .word__count span');
-    difficultCount.textContent = String(this.difficultWords.length);
-    const learntCount = document.querySelector('.learnt-words .word__count span');
-    learntCount.textContent = String(this.learntWords.length);
+    utils.changeUserWordsCount(this.difficultWords.length, this.learntWords.length);
     document.querySelector('.active-state').classList.remove('active-state');
     document.querySelector('.difficult-words').classList.add('active-state');
     const gameLinks = document.querySelectorAll('.link-container');
@@ -164,7 +186,6 @@ class TextbookComponent extends Component {
     if (target.classList.contains('pag-number')) {
       this.currentPage = Number(target.textContent) - 1;
       await this.initLevelWords();
-      this.addLevelListeners();
       utils.channgePaginationView(this.currentPage);
       utils.checkPageProgress();
       utils.savePageInLocalStorage(this.currentLevel, this.currentPage);
@@ -174,7 +195,6 @@ class TextbookComponent extends Component {
   async goToPrevPage() {
     this.currentPage -= 1;
     await this.initLevelWords();
-    this.addLevelListeners();
     utils.channgePaginationView(this.currentPage);
     utils.checkPageProgress();
     utils.savePageInLocalStorage(this.currentLevel, this.currentPage);
@@ -183,7 +203,6 @@ class TextbookComponent extends Component {
   async goToNextPage() {
     this.currentPage += 1;
     await this.initLevelWords();
-    this.addLevelListeners();
     utils.checkPageProgress();
     utils.channgePaginationView(this.currentPage);
     utils.savePageInLocalStorage(this.currentLevel, this.currentPage);
@@ -250,10 +269,13 @@ class TextbookComponent extends Component {
   }
 
   addWordsListeners(): void {
-    const showWordInfo = (event: MouseEvent): void => {
-      const target = <HTMLDivElement>event.target;
+    const showWordInfo = async (event: MouseEvent) => {
+      const target = <Element>event.target;
       const parentDiv = <HTMLDivElement>target.closest('.word-card');
-      if (parentDiv && parentDiv.contains(target)) {
+      if (target.closest('.delete-difficult')) {
+        await this.deleteFromDifficult(target);
+        event.stopImmediatePropagation();
+      } else if (parentDiv && parentDiv.contains(target)) {
         const targetId = Number(parentDiv.id.slice(parentDiv.id.indexOf(this.currentMode) + this.currentMode.length));
         this.drawActiveWord(targetId);
       }
@@ -316,7 +338,6 @@ class TextbookComponent extends Component {
         }
       });
     }
-    this.addWordsListeners();
     document.querySelector('.word-description').innerHTML = '';
     document.querySelector('.word-description').insertAdjacentHTML('afterbegin',
       `<app-word></app-word>`);
@@ -337,12 +358,9 @@ class TextbookComponent extends Component {
         } else {
           document.querySelector('.active-state').classList.remove('active-state');
           document.querySelector('.difficult-words').classList.add('active-state');
-          const difficultCount = document.querySelector('.difficult-words .word__count span');
-          difficultCount.textContent = String(this.difficultWords.length);
-          const learntCount = document.querySelector('.learnt-words .word__count span');
-          learntCount.textContent = String(this.learntWords.length);
           this.getFilteredWords();
           await this.showDifficultWords();
+          utils.changeUserWordsCount(this.difficultWords.length, this.learntWords.length);
         }
       }
     }
@@ -361,8 +379,9 @@ class TextbookComponent extends Component {
       utils.channgePaginationView(this.currentPage);
     }
     await this.initLevelWords();
-    utils.checkPageProgress();
+    this.addWordsListeners();
     this.addLevelListeners();
+    utils.checkPageProgress();
   }
 }
 

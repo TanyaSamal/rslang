@@ -108,3 +108,10 @@ export const switchMode = (mode: string): void => {
   if (mode === DICTIONARY) headersTitles[1].classList.add('active-textbook');
     else headersTitles[1].classList.remove('active-textbook');
 }
+
+export const changeUserWordsCount = (difficultCount: number, learntCount: number): void => {
+  const difficult = document.querySelector('.difficult-words .word__count span');
+  difficult.textContent = String(difficultCount);
+  const learnt = document.querySelector('.learnt-words .word__count span');
+  learnt.textContent = String(learntCount);
+}

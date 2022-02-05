@@ -12,7 +12,8 @@ export enum UrlPath {
 
 export enum HttpMethod {
   GET = 'GET',
-  POST = 'POST'
+  POST = 'POST',
+  PUT = 'PUT'
 }
 
 export interface IUser {

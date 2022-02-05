@@ -193,6 +193,15 @@
       font-size: 1rem;
     }
 
+    svg {
+      display: none;
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      top: 0;
+      right: 10px;
+      z-index: 3;
+    }
 
     .word-status {
       display: none;
@@ -239,6 +248,7 @@
       display: none;
       font-size: 1.2rem;
       text-align: center;
+      margin-top: 10px;
 
       span {
         border-bottom: 1px solid #8bd884;
