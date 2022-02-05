@@ -1,4 +1,4 @@
-import { Component, Controller } from '../../../spa';
+import { Component, Controller, utils } from '../../../spa';
 import Textbook from './textbook.component.html';
 import './textbook.component.scss';
 import { appHeader } from '../../components/header/app.header';
@@ -235,6 +235,7 @@ class TextbookComponent extends Component {
       await this.initLevelWords();
       this.addLevelListeners();
       this.savePageInLocalStorage();
+      utils.checkPageProgress();
     }
   }
 
@@ -244,6 +245,7 @@ class TextbookComponent extends Component {
     await this.initLevelWords();
     this.addLevelListeners();
     this.savePageInLocalStorage();
+    utils.checkPageProgress();
   }
 
   async goToNextPage() {
@@ -252,6 +254,7 @@ class TextbookComponent extends Component {
     await this.initLevelWords();
     this.addLevelListeners();
     this.savePageInLocalStorage();
+    utils.checkPageProgress();
   }
 
   addAudio(idx: number): void {
@@ -407,6 +410,7 @@ class TextbookComponent extends Component {
         this.changeColorTheme();
         if (this.currentMode === TEXTBOOK) {
           await this.initLevelWords();
+          utils.checkPageProgress();
         } else {
           document.querySelector('.active-state').classList.remove('active-state');
           document.querySelector('.difficult-words').classList.add('active-state');
@@ -434,6 +438,7 @@ class TextbookComponent extends Component {
       this.channgePaginationView();
     }
     await this.initLevelWords();
+    utils.checkPageProgress();
     this.addLevelListeners();
   }
 }

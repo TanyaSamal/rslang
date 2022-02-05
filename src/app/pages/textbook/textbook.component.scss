@@ -28,12 +28,20 @@
     background-color: $color;
   }
 
+  .page-status__info span {
+    border-color: $color;
+  }
+
   .pagination .pagination-list li .current-page {
     background-color: $color;
 
     &:hover {
       background-color: darken($color, 20%);
     }
+  }
+
+  .pagination .pagination-list li .learnt-page {
+    background-color: #e1e1e1;
   }
 
   .pagination .pagination-list li .pag-number:hover {
@@ -207,6 +215,11 @@
 
   .words-content {
 
+    .done {
+      background-color: #e1e1e1;
+      border-radius: 10px;
+    }
+
     .words-meaning {
       @include flex-between;
       flex-wrap: nowrap;
@@ -214,9 +227,21 @@
       .words-container {
         display: flex;
         flex-wrap: wrap;
+        justify-content: flex-end;
+        align-items: flex-end;
         gap: 3rem;
         width: 1300px;
         padding-bottom: 20px;
+      }
+    }
+
+    .page-status__info {
+      display: none;
+      font-size: 1.2rem;
+      text-align: center;
+
+      span {
+        border-bottom: 1px solid #8bd884;
       }
     }
 
@@ -272,6 +297,10 @@
             &:hover {
               background-color: darken(#8bd884, 20%);
             }
+          }
+
+          .learnt-page {
+            background-color: #e1e1e1;
           }
 
           .pag-arrow {
@@ -419,6 +448,16 @@
 
         &:hover {
           transform: scale(1.03);
+        }
+      }
+
+      .disabled {
+        opacity: .6;
+        filter: grayscale(1);
+        cursor: auto;
+
+        &:hover {
+          transform: scale(1);
         }
       }
 

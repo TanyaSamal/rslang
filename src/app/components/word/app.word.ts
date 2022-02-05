@@ -1,5 +1,5 @@
 import './app.word.scss';
-import { Component, Controller } from '../../../spa';
+import { Component, Controller, utils } from '../../../spa';
 import { ComponentEvent, IComponentConfig } from '../../../spa/core/coreTypes';
 import { IAuth, IUserWord, WordStatus } from '../../../spa/tools/controllerTypes';
 
@@ -58,6 +58,7 @@ export class AppWord extends Component {
 
   async addInDifficult() {
     this.changeWordStatus('C');
+    utils.checkPageProgress();
     const wordProgress: IUserWord = this.setWordProgress(WordStatus.difficult);
     const userInfo: IAuth = JSON.parse(localStorage.getItem('userInfo'));
     const wordID: string = JSON.parse(localStorage.getItem('activeWordID'));
@@ -66,6 +67,7 @@ export class AppWord extends Component {
 
   async addInLearnt() {
     this.changeWordStatus('И');
+    utils.checkPageProgress();
     const wordProgress: IUserWord = this.setWordProgress(WordStatus.learnt);
     const userInfo: IAuth = JSON.parse(localStorage.getItem('userInfo'));
     const wordID: string = JSON.parse(localStorage.getItem('activeWordID'));
