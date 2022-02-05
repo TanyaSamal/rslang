@@ -36,6 +36,10 @@
   width: 400px;
   border-radius: 10px;
 
+  @media (max-width: 780px) {
+    width: 355px;
+  }
+
   @media (max-width: 400px) {
     width: 100%;
   }
@@ -57,6 +61,10 @@
       background-repeat: no-repeat;
       background-size: contain;
       height: 30px;
+
+      @media (max-width: 360px) {
+        top: 180px;
+      }
     }
   }
 

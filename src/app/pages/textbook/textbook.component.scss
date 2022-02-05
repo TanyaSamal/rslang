@@ -59,6 +59,11 @@
   background: url($url);
   background-size: contain;
   background-repeat: no-repeat;
+
+  @media (max-width: 1040px) {
+    width: 130px;
+    height: 130px;
+  }
 }
 
 .textbook-page {
@@ -72,6 +77,10 @@
       font-size: 2rem;
       padding: 0 10px;
       color: grey;
+
+      @media (max-width: 360px) {
+        font-size: 1.2rem;
+      }
     }
 
     .header-title {
@@ -121,6 +130,18 @@
       transition: .5s;
       overflow: hidden;
 
+      @media (max-width: 1620px) {
+        width: 160px;
+      }
+
+      @media (max-width: 1440px) {
+        width: 135px;
+      }
+
+      @media (max-width: 1040px) {
+        flex-grow: 1;
+      }
+
       &:hover {
         opacity: 1;
         filter: grayscale(0);
@@ -128,6 +149,12 @@
 
       .level-name {
         font-size: 1.2rem;
+        width: 115px;
+
+        @media (max-width: 1440px) {
+          font-size: 1.1rem;
+          width: 108px;
+        }
       }
 
       .level-abbr {
@@ -137,6 +164,14 @@
 
       .level-color {
         @include blockColor;
+
+        @media (max-width: 1440px) {
+          width: 90px;
+        }
+
+        @media (max-width: 360px) {
+          width: 110px;
+        }
       }
     }
 
@@ -181,6 +216,18 @@
     cursor: pointer;
     transition: 0.3s;
 
+    @media (max-width: 1620px) {
+      width: 160px;
+    }
+
+    @media (max-width: 1040px) {
+      width: 130px;
+    }
+
+    @media (max-width: 360px) {
+      width: 110px;
+    }
+
     &:hover {
       background-color: #8bd884;
     }
@@ -214,6 +261,10 @@
       .status-color {
         @include blockColor;
         top: 0;
+
+        @media (max-width: 1040px) {
+          width: 90px;
+        }
       }
     }
   }
@@ -233,6 +284,11 @@
       @include flex-between;
       flex-wrap: nowrap;
 
+      @media (max-width: 560px) {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
       .words-container {
         display: flex;
         flex-wrap: wrap;
@@ -241,6 +297,14 @@
         gap: 3rem;
         width: 1300px;
         padding-bottom: 20px;
+
+        @media (max-width: 1440px) {
+          gap: 1rem;
+        }
+
+        @media (max-width: 560px) {
+          justify-content: space-between;
+        }
       }
     }
 
@@ -329,12 +393,25 @@
     @include flex-between;
     flex-wrap: nowrap;
 
+    @media (max-width: 560px) {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
     .dictionary-words__container {
       display: flex;
       flex-wrap: wrap;
       gap: 3rem;
       width: 1300px;
       padding-bottom: 20px;
+
+      @media (max-width: 1440px) {
+        gap: 1rem;
+      }
+
+      @media (max-width: 560px) {
+        justify-content: space-between;
+      }
     }
   }
 
@@ -353,6 +430,15 @@
       justify-content: start;
       gap: 4rem;
 
+      @media (max-width: 560px) {
+        justify-content: space-between;
+        gap: 1rem;
+      }
+
+      @media (max-width: 360px) {
+        flex-wrap: wrap;
+      }
+
       .user-words {
         height: 70px;
         width: 220px;
@@ -369,6 +455,14 @@
         transition: .5s;
         overflow: hidden;
 
+        @media (max-width: 560px) {
+          width: 150px;
+        }
+
+        @media (max-width: 360px) {
+          width: 100%;
+        }
+
         &:hover {
           opacity: 1;
           filter: grayscale(0);
@@ -376,6 +470,15 @@
 
         .word__name {
           font-size: 1.2rem;
+
+          @media (max-width: 560px) {
+            font-size: 1.1rem;
+            width: 100px;
+          }
+
+          @media (max-width: 360px) {
+            width: 100%;
+          }
         }
 
         .word__abbr {
@@ -391,6 +494,14 @@
           transform: skewX(20deg);
           top: -1rem;
           left: -3rem;
+
+          @media (max-width: 560px) {
+            width: 90px;
+          }
+
+          @media (max-width: 360px) {
+            width: 110px;
+          }
         }
       }
 
@@ -456,6 +567,23 @@
         transition: .3s;
         cursor: pointer;
 
+        @media (max-width: 1440px) {
+          width: 484px;
+        }
+
+        @media (max-width: 1040px) {
+          width: 350px;
+        }
+
+        @media (max-width: 780px) {
+          width: 250px;
+          justify-content: center;
+        }
+
+        @media (max-width: 560px) {
+          width: 100%;
+        }
+
         &:hover {
           transform: scale(1.03);
         }
@@ -474,8 +602,15 @@
       .game-content {
         display: flex;
         flex-direction: column;
-
         width: 350px;
+
+        @media (max-width: 1440px) {
+          width: 264px;
+        }
+
+        @media (max-width: 1040px) {
+          width: 200px;
+        }
 
         .game-title {
           margin-bottom: 10px;
