@@ -12,7 +12,7 @@ export function resetStyleElement(): void {
     allLevel.forEach((element: HTMLElement) => {
         element.classList.remove('click');
         element.style.borderRadius = '0px';
-        element.style.backgroundColor = 'transparent';
+        element.style.backgroundColor = '#000000';
     });
 }
 
@@ -27,7 +27,7 @@ export function mouseOutElement(element: HTMLElement): void {
 
     allLevel.forEach((element: HTMLElement) => {
         if (!element.classList.contains('click')) {
-            element.style.backgroundColor = 'transparent';
+            element.style.backgroundColor = '#000000';
         }
     });
 }
