@@ -115,3 +115,55 @@ export const changeUserWordsCount = (difficultCount: number, learntCount: number
   const learnt = document.querySelector('.learnt-words .word__count span');
   learnt.textContent = String(learntCount);
 }
+
+const createPagination = (currentPage: number, maxPageCount: number): Array<number | string> => {  // source https://gist.github.com/kottenator/9d936eb3e4e3c3e02598
+  const current = currentPage;
+  const last = maxPageCount;
+  const delta = 2;
+  const left = current - delta;
+  const right = current + delta + 1;
+  const range = [];
+  const rangeWithDots = [];
+  let l;
+
+  for (let i = 1; i <= last; i += 1) {
+      if (i === 1 || i === last || i >= left && i < right) {
+          range.push(i);
+      }
+  }
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const i of range) {
+      if (l) {
+          if (i - l === 2) {
+              rangeWithDots.push(l + 1);
+          } else if (i - l !== 1) {
+              rangeWithDots.push('...');
+          }
+      }
+      rangeWithDots.push(i);
+      l = i;
+  }
+
+  return rangeWithDots;
+}
+
+export const createPaginationView = (currentPage: number, maxPageCount: number): string => {
+  const rangeArray = createPagination(currentPage, maxPageCount);
+  const template = (pageNumber: string) => `
+  <li>
+    <button class="pag-number" tabindex="0" type="button" aria-label="page ${pageNumber}" aria-current="true">${pageNumber}</button>
+  </li>`
+  let pagination = '';
+  rangeArray.forEach((page) => {
+    pagination = pagination.concat(template(page.toString()));
+  });
+  return pagination;
+}
+
+export const culcPagesCount = (arrLength: number): number => {
+  const WORDS_ON_PAGE = 20;
+  return (arrLength % WORDS_ON_PAGE !== 0) ? 
+    Math.floor(arrLength / WORDS_ON_PAGE) + 1 :
+    arrLength / WORDS_ON_PAGE;
+}

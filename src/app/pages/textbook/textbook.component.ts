@@ -11,11 +11,14 @@ import { ComponentEvent } from '../../../spa/core/coreTypes';
 const BASE_URL = 'https://rslang-2022.herokuapp.com/';
 const DICTIONARY = 'dictionary';
 const TEXTBOOK = 'textbook';
+const WORDS_ON_PAGE = 20;
 
 class TextbookComponent extends Component {
   private controller = new Controller();
   private currentPage = 0;
+  private currentDictPage = 0;
   private currentMode = TEXTBOOK;
+  private currentState = WordStatus.difficult;
   private currentLevel = '0';
   private pageWords: IWord[] = [];
   private userWords: IWord[] = [];
@@ -40,6 +43,21 @@ class TextbookComponent extends Component {
   },
   {
     event: 'click',
+    className: '.pagination-dict__list',
+    listener: this.changeDictPage,
+  },
+  {
+    event: 'click',
+    className: '.prev-dict__page',
+    listener: this.goToPrevDictPage,
+  },
+  {
+    event: 'click',
+    className: '.next-dict__page',
+    listener: this.goToNextDictPage,
+  },
+  {
+    event: 'click',
     className: '#dictionary-title',
     listener: this.showDictionary,
   },
@@ -60,6 +78,41 @@ class TextbookComponent extends Component {
   }
 ];
 
+  changeDictPaginationState() {
+    let pagesCount = 1;
+    if (this.currentState === WordStatus.difficult) {
+      pagesCount = utils.culcPagesCount(this.difficultWords.length);
+    } else {
+      pagesCount = utils.culcPagesCount(this.learntWords.length);
+    }
+    this.drawActiveWord(this.currentDictPage * WORDS_ON_PAGE);
+    this.drawDictionaryPagination(this.currentDictPage + 1, pagesCount);
+    document.querySelector('.current-dict__page').classList.remove('current-dict__page');
+    const newCurrent = document.querySelector(`[aria-label="page ${this.currentDictPage + 1}"]`);
+    newCurrent.classList.add('current-dict__page');
+    const MARGIN = 592;
+    (<HTMLDivElement>document.querySelector('.dictionary-words__container')).style.marginTop =
+      `-${MARGIN * this.currentDictPage}px`;
+  }
+
+  changeDictPage(event: MouseEvent) {
+    const target = <HTMLButtonElement>event.target;
+    if (target.classList.contains('pag-number')) {
+      this.currentDictPage = Number(target.textContent) - 1;
+      this.changeDictPaginationState();
+    }
+  }
+
+  goToPrevDictPage() {
+    this.currentDictPage -= 1;
+    this.changeDictPaginationState();
+  }
+
+  goToNextDictPage() {
+    this.currentDictPage += 1;
+    this.changeDictPaginationState();
+  }
+
   async deleteFromDifficult(target: Element) {
     const wordCard = <HTMLDivElement>target.closest('.word-card');
     const wordIdx = wordCard.id.slice(DICTIONARY.length);
@@ -75,7 +128,11 @@ class TextbookComponent extends Component {
     if (deletedWordInfo[0]) this.learntWords.push(deletedWordInfo[0]);
     this.difficultWords = this.difficultWords.filter((word) => word.wordId !== wordId);
     this.userWords = this.userWords.filter((word) => word.id !== wordId);
-    this.drawDictionaryWords(this.difficultWords);
+    if (this.difficultWords.length % WORDS_ON_PAGE === 0) {
+      this.currentDictPage -= 1;
+      this.changeDictPaginationState();
+    }
+    this.drawDictionaryWords(this.difficultWords, this.userWords);
     const deleteDifficultBtn = document.querySelectorAll('.delete-difficult');
     deleteDifficultBtn.forEach((deleteBtn: SVGElement) => {
       deleteBtn.style.display = 'block';
@@ -83,16 +140,16 @@ class TextbookComponent extends Component {
     utils.changeUserWordsCount(this.difficultWords.length, this.learntWords.length);
   }
 
-  drawDictionaryWords(wordsArr: IUserWordInfo[]) {
+  drawDictionaryWords(wordsArr: IUserWordInfo[], drawnArray: IWord[]) {
     const dictionaryContainer = document.querySelector('.dictionary-words__container');
     if (wordsArr.length !== 0) {
       dictionaryContainer.innerHTML = '';
-      const fragment = this.createFragment(this.userWords);
+      const fragment = this.createFragment(drawnArray);
       dictionaryContainer.appendChild(fragment);
       document.querySelector('.dictionary-word__description').innerHTML = '';
       document.querySelector('.dictionary-word__description').insertAdjacentHTML('afterbegin',
         `<app-word></app-word>`);
-      this.drawActiveWord(0);
+      this.drawActiveWord(this.currentDictPage * WORDS_ON_PAGE);
     } else {
       dictionaryContainer.innerHTML = 'В разделе пока нет слов.';
       document.querySelector('.dictionary-word__description').innerHTML = '';
@@ -107,7 +164,26 @@ class TextbookComponent extends Component {
     return Promise.all(promices);
   }
 
+  drawDictionaryPagination(currentPage: number, pagesCount: number) {
+    const paginationList = utils.createPaginationView(currentPage, pagesCount);
+    document.querySelector('.pagination-dict__list').innerHTML = paginationList.trim();
+    document.querySelector('.pagination-dict__list li:first-child button').classList.add('current-dict__page');
+    if (pagesCount === 1 || pagesCount === currentPage) {
+      (<HTMLButtonElement>document.querySelector('.next-dict__page')).disabled = true;
+    } else {
+      (<HTMLButtonElement>document.querySelector('.next-dict__page')).disabled = false;
+    }
+    if (currentPage > 1) {
+      (<HTMLButtonElement>document.querySelector('.prev-dict__page')).disabled = false;
+    } else {
+      (<HTMLButtonElement>document.querySelector('.prev-dict__page')).disabled = true;
+    }
+  }
+
   async showDifficultWords(event?: MouseEvent) {
+    this.currentState = WordStatus.difficult;
+    this.currentDictPage = 0;
+    (<HTMLDivElement>document.querySelector('.dictionary-words__container')).style.marginTop = '0px';
     if (event) {
       document.querySelector('.active-state').classList.remove('active-state');
       const target = <HTMLDivElement>event.target;
@@ -118,14 +194,19 @@ class TextbookComponent extends Component {
     (<HTMLParagraphElement>usersDifficulty[1]).classList.add('hide');
 
     this.userWords = await this.getFilteredDictionary(this.difficultWords);
-    this.drawDictionaryWords(this.difficultWords);
+    this.drawDictionaryWords(this.difficultWords, this.userWords);
     const deleteDifficultBtn = document.querySelectorAll('.delete-difficult');
     deleteDifficultBtn.forEach((deleteBtn: SVGElement) => {
       deleteBtn.style.display = 'block';
     });
+    const pagesCount = utils.culcPagesCount(this.difficultWords.length);
+    this.drawDictionaryPagination(1, pagesCount);
   }
 
   async showLearntWords(event: MouseEvent) {
+    this.currentState = WordStatus.learnt;
+    this.currentDictPage = 0;
+    (<HTMLDivElement>document.querySelector('.dictionary-words__container')).style.marginTop = '0px';
     document.querySelector('.active-state').classList.remove('active-state');
     const target = <HTMLDivElement>event.target;
     target.closest('.user-words').classList.add('active-state');
@@ -134,7 +215,9 @@ class TextbookComponent extends Component {
     (<HTMLParagraphElement>usersDifficulty[1]).classList.remove('hide');
 
     this.userWords = await this.getFilteredDictionary(this.learntWords);
-    this.drawDictionaryWords(this.learntWords);
+    this.drawDictionaryWords(this.learntWords, this.userWords);
+    const pagesCount = utils.culcPagesCount(this.learntWords.length);
+    this.drawDictionaryPagination(1, pagesCount);
   }
 
   async getDictionaryWords() {

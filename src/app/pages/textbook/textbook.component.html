@@ -95,8 +95,18 @@
       </div>
     </template>
     <div class="dictionary-words dictionary-view">
-      <div class="dictionary-word__description"></div>
-      <div class="dictionary-words__container">В разделе пока нет слов.</div>
+      <div class="dictionary-words__content">
+        <div class="dictionary-word__description"></div>
+        <div class="dict-words__container">
+          <div class="dictionary-words__container">В разделе пока нет слов.</div>
+        </div>
+      </div>
+      <nav class="dictionary-pagination">
+        <button class="pag-arrow prev-dict__page" disabled tabindex="-1" type="button" aria-label="Go to previous page">&lt</button>
+        <ul class="pagination-dict__list">
+        </ul>
+        <button class="pag-arrow next-dict__page" tabindex="0" type="button" aria-label="Go to next page">&gt</button>
+      </nav>
     </div>
     <div class="words-content">
       <div class="words-meaning">

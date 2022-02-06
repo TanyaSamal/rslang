@@ -390,27 +390,100 @@
   }
 
   .dictionary-words {
-    @include flex-between;
-    flex-wrap: nowrap;
+    display: flex;
+    flex-direction: column;
 
-    @media (max-width: 560px) {
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .dictionary-words__container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 3rem;
-      width: 1300px;
-      padding-bottom: 20px;
-
-      @media (max-width: 1440px) {
-        gap: 1rem;
-      }
+    .dictionary-words__content {
+      @include flex-between;
+      flex-wrap: nowrap;
 
       @media (max-width: 560px) {
-        justify-content: space-between;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .dict-words__container {
+        max-height: 590px;
+        overflow: hidden;
+
+        .dictionary-words__container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 3rem;
+          width: 1300px;
+          padding-bottom: 20px;
+
+          @media (max-width: 1440px) {
+            gap: 1rem;
+          }
+
+          @media (max-width: 560px) {
+            justify-content: space-between;
+          }
+        }
+      }
+    }
+
+    .dictionary-pagination {
+      display: flex;
+      justify-content: center;
+
+      .pagination-dict__list {
+        display: flex;
+        justify-content: center;
+        list-style-type: none;
+
+        li {
+
+          button {
+            min-width: 32px;
+            height: 32px;
+            margin: 0 3px;
+            padding: 0 6px;
+            font-size: 0.875rem;
+            box-sizing: border-box;
+            text-align: center;
+            border-radius: 16px;
+            border: none;
+            cursor: pointer;
+            transition: .3s;
+
+            &:disabled:hover {
+              background-color: transparent;
+            }
+          }
+        }
+
+        .pag-number:hover {
+          background-color: #8bd884;
+        }
+
+        .current-dict__page {
+          background-color: #8bd884;
+
+          &:hover {
+            background-color: darken(#8bd884, 20%);
+          }
+        }
+      }
+
+      .pag-arrow {
+        min-width: 32px;
+        height: 32px;
+        margin: 0 3px;
+        padding: 0 6px;
+        font-size: 0.875rem;
+        box-sizing: border-box;
+        text-align: center;
+        border-radius: 16px;
+        border: none;
+        cursor: pointer;
+        transition: .3s;
+        background-color: transparent;
+
+        &:hover {
+          background-color: #d3d3d3;
+        }
       }
     }
   }
