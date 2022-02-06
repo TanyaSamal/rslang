@@ -1,3 +1,5 @@
+import { IWord } from "../tools/controllerTypes";
+
 export interface IModule {
   start: () => void
 }
@@ -23,7 +25,8 @@ export interface IComponent {
 export interface IComponentConfig {
   template: string,
   selector: string,
-  components?: IComponent[]
+  components?: IComponent[],
+  wordData?: IWord
 }
 
 export interface IRoute {

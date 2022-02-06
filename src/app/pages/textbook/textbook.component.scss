@@ -1,0 +1,711 @@
+@mixin flex-between {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+@mixin blockColor {
+  background-color: #8bd884;
+  height: 110px;
+  width: 110px;
+  position: absolute;
+  transform: skewX(-20deg);
+  top: -1rem;
+  right: -3rem;
+}
+
+@mixin colorTheme($color) {
+  .word-card:hover {
+    background-color: $color;
+  }
+
+  .word-card .word-status .status-color {
+    background-color: $color;
+  }
+
+  .active-card {
+    background-color: $color;
+  }
+
+  .page-status__info span {
+    border-color: $color;
+  }
+
+  .pagination .pagination-list li .current-page {
+    background-color: $color;
+
+    &:hover {
+      background-color: darken($color, 20%);
+    }
+  }
+
+  .pagination .pagination-list li .learnt-page {
+    background-color: #e1e1e1;
+  }
+
+  .pagination .pagination-list li .pag-number:hover {
+    background-color: $color;
+  }
+
+  .dictionary-states .user-words .word__color {
+    background-color: $color;
+  }
+}
+
+@mixin bg-image($url) {
+  width: 200px;
+  height: 200px;
+  background: url($url);
+  background-size: contain;
+  background-repeat: no-repeat;
+
+  @media (max-width: 1040px) {
+    width: 130px;
+    height: 130px;
+  }
+}
+
+.textbook-page {
+
+  .textbook-header {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+
+    .title-separator {
+      font-size: 2rem;
+      padding: 0 10px;
+      color: grey;
+
+      @media (max-width: 360px) {
+        font-size: 1.2rem;
+      }
+    }
+
+    .header-title {
+      color: #b6b6b6;
+      transition: .3s;
+      cursor: pointer;
+
+      &:hover {
+        color: #FE8366;
+      }
+    }
+
+    .active-textbook {
+      color: black;
+    }
+  }
+
+  .difficulty,
+  .users-difficulty {
+    text-align: left;
+    font-size: 1.2rem;
+    margin: 20px 0;
+  }
+
+  .difficulty {
+    text-align: center;
+  }
+
+  .difficulty-levels {
+    @include flex-between;
+    flex-direction: row;
+    margin-bottom: 2rem;
+
+    .difficulty-level {
+      height: 70px;
+      width: 220px;
+      background-color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      border-radius: 10px;
+      padding: 10px;
+      opacity: .6;
+      filter: grayscale(1);
+      cursor: pointer;
+      transition: .5s;
+      overflow: hidden;
+
+      @media (max-width: 1620px) {
+        width: 160px;
+      }
+
+      @media (max-width: 1440px) {
+        width: 135px;
+      }
+
+      @media (max-width: 1040px) {
+        flex-grow: 1;
+      }
+
+      &:hover {
+        opacity: 1;
+        filter: grayscale(0);
+      }
+
+      .level-name {
+        font-size: 1.2rem;
+        width: 115px;
+
+        @media (max-width: 1440px) {
+          font-size: 1.1rem;
+          width: 108px;
+        }
+      }
+
+      .level-abbr {
+        font-size: 1.4rem;
+        z-index: 2;
+      }
+
+      .level-color {
+        @include blockColor;
+
+        @media (max-width: 1440px) {
+          width: 90px;
+        }
+
+        @media (max-width: 360px) {
+          width: 110px;
+        }
+      }
+    }
+
+    #level-1 .level-color {
+      background-color: #71DEC5;
+    }
+
+    #level-2 .level-color {
+      background-color: #fff174;
+    }
+
+    #level-3 .level-color {
+      background-color: #ffcb74;
+    }
+
+    #level-4 .level-color {
+      background-color: #FE8366;
+    }
+
+    #level-5 .level-color {
+      background-color: #d34747;
+    }
+
+    .active-level {
+      opacity: 1;
+      filter: grayscale(0);
+    }
+  }
+
+  .word-card {
+    position: relative;
+    width: 189px;
+    height: 100px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1rem;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: white;
+    cursor: pointer;
+    transition: 0.3s;
+
+    @media (max-width: 1620px) {
+      width: 160px;
+    }
+
+    @media (max-width: 1040px) {
+      width: 130px;
+    }
+
+    @media (max-width: 360px) {
+      width: 110px;
+    }
+
+    &:hover {
+      background-color: #8bd884;
+    }
+
+    .word-en {
+      font-size: 1.3rem;
+    }
+
+    .word-ru {
+      font-size: 1rem;
+    }
+
+    svg {
+      display: none;
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      top: 0;
+      right: 10px;
+      z-index: 3;
+    }
+
+    .word-status {
+      display: none;
+
+      .status-info {
+        font-size: 1.2rem;
+        position: relative;
+      }
+
+      .status-color {
+        @include blockColor;
+        top: 0;
+
+        @media (max-width: 1040px) {
+          width: 90px;
+        }
+      }
+    }
+  }
+
+  .active-card {
+    background-color: #8bd884;
+  }
+
+  .words-content {
+
+    .done {
+      background-color: #e1e1e1;
+      border-radius: 10px;
+    }
+
+    .words-meaning {
+      @include flex-between;
+      flex-wrap: nowrap;
+
+      @media (max-width: 560px) {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .words-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        align-items: flex-end;
+        gap: 3rem;
+        width: 1300px;
+        padding-bottom: 20px;
+
+        @media (max-width: 1440px) {
+          gap: 1rem;
+        }
+
+        @media (max-width: 560px) {
+          justify-content: space-between;
+        }
+      }
+    }
+
+    .page-status__info {
+      display: none;
+      font-size: 1.2rem;
+      text-align: center;
+      margin-top: 10px;
+
+      span {
+        border-bottom: 1px solid #8bd884;
+      }
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin: 30px 0 40px;
+
+      .pagination-list {
+        display: flex;
+        list-style-type: none;
+
+        .first-part {
+          display: flex;
+        }
+        
+        .hide {
+          display: none;
+        }
+
+        li {
+          margin: 5px;
+
+          .ellipsis {
+            font-size: 1rem;
+          }
+
+          button {
+            min-width: 32px;
+            height: 32px;
+            margin: 0 3px;
+            padding: 0 6px;
+            font-size: 0.875rem;
+            box-sizing: border-box;
+            text-align: center;
+            border-radius: 16px;
+            border: none;
+            cursor: pointer;
+            transition: .3s;
+
+            &:disabled:hover {
+              background-color: transparent;
+            }
+          }
+
+          .pag-number:hover {
+            background-color: #8bd884;
+          }
+
+          .current-page {
+            background-color: #8bd884;
+
+            &:hover {
+              background-color: darken(#8bd884, 20%);
+            }
+          }
+
+          .learnt-page {
+            background-color: #e1e1e1;
+          }
+
+          .pag-arrow {
+            background-color: transparent;
+
+            &:hover {
+              background-color: #d3d3d3;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .dictionary-words {
+    display: flex;
+    flex-direction: column;
+
+    .dictionary-words__content {
+      @include flex-between;
+      flex-wrap: nowrap;
+
+      @media (max-width: 560px) {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .dict-words__container {
+        max-height: 590px;
+        overflow: hidden;
+
+        .dictionary-words__container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 3rem;
+          width: 1300px;
+          padding-bottom: 20px;
+
+          @media (max-width: 1440px) {
+            gap: 1rem;
+          }
+
+          @media (max-width: 560px) {
+            justify-content: space-between;
+          }
+        }
+      }
+    }
+
+    .dictionary-pagination {
+      display: flex;
+      justify-content: center;
+
+      .pagination-dict__list {
+        display: flex;
+        justify-content: center;
+        list-style-type: none;
+
+        li {
+
+          button {
+            min-width: 32px;
+            height: 32px;
+            margin: 0 3px;
+            padding: 0 6px;
+            font-size: 0.875rem;
+            box-sizing: border-box;
+            text-align: center;
+            border-radius: 16px;
+            border: none;
+            cursor: pointer;
+            transition: .3s;
+
+            &:disabled:hover {
+              background-color: transparent;
+            }
+          }
+        }
+
+        .pag-number:hover {
+          background-color: #8bd884;
+        }
+
+        .current-dict__page {
+          background-color: #8bd884;
+
+          &:hover {
+            background-color: darken(#8bd884, 20%);
+          }
+        }
+      }
+
+      .pag-arrow {
+        min-width: 32px;
+        height: 32px;
+        margin: 0 3px;
+        padding: 0 6px;
+        font-size: 0.875rem;
+        box-sizing: border-box;
+        text-align: center;
+        border-radius: 16px;
+        border: none;
+        cursor: pointer;
+        transition: .3s;
+        background-color: transparent;
+
+        &:hover {
+          background-color: #d3d3d3;
+        }
+      }
+    }
+  }
+
+  .only-authorized {
+    display: none;
+  }
+
+  .dictionary-view {
+    display: none;
+  }
+
+  .user-dictionary {
+
+    .dictionary-states {
+      display: flex;
+      justify-content: start;
+      gap: 4rem;
+
+      @media (max-width: 560px) {
+        justify-content: space-between;
+        gap: 1rem;
+      }
+
+      @media (max-width: 360px) {
+        flex-wrap: wrap;
+      }
+
+      .user-words {
+        height: 70px;
+        width: 220px;
+        background-color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        border-radius: 10px;
+        padding: 10px;
+        opacity: .6;
+        filter: grayscale(1);
+        cursor: pointer;
+        transition: .5s;
+        overflow: hidden;
+
+        @media (max-width: 560px) {
+          width: 150px;
+        }
+
+        @media (max-width: 360px) {
+          width: 100%;
+        }
+
+        &:hover {
+          opacity: 1;
+          filter: grayscale(0);
+        }
+
+        .word__name {
+          font-size: 1.2rem;
+
+          @media (max-width: 560px) {
+            font-size: 1.1rem;
+            width: 100px;
+          }
+
+          @media (max-width: 360px) {
+            width: 100%;
+          }
+        }
+
+        .word__abbr {
+          font-size: 1.4rem;
+          z-index: 2;
+        }
+
+        .word__color {
+          background-color: #8bd884;
+          height: 110px;
+          width: 110px;
+          position: absolute;
+          transform: skewX(20deg);
+          top: -1rem;
+          left: -3rem;
+
+          @media (max-width: 560px) {
+            width: 90px;
+          }
+
+          @media (max-width: 360px) {
+            width: 110px;
+          }
+        }
+      }
+
+      .active-state {
+        opacity: 1;
+        filter: grayscale(0);
+      }
+    }
+
+    .hide {
+      display: none;
+    }
+  }
+
+  .colorTheme-0 {
+    @include colorTheme(#8bd884);
+  }
+
+  .colorTheme-1 {
+    @include colorTheme(#71DEC5);
+  }
+
+  .colorTheme-2 {
+    @include colorTheme(#fff174);
+  }
+
+  .colorTheme-3 {
+    @include colorTheme(#ffcb74);
+  }
+
+  .colorTheme-4 {
+    @include colorTheme(#FE8366);
+  }
+
+  .colorTheme-5 {
+    @include colorTheme(#d34747);
+  }
+
+  .games-link {
+
+    .game-link__descriprion {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.1rem;
+    }
+
+    .english-games {
+      @include flex-between;
+      justify-content: start;
+      margin-bottom: 30px;
+
+      .gotoGame {
+        text-align: start;
+      }
+
+      .link-container {
+        @include flex-between;
+        align-items: center;
+        width: 600px;
+        padding: 10px;
+        background-color: white;
+        border-radius: 10px;
+        transition: .3s;
+        cursor: pointer;
+
+        @media (max-width: 1440px) {
+          width: 484px;
+        }
+
+        @media (max-width: 1040px) {
+          width: 350px;
+        }
+
+        @media (max-width: 780px) {
+          width: 250px;
+          justify-content: center;
+        }
+
+        @media (max-width: 560px) {
+          width: 100%;
+        }
+
+        &:hover {
+          transform: scale(1.03);
+        }
+      }
+
+      .disabled {
+        opacity: .6;
+        filter: grayscale(1);
+        cursor: auto;
+
+        &:hover {
+          transform: scale(1);
+        }
+      }
+
+      .game-content {
+        display: flex;
+        flex-direction: column;
+        width: 350px;
+
+        @media (max-width: 1440px) {
+          width: 264px;
+        }
+
+        @media (max-width: 1040px) {
+          width: 200px;
+        }
+
+        .game-title {
+          margin-bottom: 10px;
+        }
+
+        .training {
+          display: inline-block;
+          padding: 5px 15px;
+          border-radius: 20px;
+          align-self: center;
+          background-color: #ffcb74;
+          margin-bottom: 10px;
+        }
+      }
+
+      .game-audiocall .game-image {
+        @include bg-image('../../../assets/audiocall.png');
+      }
+
+      .game-sprint .game-image {
+        @include bg-image('../../../assets/sprint.png');
+      }
+    }
+  }
+}

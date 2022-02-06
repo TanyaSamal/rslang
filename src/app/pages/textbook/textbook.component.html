@@ -1,5 +1,184 @@
 <app-header></app-header>
 <main class="textbook-page">
-  Textbook is working
+  <div class="container textbook-container">
+    <div class="textbook-header">
+      <h2 class="header-title active-textbook" id="textbook-title">Учебник</h2>
+      <span class="title-separator"> | </span>
+      <h2 class="header-title only-authorized" id="dictionary-title">Словарь</h2>
+    </div>
+    <p class="difficulty">Уровни сложности слов</p>
+    <div class="difficulty-levels">
+      <div class="difficulty-level active-level" id="level-0">
+        <div class="level-title">
+          <p class="level-name">Beginner</p>
+          <p class="level-numbers">1-600</p>
+        </div>
+        <div class="level-abbr">A1</div>
+        <div class="level-color"></div>
+      </div>
+      <div class="difficulty-level" id="level-1">
+        <div class="level-title">
+          <p class="level-name">Elementary</p>
+          <p class="level-numbers">601-1200</p>
+        </div>
+        <div class="level-abbr">A2</div>
+        <div class="level-color"></div>
+      </div>
+      <div class="difficulty-level" id="level-2">
+        <div class="level-title">
+          <p class="level-name">Intermediate</p>
+          <p class="level-numbers">1201-1800</p>
+        </div>
+        <div class="level-abbr">B1</div>
+        <div class="level-color"></div>
+      </div>
+      <div class="difficulty-level" id="level-3">
+        <div class="level-title">
+          <p class="level-name">Upper Intermediate</p>
+          <p class="level-numbers">1801-2400</p>
+        </div>
+        <div class="level-abbr">B2</div>
+        <div class="level-color"></div>
+      </div>
+      <div class="difficulty-level" id="level-4">
+        <div class="level-title">
+          <p class="level-name">Advanced</p>
+          <p class="level-numbers">2401-3000</p>
+        </div>
+        <div class="level-abbr">C1</div>
+        <div class="level-color"></div>
+      </div>
+      <div class="difficulty-level" id="level-5">
+        <div class="level-title">
+          <p class="level-name">Proficiency</p>
+          <p class="level-numbers">3001-3600</p>
+        </div>
+        <div class="level-abbr">C2</div>
+        <div class="level-color"></div>
+      </div>
+    </div>
+    <div class="user-dictionary dictionary-view">
+      <div class="dictionary-container">
+        <div class="dictionary-states">
+          <div class="user-words difficult-words active-state">
+            <div class="word__abbr">C</div>
+            <div class="word__color"></div>
+            <div class="word__title">
+              <p class="word__name">Сложные слова</p>
+              <p class="word__count">Количество: <span>0</span></p>
+            </div>
+          </div>
+          <div class="user-words learnt-words" disabled>
+            <div class="word__abbr">И</div>
+            <div class="word__color"></div>
+            <div class="word__title">
+              <p class="word__name">Изученные слова</p>
+              <p class="word__count">Количество: <span>0</span></p>
+            </div>
+          </div>
+        </div>
+        <p class="users-difficulty">Слова, отмеченные как сложные в этом уровне:</p>
+        <p class="users-difficulty hide">Слова, уже изученные в этом уровне:</p>
+      </div>
+    </div>
+    <template id="word-item-temp">
+      <div class="word-card">
+        <div class="word-info">
+          <p class="word-en"></p>
+          <p class="word-ru"></p>
+        </div>
+        <div class="word-status">
+          <div class="status-color"></div>
+          <div class="status-info"></div>
+        </div>
+        <svg class="delete-difficult" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><defs><style>.cls-1{fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:1px;}</style></defs><title/><g id="cross"><line class="cls-1" x1="7" x2="15" y1="7" y2="15"/><line class="cls-1" x1="7" x2="15" y1="15" y2="7"/></g></svg>
+      </div>
+    </template>
+    <div class="dictionary-words dictionary-view">
+      <div class="dictionary-words__content">
+        <div class="dictionary-word__description"></div>
+        <div class="dict-words__container">
+          <div class="dictionary-words__container">В разделе пока нет слов.</div>
+        </div>
+      </div>
+      <nav class="dictionary-pagination">
+        <button class="pag-arrow prev-dict__page" disabled tabindex="-1" type="button" aria-label="Go to previous page">&lt</button>
+        <ul class="pagination-dict__list">
+        </ul>
+        <button class="pag-arrow next-dict__page" tabindex="0" type="button" aria-label="Go to next page">&gt</button>
+      </nav>
+    </div>
+    <div class="words-content">
+      <div class="words-meaning">
+        <div class="word-description"></div>
+        <div class="words-container"></div>
+      </div>
+      <div class="page-status__info"><span>Все слова на странице помечены</span></div>
+      <div class="pagination">
+        <nav class="textbook-pagination">
+          <ul class="pagination-list">
+            <li>
+              <button class="pag-arrow prev-page" disabled tabindex="-1" type="button" aria-label="Go to previous page">&lt</button>
+            </li>
+            <div class="first-part hide">
+              <li>
+                <button class="pag-number" tabindex="0" type="button" aria-label="page 1" aria-current="true">1</button>
+              </li>
+              <li>
+                <div class="ellipsis">…</div>
+              </li>
+            </div>
+            <li>
+              <button class="pag-number current-page" tabindex="0" type="button" aria-label="page 1" aria-current="true">1</button>
+            </li>
+            <li>
+              <button class="pag-number" tabindex="0" type="button">2</button>
+            </li>
+            <li>
+              <button class="pag-number" tabindex="0" type="button">3</button>
+            </li>
+            <li>
+              <div class="ellipsis">…</div>
+            </li>
+            <li>
+              <button class="pag-number" tabindex="0" type="button">29</button>
+            </li>
+            <li>
+              <button class="pag-number" tabindex="0" type="button" aria-label="Go to page 30">30</button>
+            </li>
+            <li>
+              <button class="pag-arrow next-page" tabindex="0" type="button" aria-label="Go to next page">&gt</button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+    <div class="games-link">
+      <h2>Давай поиграем!</h2>
+      <p class="game-link__descriprion">Изучение новых слов в игровой форме способструет их скорейшему запоминанию.</p>
+      <div class="english-games">
+        <a href="#audiocall" class="gotoGame">
+          <div class="game-audiocall link-container">
+            <div class="game-image"></div>
+            <div class="game-content">
+              <h3 class="game-title">Аудиовызов</h3>
+              <p class="training">Аудирование</p>
+              <p class="game-description">Тебе предстоит правильно определить слово, которое ты услышишь в игре.</p>
+            </div>
+          </div>
+        </a>
+        <a href="#sprint" class="gotoGame">
+          <div class="game-sprint link-container">
+            <div class="game-image"></div>
+            <div class="game-content">
+              <h3 class="game-title">Спринт</h3>
+              <p class="training">Перевод</p>
+              <p class="game-description">Тебе предстоит правильно перевести как можно больше слов за отведенное время.</p>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
 </main>
 <app-footer></app-footer>
