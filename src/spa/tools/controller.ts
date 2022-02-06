@@ -1,4 +1,4 @@
-import { IUser, IAuth } from "./controllerTypes";
+import { IUser, IAuth, IWord } from "./controllerTypes";
 
 const path = {
   users: 'users',
@@ -34,4 +34,9 @@ export default class Controller {
     return rawResponse;
   }
 
+  async getWords(group: string, page: string): Promise<IWord[]> {
+    const rawResponse = await fetch(`${this.baseUrl + path.words}?group=${group}&page=${page}`);
+    
+    return rawResponse.json();
+  }
 }

@@ -2,7 +2,10 @@ import { Component } from '../../../spa';
 import Sprint from './sprint.component.html';
 import './sprint.component.scss';
 import { appHeader } from '../../components/header/app.header';
-import { activateButton, changeStyleElement, mouseOutElement, mouseOverElement, resetStyleElement } from './utils';
+import { activateButton, changeStyleElement, getGroup, hideVelcomeContainer, mouseOutElement, mouseOverElement, randomNumber, resetStyleElement, showStopwatch } from './utils';
+import Controller from '../../../spa/tools/controller';
+import { IWord } from '../../../spa/tools/controllerTypes';
+import { MAX_PAGE, MIN_PAGE } from './consts';
 
 class SprintComponent extends Component {
   getEventsClick(event: Event): void {
@@ -52,6 +55,21 @@ class SprintComponent extends Component {
       }
 
       if (buttonStartSprint) {
+        const group: string = getGroup();
+        const page: string = String(randomNumber(MIN_PAGE, MAX_PAGE));
+        console.log(group, page);
+
+        const wordsPromise: Promise<IWord[]> = new Controller().getWords(group, page);
+
+        wordsPromise.then((words) => {
+          words.forEach((word: IWord) => {
+              //console.log(word);
+              //createCarContainer(carData, collectCarContainer);
+          });
+      });
+        
+        hideVelcomeContainer();
+        showStopwatch();
         // startGameSprint();
       }
     }
