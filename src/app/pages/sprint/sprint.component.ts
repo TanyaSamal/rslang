@@ -4,6 +4,7 @@ import './sprint.component.scss';
 import { appHeader } from '../../components/header/app.header';
 import UTILS from './utils';
 import CONSTS from './consts';
+import { IWord } from '../../../spa/tools/controllerTypes';
 
 class SprintComponent extends Component {
   getEventsClick(event: Event): void {
@@ -15,6 +16,9 @@ class SprintComponent extends Component {
       const level5 = event.target.closest('.level5') as HTMLElement;
       const level6 = event.target.closest('.level6') as HTMLElement;
       const buttonStartSprint = event.target.closest('.start-sprint') as HTMLElement;
+      const volume = event.target.closest('.volume') as HTMLElement;
+      const buttonTrue = event.target.closest('.button-true') as HTMLElement;
+      const buttonFalse = event.target.closest('.button-false') as HTMLElement;
     
       if (level1) {
         UTILS.resetStyleElement();
@@ -52,6 +56,10 @@ class SprintComponent extends Component {
         UTILS.activateButton();
       }
 
+      if (volume) {
+        volume.classList.toggle('volume-mute');
+      }
+
       if (buttonStartSprint) {
         const welcomeContainer = document.querySelector('.welcome-container') as HTMLElement;
         const group: string = UTILS.getGroup();
@@ -60,6 +68,38 @@ class SprintComponent extends Component {
 
         UTILS.hideContainer(welcomeContainer);
         UTILS.showStopwatch(group, page);
+      }
+
+      if (buttonTrue) {
+        localStorage.setItem(CONSTS.ANSWER, CONSTS.TRUE);
+        UTILS.checkAnswer();
+
+        const words: IWord[] = JSON.parse(localStorage[CONSTS.WORDS]);
+        const currentCard: number = Number(localStorage[CONSTS.CURRENT_CARD]);
+        const newCard: number = currentCard + 1;
+        
+        if (newCard < words.length) {
+          localStorage.setItem(CONSTS.CURRENT_CARD, String(newCard));
+          UTILS.makeNextWordCard();
+        } else {
+          buttonTrue.setAttribute('disabled', 'true');
+        }
+      }
+
+      if (buttonFalse) {
+        localStorage.setItem(CONSTS.ANSWER, CONSTS.FALSE);
+        UTILS.checkAnswer();
+
+        const words: IWord[] = JSON.parse(localStorage[CONSTS.WORDS]);
+        const currentCard: number = Number(localStorage[CONSTS.CURRENT_CARD]);
+        const newCard: number = currentCard + 1;
+        
+        if (newCard < words.length) {
+          localStorage.setItem(CONSTS.CURRENT_CARD, String(newCard));
+          UTILS.makeNextWordCard();
+        } else {
+          buttonFalse.setAttribute('disabled', 'true');
+        }
       }
     }
   }
@@ -133,6 +173,18 @@ class SprintComponent extends Component {
       }
     }
   }
+
+  getEventsKeyDown(event: KeyboardEvent): void {
+    if (event.key === CONSTS.KEYS.arrowLeft) {
+      localStorage.setItem(CONSTS.ANSWER, CONSTS.FALSE);
+      UTILS.checkAnswer();
+    }
+
+    if (event.key === CONSTS.KEYS.ArrowRight) {
+      localStorage.setItem(CONSTS.ANSWER, CONSTS.TRUE);
+      UTILS.checkAnswer();
+    }
+  }
 }
 
 export const sprintComponent = new SprintComponent({
@@ -146,3 +198,4 @@ export const sprintComponent = new SprintComponent({
 document.addEventListener('click', sprintComponent.getEventsClick);
 document.addEventListener('mouseover', sprintComponent.getEventsMouseOver);
 document.addEventListener('mouseout', sprintComponent.getEventsMouseOut);
+document.addEventListener('keydown', sprintComponent.getEventsKeyDown);

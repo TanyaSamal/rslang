@@ -24,27 +24,39 @@
     <div class="game-container">
       <div class="header-game-container">
         <div class="game-timer"></div>
-        <div class="game-score"></div>
+        <div class="volume volume-on"></div>
         <div class="game-close"><i class="fas fa-window-close"></i></div>
       </div>
       
       <div class="common-container word-card">
-        <ul>
-          <li class="check-word"></li>
-          <li class="check-word"></li>
-          <li class="check-word"></li>
-        </ul>
-        <span class="bonus-points"></span>
+        <div class="bonus-things">
+          <div class="bonus-medal">
+            <i class="fas fa-medal"></i>
+            <i class="fas fa-medal"></i>
+            <i class="fas fa-medal"></i>
+            <i class="fas fa-medal"></i>
+          </div>
+
+          <span class="score">0</span>
+
+          <div class="bonus-star">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+          </div>
+        </div>
+        
+        <span class="game-bonus">+<span class="bonus-points">10</span> очков за слово</span>
+
         <div class="data-word">
           <div>
             <span class="word-text"></span>
             <i class="word-sound fas fa-file-audio"></i>
           </div>
-          <div class="word-image"></div>
           <span class="word-translate"></span>
           <div class="word-button">
-            <button class="button-true" disabled>Неверно</button>
-            <button class="button-false" disabled>Верно</button>
+            <button class="button-false">Неверно</button>
+            <button class="button-true">Верно</button>
           </div>
           <div class="key-hint">
             <i class="fas fa-long-arrow-alt-left"></i>

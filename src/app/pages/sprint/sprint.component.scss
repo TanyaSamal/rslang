@@ -1,3 +1,5 @@
+//@import "https://use.fontawesome.com/releases/v5.15.0/css/all.css";
+
 @keyframes animate-color {
     from {
         transform: rotate(0deg);
@@ -42,17 +44,6 @@
     }
 
     .welcome-container {
-        // max-width: 500px;
-        // width: 60vw;
-        // height: fit-content;
-        // padding: 20px;
-        // border-radius: 10px;
-        // text-align: center;
-        // background-color: hsla(189, 61%, 31%, 0.3);
-        // backdrop-filter: blur(4px);
-        // animation: animate-height .5s linear;
-        // animation-fill-mode: both;
-
         h1 {
             text-transform: uppercase;
             margin-bottom: 20px;
@@ -81,9 +72,10 @@
             }
 
             .level1 {
-                border: 1px solid #9a47e6;
+                border-color: #9a47e6;
                 background-color: #000000;
                 color: #ffffff;
+                box-shadow: 0px 0px 10px 3px #9a47e6;
             }
 
             .level1:hover {
@@ -94,9 +86,10 @@
             }
 
             .level2 {
-                border: 1px solid #476ce6;
+                border-color: #476ce6;
                 background-color: #000000;
                 color: #ffffff;
+                box-shadow: 0px 0px 10px 3px #476ce6;
             }
 
             .level2:hover {
@@ -107,9 +100,10 @@
             }
 
             .level3 {
-                border: 1px solid #47e647;
+                border-color: #47e647;
                 background-color: #000000;
                 color: #ffffff;
+                box-shadow: 0px 0px 10px 3px #47e647;
             }
 
             .level3:hover {
@@ -120,9 +114,10 @@
             }
 
             .level4 {
-                border: 1px solid #e7e408;
+                border-color: #e7e408;
                 background-color: #000000;
                 color: #ffffff;
+                box-shadow: 0px 0px 10px 3px #e7e408;
             }
 
             .level4:hover {
@@ -133,9 +128,10 @@
             }
 
             .level5 {
-                border: 1px solid #1c9dd1;
+                border-color: #1c9dd1;
                 background-color: #000000;
                 color: #ffffff;
+                box-shadow: 0px 0px 10px 3px #1c9dd1;
             }
 
             .level5:hover {
@@ -146,9 +142,10 @@
             }
 
             .level6 {
-                border: 1px solid #e647cc;
+                border-color: #e647cc;
                 background-color: #000000;
                 color: #ffffff;
+                box-shadow: 0px 0px 10px 3px #e647cc;
             }
 
             .level6:hover {
@@ -200,7 +197,7 @@
         p {
             margin-top: 20px;
             font-size: 20px;
-            color: #fe8365;
+            color: #000000;
             text-transform: uppercase;
         }
     }
@@ -243,9 +240,27 @@
                 background-color: #e91212;
             }
 
-            .game-score {
-                width: 50px;
-                height: 50px;
+            .volume {
+                font-size: 40px;
+                width: 45px;
+            }
+            
+            .volume-on::before {
+                font-family: "Font Awesome 5 Free"; 
+                font-weight: 900; 
+                content: "\f028";
+            }
+            
+            .volume-mute::before {
+                font-family: "Font Awesome 5 Free"; 
+                font-weight: 900; 
+                content: "\f6a9";
+            }
+            
+            .volume-on:hover,
+            .volume-mute:hover {
+                cursor: pointer;
+                color: #fe8365;
             }
         }
 
@@ -253,56 +268,78 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            row-gap: 30px;
-            font-size: 30px;
+            row-gap: 20px;
+            font-size: 34px;
 
-            ul {
-                list-style: none;
+            .bonus-things {
                 display: flex;
-                column-gap: 20px;
+                width: 100%;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
 
-                .check-word {
-                    width: 25px;
-                    height: 25px;
-                    background: #aaa7a7;
-                    border-radius: 50%;
+                .bonus-star,
+                .bonus-medal {
+                    i {
+                        color: #81817e;
+                    }
                 }
-            }
 
-            .word-sound:hover {
-                cursor: pointer;
-                background-color: #47e647;
-            }
-
-            .word-button {
-                margin-top: 20px;
+                .score {
+                    font-size: 26px;
+                }
             }
             
-            .word-button,
-            .key-hint {
-                display: flex;
-                justify-content: space-around;
-
-                .button-true,
-                .button-false {
-                    font-size: 18px;
-                    padding: 3px 10px;
-                    background-color: #fe8365;
-                    color: #ffffff;
-                    border: 1px solid #fe8365;
-                    width: 100px;
-                }
-
-                .button-true:hover,
-                .button-false:hover {
-                    cursor: pointer;
-                    background-color: #ffffff;
-                    color: #fe8365;
-                }
+            .game-bonus {
+                font-size: 15px;
+                color: #000000
             }
 
-            .key-hint {
-                color: #1c9dd1;
+            .data-word {
+                width: 100%;
+
+                .word-sound:hover {
+                    cursor: pointer;
+                    background-color: #fe8365;
+                }
+
+                .word-translate {
+                    color: #476ce6;
+                }
+
+                .word-button {
+                    margin-top: 20px;
+                }
+                
+                .word-button,
+                .key-hint {
+                    display: flex;
+                    justify-content: center;
+                    column-gap: 30px;
+
+                    .button-true,
+                    .button-false {
+                        font-size: 18px;
+                        padding: 3px 10px;
+                        background-color: #fe8365;
+                        color: #ffffff;
+                        border: 1px solid #fe8365;
+                        border-radius: 15px;
+                        width: 100px;
+                    }
+
+                    .button-true:hover,
+                    .button-false:hover {
+                        cursor: pointer;
+                        background-color: #ffffff;
+                        color: #fe8365;
+                    }
+                }
+
+                .key-hint {
+                    color: #1c9dd1;
+                    column-gap: 96px;
+                }
             }
         }
     }
@@ -317,6 +354,32 @@
         display: none;
     }
 }
+
+// .volume {
+//     position: absolute;
+//     right: 0;
+//     margin: 20px;
+//     font-size: 30px;
+//     width: 35px;
+// }
+
+// .volume-on::before {
+//     font-family: "Font Awesome 5 Free"; 
+//     font-weight: 900; 
+//     content: "\f028";
+// }
+
+// .volume-mute::before {
+//     font-family: "Font Awesome 5 Free"; 
+//     font-weight: 900; 
+//     content: "\f6a9";
+// }
+
+// .volume-on:hover,
+// .volume-mute:hover {
+//     cursor: pointer;
+//     color: #fe8365;
+// }
 
 
 

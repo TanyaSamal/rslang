@@ -87,47 +87,59 @@ function showStopwatch(group: string, page: string): void {
     }, 1000);
 }
 
+function fillArrayWordTranslate(words: IWord[]): string[] {
+    const wordsTranslate: string[] = [];
+
+    for (let index = 0; index < CONSTS.MAX_LENGTH_ARRAY_TRANSLATE; index += 1) {
+        const index: number = randomNumber(0, words.length - 1);
+        wordsTranslate.push(words[index].wordTranslate);
+    }
+
+    return wordsTranslate;
+}
+
 function startGameSprint(group: string, page: string): void {
     const gameContainer = document.querySelector('.game-container') as HTMLElement;
-    const wordCard = document.querySelector('.word-card') as HTMLElement;
     showContainer(gameContainer);
 
     const wordsPromise: Promise<IWord[]> = new Controller().getWords(group, page);
 
     wordsPromise.then((words: IWord[]) => {
-        console.log(words);
-        const wordsTranslate: string[] = [];
+        const wordsTranslate: string[] = fillArrayWordTranslate(words);
 
-        words.forEach((word: IWord) => {
-            wordsTranslate.push(word.wordTranslate);
-        });
+        localStorage.setItem(CONSTS.WORDS, JSON.stringify(words));
+        localStorage.setItem(CONSTS.CURRENT_CARD, String(CONSTS.START_NUMBER_CARD));
 
         startTimerGame();
-        makeWordCard(wordCard, words, CONSTS.START_NUMBER_CARD, wordsTranslate);
+        makeWordCard(words, CONSTS.START_NUMBER_CARD, wordsTranslate);
     });
 }
 
-function makeWordCard(container: HTMLElement, words: IWord[], index: number, translates: string[]): void {
-    const wordText = container.querySelector('.word-text') as HTMLElement;
-    const wordImg = container.querySelector('.word-image') as HTMLElement;
-    const wordTranslate = container.querySelector('.word-translate') as HTMLElement;
-
+function makeWordCard(words: IWord[], index: number, translates: string[]): void {
+    const wordText = document.querySelector('.word-text') as HTMLElement;
+    const wordTranslate = document.querySelector('.word-translate') as HTMLElement;
     wordText.innerHTML = words[index].word;
 
     const trueTranslate: string = words[index].wordTranslate;
-    const wordsTranslateShuffle: string[] = shuffle(translates);
+    localStorage.setItem(CONSTS.TRUE_TRANSLATE, trueTranslate);
 
-    const falseTranslate: string = translates[0];
-    wordTranslate.innerHTML = falseTranslate;
+    const translatesCopy: string[] = translates.slice();
+    translatesCopy.push(trueTranslate);
 
-    console.log(trueTranslate);
-    console.log(falseTranslate);
+    console.log(translatesCopy);   
 
-    const img = document.createElement('img');
-    img.alt = 'image';
-    img.width = 250;
-    img.src = `${CONSTS.BASE_URL}${words[index].image}`;
-    wordImg.append(img);
+    const numberTranslate: number = randomNumber(0, translatesCopy.length - 1);
+    const currentTranslate: string = translatesCopy[numberTranslate];
+    localStorage.setItem(CONSTS.CURRENT_TRANSLATE, currentTranslate);
+    wordTranslate.innerHTML = currentTranslate;
+}
+
+function makeNextWordCard(): void {
+    const words: IWord[] = JSON.parse(localStorage[CONSTS.WORDS]);
+    const wordsTranslate: string[] = fillArrayWordTranslate(words); 
+    const index: number = Number(localStorage[CONSTS.CURRENT_CARD]);
+
+    makeWordCard(words, index, wordsTranslate);
 }
 
 function startTimerGame(): void {
@@ -145,21 +157,54 @@ function startTimerGame(): void {
         
         if (currentTimer < 0) {
             clearInterval(timerId);
-            // hideContainer(stopwatchСontainer);
+            // stop;
         } else {
             timerId = setTimeout(tick, 1000);
         }
     }, 1000);
 }
 
-function shuffle(array: string[]) {
-    for (let i = array.length - 1; i > 0; i--) {
-        let j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+function checkAnswer(): void {
+    const compareTranslate: boolean = localStorage[CONSTS.TRUE_TRANSLATE] === localStorage[CONSTS.CURRENT_TRANSLATE];
+    const stateAnswer: boolean = localStorage[CONSTS.ANSWER] === 'true';
+
+    console.log(compareTranslate, stateAnswer);
+    
+    if (compareTranslate && stateAnswer) {
+        animateContainer(CONSTS.COLOR_SHADOW.green);
     }
 
-    return array;
+    if (!compareTranslate && !stateAnswer) {
+        animateContainer(CONSTS.COLOR_SHADOW.green);
+    }
+
+    if (compareTranslate && !stateAnswer) {
+        animateContainer(CONSTS.COLOR_SHADOW.red);
+    }
+
+    if (!compareTranslate && stateAnswer) {
+        animateContainer(CONSTS.COLOR_SHADOW.red);
+    }
 }
+
+function animateContainer(color: string): void {
+    const container = document.querySelector('.word-card') as HTMLElement;
+
+    container.animate([{ boxShadow: '0px 0px 0px 0px #ffffff' }, { boxShadow: `0px 0px 20px 5px ${color}` }], {
+        duration: 500,
+        iterations: 2,
+    });
+}
+
+
+// function shuffle(array: string[]) {
+//     for (let i = array.length - 1; i > 0; i--) {
+//         let j = Math.floor(Math.random() * (i + 1));
+//         [array[i], array[j]] = [array[j], array[i]];
+//     }
+
+//     return array;
+// }
 
 export default {
     activateButton, 
@@ -172,4 +217,6 @@ export default {
     randomNumber, 
     resetStyleElement, 
     startGameSprint,
+    checkAnswer,
+    makeNextWordCard,
 };
