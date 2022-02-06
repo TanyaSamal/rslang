@@ -1,4 +1,4 @@
-import { IComponent, IComponentConfig, ComponentEvent } from './coreTypes';
+import { IComponent, IComponentConfig, ComponentEvent, ICallQuestion } from './coreTypes';
 import Observable from '../tools/observer';
 import { IWord } from '../tools/controllerTypes';
 
@@ -9,7 +9,7 @@ export default class Component implements IComponent {
 
   components: IComponent[];
 
-  wordData: IWord;
+  wordData: IWord | ICallQuestion;
 
   private el: NodeListOf<HTMLElement>;
 
@@ -53,7 +53,7 @@ export default class Component implements IComponent {
     }
   }
 
-  private compileTemplate(template: string, wordData: IWord): string {
+  private compileTemplate(template: string, wordData: IWord | ICallQuestion): string {
     if (typeof wordData === 'undefined') return template;
 
     const regex = /\{{.*?}}/g;

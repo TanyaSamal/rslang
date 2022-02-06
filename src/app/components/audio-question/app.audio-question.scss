@@ -1,0 +1,119 @@
+.audiocall-question  {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 50vh;
+
+  .question-info {
+    display: none;
+
+    .question-image {
+      width: 400px;
+      height: 270px;
+      background-repeat: no-repeat;
+      background-size: cover;
+      border-radius: 10px;
+      box-shadow: 3px 4px 11px -1px rgba(34, 60, 80, 0.5);
+    }
+
+    .question-answer {
+      display: flex;
+      align-items: center;
+
+      p {
+        font-family: 'Marmelad', sans-serif;
+        color: white;
+        font-size: 2rem;
+        text-align: center;
+        margin: 10px 0 10px 20px;
+      }
+
+      .play-answer {
+        width: 40px;
+        cursor: pointer;
+
+        path {
+          transition: .3s;
+        }
+
+        &:hover path{
+          fill: rgb(216, 216, 216);
+        }
+      }
+    }
+  }
+
+  .play-question {
+
+    svg {
+      width: 120px;
+      height: 120px;
+      border: 5px solid white;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: 0.3s;
+      
+      path {
+        stroke:white;
+      }
+
+      &:hover {
+        transform: scale(1.1);
+      }
+
+      &:active {
+        transform: scale(1);
+      }
+    }
+  }
+
+  .answers {
+    display: flex;
+
+    .answer {
+      margin: 0 20px;
+
+      button {
+        font-size: 1.2rem;
+        text-transform: uppercase;
+        background-color: transparent;
+        border: 2px solid white;
+        border-radius: 30px;
+        color: white;
+        padding: 10px 20px;
+        transition: .3s;
+        cursor: pointer;
+
+        &:hover {
+          background-color: rgba(197, 197, 197, 0.3);
+        }
+      }
+
+      .correct {
+        background-color: rgb(92, 197, 82);
+      }
+
+      .incorrect {
+        background-color: rgb(236, 78, 78);
+      }
+    }
+  }
+
+  .forward-btn {
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    background-color: rgb(221, 221, 221);
+    border: none;
+    border-radius: 30px;
+    color: black;
+    padding: 15px 40px;
+    box-shadow: 3px 4px 11px -1px rgba(34, 60, 80, 0.5);
+    transition: .3s;
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba(197, 197, 197, 0.3);
+    }
+  }
+}
