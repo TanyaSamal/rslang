@@ -1,7 +1,7 @@
 <app-header></app-header>
 <main class="sprint-page">
   <div class="sprint-page-container">
-    <div class="welcome-container">
+    <div class="common-container welcome-container">
       <h1>Спринт</h1>
       <p>Необходимо проверить соответствует ли перевод истине. На это отводится 60 сек.</p>
       <p>Выберите сложность:</p>
@@ -19,6 +19,40 @@
     <div class="stopwatch-container">
       <div class="stopwatch"></div>
       <p>Приготовьтесь</p>
+    </div>
+
+    <div class="game-container">
+      <div class="header-game-container">
+        <div class="game-timer"></div>
+        <div class="game-score"></div>
+        <div class="game-close"><i class="fas fa-window-close"></i></div>
+      </div>
+      
+      <div class="common-container word-card">
+        <ul>
+          <li class="check-word"></li>
+          <li class="check-word"></li>
+          <li class="check-word"></li>
+        </ul>
+        <span class="bonus-points"></span>
+        <div class="data-word">
+          <div>
+            <span class="word-text"></span>
+            <i class="word-sound fas fa-file-audio"></i>
+          </div>
+          <div class="word-image"></div>
+          <span class="word-translate"></span>
+          <div class="word-button">
+            <button class="button-true" disabled>Неверно</button>
+            <button class="button-false" disabled>Верно</button>
+          </div>
+          <div class="key-hint">
+            <i class="fas fa-long-arrow-alt-left"></i>
+            <i class="fas fa-long-arrow-alt-right"></i>
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
   

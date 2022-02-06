@@ -2,10 +2,8 @@ import { Component } from '../../../spa';
 import Sprint from './sprint.component.html';
 import './sprint.component.scss';
 import { appHeader } from '../../components/header/app.header';
-import { activateButton, changeStyleElement, getGroup, hideVelcomeContainer, mouseOutElement, mouseOverElement, randomNumber, resetStyleElement, showStopwatch } from './utils';
-import Controller from '../../../spa/tools/controller';
-import { IWord } from '../../../spa/tools/controllerTypes';
-import { MAX_PAGE, MIN_PAGE } from './consts';
+import UTILS from './utils';
+import CONSTS from './consts';
 
 class SprintComponent extends Component {
   getEventsClick(event: Event): void {
@@ -19,58 +17,49 @@ class SprintComponent extends Component {
       const buttonStartSprint = event.target.closest('.start-sprint') as HTMLElement;
     
       if (level1) {
-        resetStyleElement();
-        changeStyleElement(level1);
-        activateButton();
+        UTILS.resetStyleElement();
+        UTILS.changeStyleElement(level1);
+        UTILS.activateButton();
       }
 
       if (level2) {
-        resetStyleElement();
-        changeStyleElement(level2);
-        activateButton();
+        UTILS.resetStyleElement();
+        UTILS.changeStyleElement(level2);
+        UTILS.activateButton();
       }
 
       if (level3) {
-        resetStyleElement();
-        changeStyleElement(level3);
-        activateButton();
+        UTILS.resetStyleElement();
+        UTILS.changeStyleElement(level3);
+        UTILS.activateButton();
       }
 
       if (level4) {
-        resetStyleElement();
-        changeStyleElement(level4);
-        activateButton();
+        UTILS.resetStyleElement();
+        UTILS.changeStyleElement(level4);
+        UTILS.activateButton();
       }
 
       if (level5) {
-        resetStyleElement();
-        changeStyleElement(level5);
-        activateButton();
+        UTILS.resetStyleElement();
+        UTILS.changeStyleElement(level5);
+        UTILS.activateButton();
       }
 
       if (level6) {
-        resetStyleElement();
-        changeStyleElement(level6);
-        activateButton();
+        UTILS.resetStyleElement();
+        UTILS.changeStyleElement(level6);
+        UTILS.activateButton();
       }
 
       if (buttonStartSprint) {
-        const group: string = getGroup();
-        const page: string = String(randomNumber(MIN_PAGE, MAX_PAGE));
+        const welcomeContainer = document.querySelector('.welcome-container') as HTMLElement;
+        const group: string = UTILS.getGroup();
+        const page: string = String(UTILS.randomNumber(CONSTS.MIN_PAGE, CONSTS.MAX_PAGE));
         console.log(group, page);
 
-        const wordsPromise: Promise<IWord[]> = new Controller().getWords(group, page);
-
-        wordsPromise.then((words) => {
-          words.forEach((word: IWord) => {
-              //console.log(word);
-              //createCarContainer(carData, collectCarContainer);
-          });
-      });
-        
-        hideVelcomeContainer();
-        showStopwatch();
-        // startGameSprint();
+        UTILS.hideContainer(welcomeContainer);
+        UTILS.showStopwatch(group, page);
       }
     }
   }
@@ -85,27 +74,27 @@ class SprintComponent extends Component {
       const level6 = event.target.closest('.level6') as HTMLElement;
     
       if (level1) {
-        mouseOverElement(level1);
+        UTILS.mouseOverElement(level1);
       }
 
       if (level2) {
-        mouseOverElement(level2);
+        UTILS.mouseOverElement(level2);
       }
 
       if (level3) {
-        mouseOverElement(level3);
+        UTILS.mouseOverElement(level3);
       }
 
       if (level4) {
-        mouseOverElement(level4);
+        UTILS.mouseOverElement(level4);
       }
 
       if (level5) {
-        mouseOverElement(level5);
+        UTILS.mouseOverElement(level5);
       }
 
       if (level6) {
-        mouseOverElement(level6);
+        UTILS.mouseOverElement(level6);
       }
     }
   }
@@ -120,27 +109,27 @@ class SprintComponent extends Component {
       const level6 = event.target.closest('.level6') as HTMLElement;
     
       if (level1) {
-        mouseOutElement(level1);
+        UTILS.mouseOutElement(level1);
       }
 
       if (level2) {
-        mouseOutElement(level2);
+        UTILS.mouseOutElement(level2);
       }
 
       if (level3) {
-        mouseOutElement(level3);
+        UTILS.mouseOutElement(level3);
       }
 
       if (level4) {
-        mouseOutElement(level4);
+        UTILS.mouseOutElement(level4);
       }
 
       if (level5) {
-        mouseOutElement(level5);
+        UTILS.mouseOutElement(level5);
       }
 
       if (level6) {
-        mouseOutElement(level6);
+        UTILS.mouseOutElement(level6);
       }
     }
   }
