@@ -17,6 +17,8 @@ const WORDS: string = 'words';
 const WORDS_TRANSLATE: string = 'words_translate';
 const GROUP: string = 'group';
 const PAGE: string = 'page';
+const BONUS_STAR: string = 'bonus_star';
+const BONUS_MEDAL: string = 'bonus_medal';
 
 enum KEYS {
     arrowLeft = 'ArrowLeft',
@@ -26,6 +28,13 @@ enum KEYS {
 enum COLOR_SHADOW {
     red = '#e91212',
     green = 'green',
+}
+
+enum BONUS_STAR_MEDAL {
+    minStar = 0,
+    maxStar = 3,
+    minMedal = 0,
+    maxMedal = 4,
 }
 
 export default {
@@ -48,5 +57,8 @@ export default {
     WORDS,
     WORDS_TRANSLATE,
     GROUP,
-    PAGE
+    PAGE,
+    BONUS_STAR,
+    BONUS_MEDAL,
+    BONUS_STAR_MEDAL,
 };

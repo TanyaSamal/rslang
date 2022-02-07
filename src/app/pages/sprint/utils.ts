@@ -1,6 +1,7 @@
 import Controller from "../../../spa/tools/controller";
 import { IWord } from "../../../spa/tools/controllerTypes";
 import CONSTS from "./consts";
+import { Bonus } from "./sprintTypes";
 
 function changeStyleElement(element: HTMLElement): void {
     const borderColor: string = window.getComputedStyle(element).borderColor;
@@ -125,6 +126,7 @@ function makeWordCard(words: IWord[], index: number, translates: string[]): void
 
     const translatesCopy: string[] = translates.slice();
     translatesCopy.push(trueTranslate);
+    translatesCopy.unshift(trueTranslate);
 
     const numberTranslate: number = randomNumber(0, translatesCopy.length - 1);
     const currentTranslate: string = translatesCopy[numberTranslate];
@@ -191,6 +193,7 @@ function checkAnswer(): void {
     const stateAnswer: boolean = localStorage[CONSTS.ANSWER] === 'true';
     const currentCard: number = Number(localStorage[CONSTS.CURRENT_CARD]);
     const words: IWord[] = JSON.parse(localStorage[CONSTS.WORDS]);
+    const { minStar, minMedal } = CONSTS.BONUS_STAR_MEDAL;
 
     if (currentCard === words.length - 1) {
         return;
@@ -198,19 +201,97 @@ function checkAnswer(): void {
     
     if (compareTranslate && stateAnswer) {
         animateContainer(CONSTS.COLOR_SHADOW.green);
+
+        const star: number = countBonus().star;
+        const medal: number = countBonus().medal;
+
+        localStorage.setItem(CONSTS.BONUS_STAR, String(star));
+        localStorage.setItem(CONSTS.BONUS_MEDAL, String(medal));
+
+        getBonus(star, medal);
     }
 
     if (!compareTranslate && !stateAnswer) {
         animateContainer(CONSTS.COLOR_SHADOW.green);
+
+        const star: number = countBonus().star;
+        const medal: number = countBonus().medal;
+
+        localStorage.setItem(CONSTS.BONUS_STAR, String(star));
+        localStorage.setItem(CONSTS.BONUS_MEDAL, String(medal));
+
+        getBonus(star, medal);
     }
 
     if (compareTranslate && !stateAnswer) {
         animateContainer(CONSTS.COLOR_SHADOW.red);
+
+        const star: number = minStar;
+        const medal: number = minMedal;
+
+        localStorage.setItem(CONSTS.BONUS_STAR, String(star));
+        localStorage.setItem(CONSTS.BONUS_MEDAL, String(medal));
+
+        deleteBonus();
     }
 
     if (!compareTranslate && stateAnswer) {
         animateContainer(CONSTS.COLOR_SHADOW.red);
+
+        const star: number = minStar;
+        const medal: number = minMedal;
+
+        localStorage.setItem(CONSTS.BONUS_STAR, String(star));
+        localStorage.setItem(CONSTS.BONUS_MEDAL, String(medal));
+
+        deleteBonus();
     }
+}
+
+function countBonus(): Bonus {
+    let countBonusStar: number = Number(localStorage[CONSTS.BONUS_STAR]);
+    let countBonusMedal: number = Number(localStorage[CONSTS.BONUS_MEDAL]);
+
+    const { maxStar, maxMedal } = CONSTS.BONUS_STAR_MEDAL;
+
+    if (countBonusStar === maxStar) {
+        countBonusMedal = (countBonusMedal === maxMedal) ? maxMedal : countBonusMedal + 1;
+    } else {
+        countBonusStar += 1;
+    }
+
+    return {
+        star: countBonusStar,
+        medal: countBonusMedal
+    };
+}
+
+function getBonus(star: number, medal: number): void {
+    const bonusStars = document.querySelectorAll('.fa-star') as NodeList;
+    const bonusMedal = document.querySelectorAll('.fa-medal') as NodeList;
+
+    for (let index = 0; index < star; index += 1) {
+        const star = bonusStars[index] as HTMLElement;
+        star.classList.add('mark-star');
+    }
+
+    for (let index = 0; index < medal; index += 1) {
+        const medal = bonusMedal[index] as HTMLElement;
+        medal.classList.add('mark-medal');
+    }
+}
+
+function deleteBonus(): void {
+    const bonusStars = document.querySelectorAll('.fa-star') as NodeList;
+    const bonusMedal = document.querySelectorAll('.fa-medal') as NodeList;
+
+    bonusStars.forEach((star: HTMLElement) => {
+        star.classList.remove('mark-star');
+    });
+
+    bonusMedal.forEach((medal: HTMLElement) => {
+        medal.classList.remove('mark-medal');
+    });
 }
 
 function animateContainer(color: string): void {
