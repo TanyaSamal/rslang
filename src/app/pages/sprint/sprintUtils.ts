@@ -1,6 +1,6 @@
 import Controller from "../../../spa/tools/controller";
 import { IWord } from "../../../spa/tools/controllerTypes";
-import CONSTS from "./consts";
+import CONSTS from "./sprintConsts";
 import { Bonus } from "./sprintTypes";
 
 function changeStyleElement(element: HTMLElement): void {

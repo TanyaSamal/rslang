@@ -2,8 +2,9 @@ import { Component } from '../../../spa';
 import Sprint from './sprint.component.html';
 import './sprint.component.scss';
 import { appHeader } from '../../components/header/app.header';
-import UTILS from './utils';
-import CONSTS from './consts';
+import { appSelectDifficulty } from '../../components/select-difficulty/app.select-difficulty';
+import UTILS from './sprintUtils';
+import CONSTS from './sprintConsts';
 import { IWord } from '../../../spa/tools/controllerTypes';
 
 class SprintComponent extends Component {
@@ -225,7 +226,8 @@ class SprintComponent extends Component {
 export const sprintComponent = new SprintComponent({
   selector: 'app-sprint',
   components: [
-    appHeader
+    appHeader,
+    appSelectDifficulty,
   ],
   template: Sprint,
 });
