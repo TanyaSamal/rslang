@@ -10,18 +10,74 @@ import { ICallQuestion } from '../../../spa/core/coreTypes';
 
 const BASE_URL = 'https://rslang-2022.herokuapp.com/';
 const ANSWERS_COUNT = 5;
+const CORRECT = 'correct';
+const INCORRECT = 'incorrect';
 
 class AudiocallComponent extends Component {
   private controller = new Controller();
   private gameWords: IWord[] = [];
   private currentQuestion = 0;
+  private answers: Array<number> = [];
+  private isAnswered = false;
+
+  addListenets() {
+    const checkAnswer = (e: MouseEvent) => {
+      this.isAnswered = true;
+      const target = <HTMLButtonElement>e.target;
+      const answerWord = target.textContent.slice(4);
+      if (answerWord === this.gameWords[this.currentQuestion].wordTranslate) {
+        utils.showAnswer(CORRECT, this.currentQuestion + 1);
+        target.classList.add(CORRECT);
+        this.answers[this.currentQuestion] = 1;
+      } else {
+        utils.showAnswer(INCORRECT, this.currentQuestion + 1);
+        target.classList.add(INCORRECT);
+        this.answers[this.currentQuestion] = -1;
+      }
+      utils.showAnswerInfo();
+      document.querySelector('.forward-btn').textContent = 'Дальше';
+    }
+
+    const nextQuestion = (e: MouseEvent) => {
+      const target = <HTMLButtonElement>e.target;
+      if (this.isAnswered) {
+        this.currentQuestion += 1;
+        this.drawQuestion(this.currentQuestion);
+      } else {
+        this.isAnswered = true;
+        this.answers[this.currentQuestion] = -1;
+        utils.showAnswer(INCORRECT, this.currentQuestion + 1);
+        utils.showAnswerInfo();
+        target.textContent = 'Дальше';
+      }
+    }
+
+    const answerBtns = document.querySelector('.answers');
+    answerBtns.addEventListener('click', checkAnswer);
+
+    const forwardBtn = document.querySelector('.forward-btn');
+    forwardBtn.addEventListener('click', nextQuestion);
+  }
+
+  drawProgress() {
+    const psogress = document.querySelector('.progress-status');
+    psogress.innerHTML = '';
+    this.answers.forEach((answer) => {
+      const li = document.createElement('li');
+      if (answer === 1) li.classList.add('correct');
+      if (answer === -1) li.classList.add('incorrect');
+      psogress.append(li);
+    });
+  }
 
   playQuestion() {
     utils.playWord(this.gameWords[this.currentQuestion].audio);
   }
 
   async getRoundWords() {
-    this.gameWords = await this.controller.getWords('0', '0');
+    const gameWords = await this.controller.getWords('0', '0');
+    this.gameWords = utils.shuffleArray(gameWords);
+    this.answers = Array(this.gameWords.length).fill(0);
   }
 
   generateAnswers(idx: number): Array<number> {
@@ -34,7 +90,7 @@ class AudiocallComponent extends Component {
   }
 
   makeQuestionData(idx: number): ICallQuestion {
-    let answers = this.generateAnswers(idx);
+    let answers: Array<number> = this.generateAnswers(idx);
     answers = utils.shuffleArray(answers);
     return {
       answerWord: this.gameWords[idx].word,
@@ -48,8 +104,9 @@ class AudiocallComponent extends Component {
     }
   }
 
-  drawQurestion(idx: number) {
+  drawQuestion(idx: number) {
     this.currentQuestion = idx;
+    this.isAnswered = false;
     document.querySelector('.question-container').innerHTML = '';
     document.querySelector('.question-container').insertAdjacentHTML('afterbegin',
       `<audio-question></audio-question>`);
@@ -69,13 +126,17 @@ class AudiocallComponent extends Component {
     const wordImage = <HTMLDivElement>document.querySelector('.question-image');
     wordImage.style.backgroundImage = `url('${BASE_URL + questionData.image}')`;
 
+    this.playQuestion();
+
     document.querySelector('.play-answer').addEventListener('click', this.playQuestion.bind(this));
     document.querySelector('.play-question').addEventListener('click', this.playQuestion.bind(this));
+    this.addListenets();
   }
 
   async afterInit() {
     await this.getRoundWords();
-    this.drawQurestion(0);
+    this.drawQuestion(this.currentQuestion);
+    this.drawProgress();
   }
 }
 

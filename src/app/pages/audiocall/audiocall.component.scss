@@ -22,6 +22,14 @@
         border-radius: 50%;
         background-color: rgb(214, 214, 214); 
       }
+
+      .correct {
+        background-color: rgb(92, 197, 82);
+      }
+
+      .incorrect {
+        background-color: rgb(236, 78, 78);
+      }
     }
   }
 }
