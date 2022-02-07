@@ -15,6 +15,8 @@ const TRUE: string = 'true';
 const FALSE: string = 'false';
 const WORDS: string = 'words';
 const WORDS_TRANSLATE: string = 'words_translate';
+const GROUP: string = 'group';
+const PAGE: string = 'page';
 
 enum KEYS {
     arrowLeft = 'ArrowLeft',
@@ -45,4 +47,6 @@ export default {
     COLOR_SHADOW,
     WORDS,
     WORDS_TRANSLATE,
+    GROUP,
+    PAGE
 };

@@ -64,7 +64,9 @@ class SprintComponent extends Component {
         const welcomeContainer = document.querySelector('.welcome-container') as HTMLElement;
         const group: string = UTILS.getGroup();
         const page: string = String(UTILS.randomNumber(CONSTS.MIN_PAGE, CONSTS.MAX_PAGE));
-        console.log(group, page);
+
+        localStorage.setItem(CONSTS.GROUP, group);
+        localStorage.setItem(CONSTS.PAGE, page);
 
         UTILS.hideContainer(welcomeContainer);
         UTILS.showStopwatch(group, page);
@@ -82,7 +84,8 @@ class SprintComponent extends Component {
           localStorage.setItem(CONSTS.CURRENT_CARD, String(newCard));
           UTILS.makeNextWordCard();
         } else {
-          buttonTrue.setAttribute('disabled', 'true');
+          UTILS.makeNextPage();
+          //buttonTrue.setAttribute('disabled', 'true');
         }
       }
 
@@ -98,7 +101,8 @@ class SprintComponent extends Component {
           localStorage.setItem(CONSTS.CURRENT_CARD, String(newCard));
           UTILS.makeNextWordCard();
         } else {
-          buttonFalse.setAttribute('disabled', 'true');
+          UTILS.makeNextPage();
+          //buttonFalse.setAttribute('disabled', 'true');
         }
       }
     }
@@ -178,11 +182,37 @@ class SprintComponent extends Component {
     if (event.key === CONSTS.KEYS.arrowLeft) {
       localStorage.setItem(CONSTS.ANSWER, CONSTS.FALSE);
       UTILS.checkAnswer();
+
+      const words: IWord[] = JSON.parse(localStorage[CONSTS.WORDS]);
+      const currentCard: number = Number(localStorage[CONSTS.CURRENT_CARD]);
+      const newCard: number = currentCard + 1;
+      
+      if (newCard < words.length) {
+        localStorage.setItem(CONSTS.CURRENT_CARD, String(newCard));
+        UTILS.makeNextWordCard();
+      } else {
+        UTILS.makeNextPage();
+        const buttonFalse = document.querySelector('.button-false');
+        buttonFalse.setAttribute('disabled', 'true');
+      }
     }
 
     if (event.key === CONSTS.KEYS.ArrowRight) {
       localStorage.setItem(CONSTS.ANSWER, CONSTS.TRUE);
       UTILS.checkAnswer();
+
+      const words: IWord[] = JSON.parse(localStorage[CONSTS.WORDS]);
+      const currentCard: number = Number(localStorage[CONSTS.CURRENT_CARD]);
+      const newCard: number = currentCard + 1;
+      
+      if (newCard < words.length) {
+        localStorage.setItem(CONSTS.CURRENT_CARD, String(newCard));
+        UTILS.makeNextWordCard();
+      } else {
+        UTILS.makeNextPage();
+        const buttonTrue = document.querySelector('.button-true');
+        buttonTrue.setAttribute('disabled', 'true');
+      }
     }
   }
 }

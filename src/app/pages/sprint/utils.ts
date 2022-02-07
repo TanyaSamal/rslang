@@ -126,8 +126,6 @@ function makeWordCard(words: IWord[], index: number, translates: string[]): void
     const translatesCopy: string[] = translates.slice();
     translatesCopy.push(trueTranslate);
 
-    console.log(translatesCopy);   
-
     const numberTranslate: number = randomNumber(0, translatesCopy.length - 1);
     const currentTranslate: string = translatesCopy[numberTranslate];
     localStorage.setItem(CONSTS.CURRENT_TRANSLATE, currentTranslate);
@@ -164,11 +162,39 @@ function startTimerGame(): void {
     }, 1000);
 }
 
+function makeNextPage(): void {
+    const group: string = localStorage[CONSTS.GROUP];
+    let page: number = Number(localStorage[CONSTS.PAGE]);
+
+    if (page === 29) {
+        page = 0;
+    } else {
+        page += 1;
+    }
+
+    localStorage.setItem(CONSTS.PAGE, String(page));
+
+    const wordsPromise: Promise<IWord[]> = new Controller().getWords(group, String(page));
+
+    wordsPromise.then((words: IWord[]) => {
+        const wordsTranslate: string[] = fillArrayWordTranslate(words);
+
+        localStorage.setItem(CONSTS.WORDS, JSON.stringify(words));
+        localStorage.setItem(CONSTS.CURRENT_CARD, String(CONSTS.START_NUMBER_CARD));
+
+        makeWordCard(words, CONSTS.START_NUMBER_CARD, wordsTranslate);
+    });
+}
+
 function checkAnswer(): void {
     const compareTranslate: boolean = localStorage[CONSTS.TRUE_TRANSLATE] === localStorage[CONSTS.CURRENT_TRANSLATE];
     const stateAnswer: boolean = localStorage[CONSTS.ANSWER] === 'true';
+    const currentCard: number = Number(localStorage[CONSTS.CURRENT_CARD]);
+    const words: IWord[] = JSON.parse(localStorage[CONSTS.WORDS]);
 
-    console.log(compareTranslate, stateAnswer);
+    if (currentCard === words.length - 1) {
+        return;
+    }
     
     if (compareTranslate && stateAnswer) {
         animateContainer(CONSTS.COLOR_SHADOW.green);
@@ -192,7 +218,7 @@ function animateContainer(color: string): void {
 
     container.animate([{ boxShadow: '0px 0px 0px 0px #ffffff' }, { boxShadow: `0px 0px 20px 5px ${color}` }], {
         duration: 500,
-        iterations: 2,
+        iterations: 1,
     });
 }
 
@@ -219,4 +245,5 @@ export default {
     startGameSprint,
     checkAnswer,
     makeNextWordCard,
+    makeNextPage,
 };
