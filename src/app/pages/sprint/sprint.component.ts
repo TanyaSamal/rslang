@@ -71,6 +71,8 @@ class SprintComponent extends Component {
         localStorage.setItem(CONSTS.BONUS_STAR, String(CONSTS.BONUS_STAR_MEDAL.minStar));
         localStorage.setItem(CONSTS.BONUS_MEDAL, String(CONSTS.BONUS_STAR_MEDAL.minMedal));
 
+        localStorage.setItem(CONSTS.SCORE, '0');
+
         UTILS.hideContainer(welcomeContainer);
         UTILS.showStopwatch(group, page);
       }

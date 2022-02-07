@@ -6,6 +6,7 @@ const BASE_URL: string = 'https://rslang-2022.herokuapp.com/';
 const START_NUMBER_CARD: number = 0;
 const MAX_LENGTH_ARRAY_TRANSLATE: number = 6;
 const TIMER: number = 60;
+const START_BONUS_POINTS: number = 10;
 
 const CURRENT_CARD: string = 'current_card';
 const TRUE_TRANSLATE: string = 'true_translate';
@@ -19,6 +20,8 @@ const GROUP: string = 'group';
 const PAGE: string = 'page';
 const BONUS_STAR: string = 'bonus_star';
 const BONUS_MEDAL: string = 'bonus_medal';
+const BONUS_POINTS: string = 'bonus_points';
+const SCORE: string = 'score';
 
 enum KEYS {
     arrowLeft = 'ArrowLeft',
@@ -61,4 +64,7 @@ export default {
     BONUS_STAR,
     BONUS_MEDAL,
     BONUS_STAR_MEDAL,
+    START_BONUS_POINTS,
+    BONUS_POINTS,
+    SCORE
 };

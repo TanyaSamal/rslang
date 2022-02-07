@@ -209,6 +209,8 @@ function checkAnswer(): void {
         localStorage.setItem(CONSTS.BONUS_MEDAL, String(medal));
 
         getBonus(star, medal);
+        getPoints(medal);
+        getScore();
     }
 
     if (!compareTranslate && !stateAnswer) {
@@ -221,6 +223,8 @@ function checkAnswer(): void {
         localStorage.setItem(CONSTS.BONUS_MEDAL, String(medal));
 
         getBonus(star, medal);
+        getPoints(medal);
+        getScore();
     }
 
     if (compareTranslate && !stateAnswer) {
@@ -233,6 +237,7 @@ function checkAnswer(): void {
         localStorage.setItem(CONSTS.BONUS_MEDAL, String(medal));
 
         deleteBonus();
+        getPoints(medal);
     }
 
     if (!compareTranslate && stateAnswer) {
@@ -245,6 +250,7 @@ function checkAnswer(): void {
         localStorage.setItem(CONSTS.BONUS_MEDAL, String(medal));
 
         deleteBonus();
+        getPoints(medal);
     }
 }
 
@@ -252,18 +258,45 @@ function countBonus(): Bonus {
     let countBonusStar: number = Number(localStorage[CONSTS.BONUS_STAR]);
     let countBonusMedal: number = Number(localStorage[CONSTS.BONUS_MEDAL]);
 
-    const { maxStar, maxMedal } = CONSTS.BONUS_STAR_MEDAL;
+    const { minStar, maxStar, maxMedal } = CONSTS.BONUS_STAR_MEDAL;
 
-    if (countBonusStar === maxStar) {
+    if (countBonusStar === maxStar && !(countBonusMedal === maxMedal)) {
         countBonusMedal = (countBonusMedal === maxMedal) ? maxMedal : countBonusMedal + 1;
+        countBonusStar = minStar;
+        deleteBonusStar();
     } else {
-        countBonusStar += 1;
+        countBonusStar = (countBonusStar === maxStar) ? maxStar : countBonusStar + 1;
+    }
+
+    if (countBonusMedal === maxMedal) {
+        countBonusStar = maxStar;
+        getBonusStar();
     }
 
     return {
         star: countBonusStar,
         medal: countBonusMedal
     };
+}
+
+function getPoints(medal: number): void {
+    const bonusPoints = document.querySelector('.bonus-points') as HTMLElement;
+    const points: number = medal ? 20 * medal : 10;
+
+    bonusPoints.innerHTML = `${points}`;
+
+    localStorage.setItem(CONSTS.BONUS_POINTS, String(points));
+}
+
+function getScore(): void {
+    const scoreGame = document.querySelector('.score') as HTMLElement;
+    const points: number = Number(localStorage[CONSTS.BONUS_POINTS]);
+    const currentScore: number = Number(localStorage[CONSTS.SCORE]);
+
+    const newScore: number = currentScore + points;
+    
+    scoreGame.innerHTML = `${newScore}`;
+    localStorage.setItem(CONSTS.SCORE, String(newScore));
 }
 
 function getBonus(star: number, medal: number): void {
@@ -281,6 +314,16 @@ function getBonus(star: number, medal: number): void {
     }
 }
 
+function getBonusStar(): void {
+    const bonusStars = document.querySelectorAll('.fa-star') as NodeList;
+    const { maxStar } = CONSTS.BONUS_STAR_MEDAL;
+
+    for (let index = 0; index < maxStar; index += 1) {
+        const star = bonusStars[index] as HTMLElement;
+        star.classList.add('mark-star');
+    }
+}
+
 function deleteBonus(): void {
     const bonusStars = document.querySelectorAll('.fa-star') as NodeList;
     const bonusMedal = document.querySelectorAll('.fa-medal') as NodeList;
@@ -291,6 +334,14 @@ function deleteBonus(): void {
 
     bonusMedal.forEach((medal: HTMLElement) => {
         medal.classList.remove('mark-medal');
+    });
+}
+
+function deleteBonusStar(): void {
+    const bonusStars = document.querySelectorAll('.fa-star') as NodeList;
+
+    bonusStars.forEach((star: HTMLElement) => {
+        star.classList.remove('mark-star');
     });
 }
 
