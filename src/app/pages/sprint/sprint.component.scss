@@ -1,13 +1,13 @@
-@keyframes animate-color {
-    from {
-        transform: rotate(0deg);
-    }
+// @keyframes animate-color {
+//     from {
+//         transform: rotate(0deg);
+//     }
 
-    to {
-        transform: rotate(360deg);
-        border-radius: 50%;
-    }
-}
+//     to {
+//         transform: rotate(360deg);
+//         border-radius: 50%;
+//     }
+// }
 
 // @keyframes animate-height {
 //     from {
@@ -360,33 +360,4 @@
         display: none;
     }
 }
-
-// .volume {
-//     position: absolute;
-//     right: 0;
-//     margin: 20px;
-//     font-size: 30px;
-//     width: 35px;
-// }
-
-// .volume-on::before {
-//     font-family: "Font Awesome 5 Free"; 
-//     font-weight: 900; 
-//     content: "\f028";
-// }
-
-// .volume-mute::before {
-//     font-family: "Font Awesome 5 Free"; 
-//     font-weight: 900; 
-//     content: "\f6a9";
-// }
-
-// .volume-on:hover,
-// .volume-mute:hover {
-//     cursor: pointer;
-//     color: #fe8365;
-// }
-
-
-
 
