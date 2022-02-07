@@ -20,43 +20,67 @@ class AudiocallComponent extends Component {
   private answers: Array<number> = [];
   private isAnswered = false;
 
-  addListenets() {
-    const checkAnswer = (e: MouseEvent) => {
+  nextQuestion() {
+    if (this.isAnswered) {
+      this.currentQuestion += 1;
+      this.drawQuestion(this.currentQuestion);
+    } else {
       this.isAnswered = true;
-      const target = <HTMLButtonElement>e.target;
-      const answerWord = target.textContent.slice(4);
-      if (answerWord === this.gameWords[this.currentQuestion].wordTranslate) {
-        utils.showAnswer(CORRECT, this.currentQuestion + 1);
-        target.classList.add(CORRECT);
-        this.answers[this.currentQuestion] = 1;
-      } else {
-        utils.showAnswer(INCORRECT, this.currentQuestion + 1);
-        target.classList.add(INCORRECT);
-        this.answers[this.currentQuestion] = -1;
-      }
+      this.answers[this.currentQuestion] = -1;
+      utils.showAnswer(INCORRECT, this.currentQuestion + 1);
       utils.showAnswerInfo();
       document.querySelector('.forward-btn').textContent = 'Дальше';
+      const answerBtns = document.querySelectorAll('.answer-btn');
+      answerBtns.forEach((btn: HTMLButtonElement) => {
+        btn.disabled = true;
+      });
     }
+  }
 
-    const nextQuestion = (e: MouseEvent) => {
-      const target = <HTMLButtonElement>e.target;
-      if (this.isAnswered) {
-        this.currentQuestion += 1;
-        this.drawQuestion(this.currentQuestion);
-      } else {
-        this.isAnswered = true;
-        this.answers[this.currentQuestion] = -1;
-        utils.showAnswer(INCORRECT, this.currentQuestion + 1);
-        utils.showAnswerInfo();
-        target.textContent = 'Дальше';
-      }
+  checkWord(target: HTMLButtonElement) {
+    this.isAnswered = true;
+    const answerWord = target.textContent.slice(4);
+    if (answerWord === this.gameWords[this.currentQuestion].wordTranslate) {
+      utils.showAnswer(CORRECT, this.currentQuestion + 1);
+      target.classList.add(CORRECT);
+      this.answers[this.currentQuestion] = 1;
+    } else {
+      utils.showAnswer(INCORRECT, this.currentQuestion + 1);
+      target.classList.add(INCORRECT);
+      this.answers[this.currentQuestion] = -1;
+    }
+    utils.showAnswerInfo();
+    document.querySelector('.forward-btn').textContent = 'Дальше';
+  }
+
+  addListenets() {
+    const checkAnswer = (event: MouseEvent) => {
+      const target = <HTMLButtonElement>event.target;
+      this.checkWord(target);
     }
 
     const answerBtns = document.querySelector('.answers');
     answerBtns.addEventListener('click', checkAnswer);
 
     const forwardBtn = document.querySelector('.forward-btn');
-    forwardBtn.addEventListener('click', nextQuestion);
+    forwardBtn.addEventListener('click', this.nextQuestion.bind(this));
+  }
+
+  addWindowListenets() {
+    const ckeckKey = (event: KeyboardEvent) => {
+      if (Number(event.key) >= 1 && Number(event.key) <= 5) {
+        const target = <HTMLButtonElement>document.querySelector(`.answer:nth-child(${event.key}) button`);
+        this.checkWord(target);
+      }
+      if (event.key === 'Enter') {
+        this.nextQuestion();
+      }
+      if (event.key === ' ') {
+        this.playQuestion();
+      }
+    }
+
+    window.addEventListener('keyup', ckeckKey);
   }
 
   drawProgress() {
@@ -137,6 +161,7 @@ class AudiocallComponent extends Component {
     await this.getRoundWords();
     this.drawQuestion(this.currentQuestion);
     this.drawProgress();
+    this.addWindowListenets();
   }
 }
 

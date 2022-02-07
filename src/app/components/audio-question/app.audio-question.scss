@@ -90,6 +90,12 @@
         &:hover {
           background-color: rgba(197, 197, 197, 0.3);
         }
+
+        &:disabled {
+          background-color: rgba(197, 197, 197, 0.3);
+          pointer-events: none;
+          cursor: auto;
+        }
       }
 
       .correct {
