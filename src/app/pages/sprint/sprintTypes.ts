@@ -3,6 +3,7 @@ export type Bonus = {
     medal: number;
 }
 
-// export default {
-//     Bonus,
-// };
+export type GAME = {
+    name: string;
+    description: string;
+}

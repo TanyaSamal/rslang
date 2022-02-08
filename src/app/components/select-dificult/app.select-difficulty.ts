@@ -3,7 +3,29 @@ import SelectDifficulty from './app.select-difficulty.html';
 import { Component } from '../../../spa';
 import UTILS from './app.select-difficulty-utils';
 
+const SPRINT_STATE: string = 'sprintState';
+
 class AppSelectDifficulty extends Component {
+  fillContent(): void {
+    const name = document.querySelector('.game-name') as HTMLElement;
+    const description = document.querySelector('.game-description') as HTMLElement;
+  
+    name.innerHTML = appSelectDifficulty.nameGame;
+    description.innerHTML = appSelectDifficulty.descriptionGame;
+  }
+
+  checkSourceWords(): void {
+    const dictionary = document.querySelector('.dictionary') as HTMLElement;
+    const difficulty = document.querySelector('.difficulty') as HTMLElement;
+
+    if (localStorage[SPRINT_STATE]) {
+      dictionary.classList.remove('hide');
+      UTILS.activateButton();
+    } else {
+      difficulty.classList.remove('hide');
+    }
+  }
+
   getEventsClick(event: Event): void {
     if (event.target instanceof Element) {
       const level1 = event.target.closest('.level1') as HTMLElement;
@@ -126,6 +148,9 @@ export const appSelectDifficulty = new AppSelectDifficulty({
   selector: 'app-select-difficulty',
   template: SelectDifficulty,
 });
+
+document.addEventListener('DOMContentLoaded', appSelectDifficulty.fillContent);
+document.addEventListener('DOMContentLoaded', appSelectDifficulty.checkSourceWords);
 
 document.addEventListener('click', appSelectDifficulty.getEventsClick);
 document.addEventListener('mouseover', appSelectDifficulty.getEventsMouseOver);

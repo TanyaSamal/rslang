@@ -1,3 +1,5 @@
+import { GAME } from "./sprintTypes";
+
 const MIN_PAGE: number = 0;
 const MAX_PAGE: number = 29;
 const DELAY: number = 8;
@@ -22,6 +24,7 @@ const BONUS_STAR: string = 'bonus_star';
 const BONUS_MEDAL: string = 'bonus_medal';
 const BONUS_POINTS: string = 'bonus_points';
 const SCORE: string = 'score';
+//const SPRINT_STATE: string = 'sprintState';
 
 enum KEYS {
     arrowLeft = 'ArrowLeft',
@@ -39,6 +42,16 @@ enum BONUS_STAR_MEDAL {
     minMedal = 0,
     maxMedal = 4,
 }
+
+const GAME_SPRINT_OPTION: GAME = {
+    name: 'Спринт',
+    description: 'Необходимо проверить соответствует ли перевод истине. На это отводится 60 сек.'
+};
+  
+const GAME_AUDIOCALL_OPTION: GAME = {
+    name: 'Аудиовызов',
+    description: 'Необходимо из предложенных вариантов ответа выбрать правильный перевод слова, которое услышите.'
+};
 
 export default {
     MIN_PAGE,
@@ -66,5 +79,7 @@ export default {
     BONUS_STAR_MEDAL,
     START_BONUS_POINTS,
     BONUS_POINTS,
-    SCORE
+    SCORE,
+    GAME_SPRINT_OPTION,
+    //SPRINT_STATE
 };

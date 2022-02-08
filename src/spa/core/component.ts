@@ -16,6 +16,10 @@ export default class Component implements IComponent {
 
   events: () => ComponentEvent[];
 
+  nameGame: string;
+
+  descriptionGame: string;
+
   constructor(config: IComponentConfig) {
     this.template = config.template;
     this.selector = config.selector;
@@ -24,6 +28,8 @@ export default class Component implements IComponent {
     this.events = null;
     this.token = '';
     this.observable = new Observable();
+    this.nameGame = '';
+    this.descriptionGame = '';
   }
 
   render(selector: string): void {

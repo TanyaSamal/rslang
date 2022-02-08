@@ -12,6 +12,8 @@ export interface IComponent {
   template: string,
   selector: string,
   components: IComponent[],
+  nameGame?: string,
+  descriptionGame?: string,
   events?: () => ComponentEvent[],
   render: (selector: string) => void,
   afterInit?: () => void,
@@ -23,7 +25,9 @@ export interface IComponent {
 export interface IComponentConfig {
   template: string,
   selector: string,
-  components?: IComponent[]
+  components?: IComponent[],
+  nameG?: string,
+  descriptionG?: string,
 }
 
 export interface IRoute {
