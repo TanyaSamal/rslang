@@ -24,7 +24,7 @@ const BONUS_STAR: string = 'bonus_star';
 const BONUS_MEDAL: string = 'bonus_medal';
 const BONUS_POINTS: string = 'bonus_points';
 const SCORE: string = 'score';
-//const SPRINT_STATE: string = 'sprintState';
+const SPRINT_STATE: string = 'sprintState';
 
 enum KEYS {
     arrowLeft = 'ArrowLeft',
@@ -81,5 +81,5 @@ export default {
     BONUS_POINTS,
     SCORE,
     GAME_SPRINT_OPTION,
-    //SPRINT_STATE
+    SPRINT_STATE
 };

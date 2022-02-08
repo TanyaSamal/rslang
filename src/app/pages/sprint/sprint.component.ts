@@ -21,19 +21,24 @@ class SprintComponent extends Component {
 
       if (buttonStartSprint) {
         const welcomeContainer = document.querySelector('.welcome-container') as HTMLElement;
-        const group: string = UTILS.getGroup();
-        const page: string = String(UTILS.randomNumber(CONSTS.MIN_PAGE, CONSTS.MAX_PAGE));
 
-        localStorage.setItem(CONSTS.GROUP, group);
-        localStorage.setItem(CONSTS.PAGE, page);
+        if (localStorage[CONSTS.SPRINT_STATE]) {
+          UTILS.hideContainer(welcomeContainer);
+        } else {
+          const group: string = UTILS.getGroup();
+          const page: string = String(UTILS.randomNumber(CONSTS.MIN_PAGE, CONSTS.MAX_PAGE));
 
-        localStorage.setItem(CONSTS.BONUS_STAR, String(CONSTS.BONUS_STAR_MEDAL.minStar));
-        localStorage.setItem(CONSTS.BONUS_MEDAL, String(CONSTS.BONUS_STAR_MEDAL.minMedal));
+          localStorage.setItem(CONSTS.GROUP, group);
+          localStorage.setItem(CONSTS.PAGE, page);
 
-        localStorage.setItem(CONSTS.SCORE, '0');
+          localStorage.setItem(CONSTS.BONUS_STAR, String(CONSTS.BONUS_STAR_MEDAL.minStar));
+          localStorage.setItem(CONSTS.BONUS_MEDAL, String(CONSTS.BONUS_STAR_MEDAL.minMedal));
 
-        UTILS.hideContainer(welcomeContainer);
-        UTILS.showStopwatch(group, page);
+          localStorage.setItem(CONSTS.SCORE, '0');
+
+          UTILS.hideContainer(welcomeContainer);
+          UTILS.showStopwatch(group, page);
+        }
       }
 
       if (buttonTrue) {
