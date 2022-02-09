@@ -28,17 +28,22 @@ class AudiocallComponent extends Component {
     let longest = utils.findLongestSeries(this.answers);
     let rightAnswers = this.answers.filter((answer) => answer === 1).length;
     let totalAnswers = this.answers.filter((answer) => answer === 1 || answer === -1).length;
+    let { newWords } = this;
     if (localStorage.getItem('audiocallStatistic')) {
       const statistic: IGameStatistic = JSON.parse(localStorage.getItem('audiocallStatistic'));
-      longest = (longest > statistic.longest) ? longest : statistic.longest;
-      rightAnswers += statistic.rightAnswers;
-      totalAnswers += statistic.totalAnswers;
+      if (statistic.date === new Date().toLocaleDateString()) {
+        longest = (longest > statistic.longest) ? longest : statistic.longest;
+        rightAnswers += statistic.rightAnswers;
+        totalAnswers += statistic.totalAnswers;
+        newWords += statistic.newWords;
+      }
     }
     localStorage.setItem('audiocallStatistic', JSON.stringify({
+      date: new Date().toLocaleDateString(), 
       longest,
       rightAnswers,
       totalAnswers,
-      newWords: this.newWords
+      newWords
     }));
   }
 
@@ -68,6 +73,7 @@ class AudiocallComponent extends Component {
       userWordInfo.optional.updatedDate = new Date().toLocaleDateString();
       await this.controller.updateUserWord(userInfo.userId, userInfo.token, wordId, userWordInfo);
     } else {
+      this.newWords += 1;
       const userWord = {
         difficulty: this.level,
         optional: {

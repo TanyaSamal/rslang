@@ -1,4 +1,4 @@
-import { Component, Controller, utils, router } from '../../../spa';
+import { Component, Controller, router } from '../../../spa';
 import Textbook from './textbook.component.html';
 import './textbook.component.scss';
 import { appHeader } from '../../components/header/app.header';
@@ -8,6 +8,7 @@ import Word from '../../components/word/app.word.html';
 import { IAuth, IUserWordInfo, IWord, WordStatus } from '../../../spa/tools/controllerTypes';
 import { ComponentEvent } from '../../../spa/core/coreTypes';
 import { Mode } from '../../componentTypes';
+import * as utils from './utils';
 
 const BASE_URL = 'https://rslang-2022.herokuapp.com/';
 const WORDS_ON_PAGE = 20;
@@ -350,6 +351,12 @@ class TextbookComponent extends Component {
     audioBtn.addEventListener('click', playAudios);
   }
 
+  async showWordStatistic(wordId: string) {
+    const userInfo: IAuth = JSON.parse(localStorage.getItem('userInfo'));
+    const userWordInfo = await this.controller.getUserWordById(userInfo.userId, userInfo.token, wordId);
+    if (userWordInfo) utils.drawGameData(userWordInfo);
+  }
+
   drawActiveWord(idx: number): void {
     const wordTepmlate = document.querySelector('app-word');
     wordTepmlate.innerHTML = '';
@@ -371,6 +378,10 @@ class TextbookComponent extends Component {
       (<HTMLDivElement>document.querySelector('.word-actions')).style.display = 'none';
     } else {
       window.localStorage.setItem('activeWord', JSON.stringify(idx));
+    }
+
+    if (appHeader.token) {
+      this.showWordStatistic(modeWordData.id);
     }
 
     const activeWord = <HTMLDivElement>document.querySelector('.active-card');

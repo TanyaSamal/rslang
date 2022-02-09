@@ -16,6 +16,7 @@ export interface IGameState {
 }
 
 export interface IGameStatistic {
+  date: string,
   longest: number,
   rightAnswers: number,
   totalAnswers: number,
