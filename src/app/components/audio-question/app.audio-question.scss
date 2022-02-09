@@ -17,6 +17,11 @@
       background-size: cover;
       border-radius: 10px;
       box-shadow: 3px 4px 11px -1px rgba(34, 60, 80, 0.5);
+
+      @media (max-width: 1440px) {
+        width: 300px;
+        height: 175px;
+      }
     }
 
     .question-answer {
@@ -26,7 +31,7 @@
       p {
         font-family: 'Marmelad', sans-serif;
         color: white;
-        font-size: 2rem;
+        font-size: 1.5rem;
         text-align: center;
         margin: 10px 0 10px 20px;
       }
@@ -73,11 +78,20 @@
   .answers {
     display: flex;
 
+    @media (max-width: 780px) {
+      flex-direction: column;
+      align-items: center;
+    }
+
     .answer {
       margin: 0 20px;
 
+      @media (max-width: 780px) {
+        margin: 10px 0;
+      }
+
       button {
-        font-size: 1.2rem;
+        font-size: 1rem;
         text-transform: uppercase;
         background-color: transparent;
         border: 2px solid white;
@@ -86,6 +100,10 @@
         padding: 10px 20px;
         transition: .3s;
         cursor: pointer;
+
+        @media (max-width: 1048px) {
+          text-transform: lowercase;
+        }
 
         &:hover {
           background-color: rgba(197, 197, 197, 0.3);
@@ -109,7 +127,7 @@
   }
 
   .forward-btn {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     text-transform: uppercase;
     background-color: rgb(221, 221, 221);
     border: none;
@@ -119,6 +137,10 @@
     box-shadow: 3px 4px 11px -1px rgba(34, 60, 80, 0.5);
     transition: .3s;
     cursor: pointer;
+
+    @media (max-width: 1440px) {
+      font-size: 1rem;
+    }
 
     &:hover {
       background-color: rgba(197, 197, 197, 0.3);

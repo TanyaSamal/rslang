@@ -7,7 +7,8 @@ export enum WordStatus {
 export enum UrlPath {
   USERS = 'users',
   WORDS = 'words',
-  SIGNIN = 'signin'
+  SIGNIN = 'signin',
+  AGREGATED = 'aggregatedWords'
 }
 
 export enum HttpMethod {

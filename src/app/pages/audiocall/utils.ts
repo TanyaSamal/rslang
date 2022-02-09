@@ -21,6 +21,20 @@ function playAudio(src: string) {
   audio.play();
 }
 
+export const findLongestSeries = (arr: Array<number>): number => {
+  let longest = 0;
+  let series = 0;
+  arr.forEach((elem, idx) => {
+    if ((elem === arr[idx + 1]) || (idx === arr.length - 1 && elem === arr[idx - 1]))
+      series += 1;
+    else {
+      if (series > longest) longest = series;
+      series = 0;
+    }
+  });
+  return longest;
+}
+
 export const showAnswer = (correctness: string, questionNumber: number) => {
   const progress = document.querySelector(`.progress-status li:nth-child(${questionNumber})`);
   progress.classList.add(correctness);

@@ -1,1 +1,23 @@
-// type DataType
+import { IWord, WordStatus } from "../spa/tools/controllerTypes";
+
+export enum Mode {
+  DICTIONARY = 'dictionary',
+  TEXTBOOK = 'textbook'
+}
+
+export interface IGameState {
+  mode: Mode,
+  state: WordStatus,
+  level: string,
+  textbookPage: number,
+  dictionaryPage: number,
+  textbookWords: IWord[],
+  dictionaryWords: IWord[]
+}
+
+export interface IGameStatistic {
+  longest: number,
+  rightAnswers: number,
+  totalAnswers: number,
+  newWords: number
+}

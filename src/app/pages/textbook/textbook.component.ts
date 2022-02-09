@@ -1,4 +1,4 @@
-import { Component, Controller, utils } from '../../../spa';
+import { Component, Controller, utils, router } from '../../../spa';
 import Textbook from './textbook.component.html';
 import './textbook.component.scss';
 import { appHeader } from '../../components/header/app.header';
@@ -7,17 +7,16 @@ import { AppWord } from '../../components/word/app.word';
 import Word from '../../components/word/app.word.html';
 import { IAuth, IUserWordInfo, IWord, WordStatus } from '../../../spa/tools/controllerTypes';
 import { ComponentEvent } from '../../../spa/core/coreTypes';
+import { Mode } from '../../componentTypes';
 
 const BASE_URL = 'https://rslang-2022.herokuapp.com/';
-const DICTIONARY = 'dictionary';
-const TEXTBOOK = 'textbook';
 const WORDS_ON_PAGE = 20;
 
 class TextbookComponent extends Component {
   private controller = new Controller();
   private currentPage = 0;
   private currentDictPage = 0;
-  private currentMode = TEXTBOOK;
+  private currentMode = Mode.TEXTBOOK;
   private currentState = WordStatus.difficult;
   private currentLevel = '0';
   private pageWords: IWord[] = [];
@@ -75,8 +74,40 @@ class TextbookComponent extends Component {
     event: 'click',
     className: '.learnt-words',
     listener: this.showLearntWords,
+  },
+  {
+    event: 'click',
+    className: '.game-sprint',
+    listener: this.goToSpring,
+  },
+  {
+    event: 'click',
+    className: '.game-audiocall',
+    listener: this.goToAudioCall,
   }
 ];
+
+  saveInLocalStorage(setItem: string) {
+    localStorage.setItem(setItem, JSON.stringify({
+      mode: this.currentMode,
+      state: this.currentState,
+      level: this.currentLevel,
+      textbookPage: this.currentPage,
+      dictionaryPage: this.currentDictPage,
+      textbookWords: this.pageWords,
+      dictionaryWords: this.userWords
+    }));
+  }
+
+  goToAudioCall() {
+    this.saveInLocalStorage('audiocallState');
+    router.navigate('audiocall');
+  }
+
+  goToSpring() {
+    this.saveInLocalStorage('sprintState');
+    router.navigate('sprint');
+  }
 
   changeDictPaginationState() {
     let pagesCount = 1;
@@ -115,7 +146,7 @@ class TextbookComponent extends Component {
 
   async deleteFromDifficult(target: Element) {
     const wordCard = <HTMLDivElement>target.closest('.word-card');
-    const wordIdx = wordCard.id.slice(DICTIONARY.length);
+    const wordIdx = wordCard.id.slice(Mode.DICTIONARY.length);
     const wordId = this.userWords[+wordIdx].id;
     const userInfo: IAuth = JSON.parse(window.localStorage.getItem('userInfo'));
     const userWordInfo: IUserWordInfo = await this.controller.getUserWordById(userInfo.userId, userInfo.token, wordId);
@@ -235,8 +266,8 @@ class TextbookComponent extends Component {
   }
 
   async showTextbook() {
-    utils.switchMode(TEXTBOOK);
-    this.currentMode = TEXTBOOK;
+    utils.switchMode(Mode.TEXTBOOK);
+    this.currentMode = Mode.TEXTBOOK;
     await this.initLevelWords();
     document.querySelector('.dictionary-word__description').innerHTML = '';
     const activeWord = JSON.parse(localStorage.getItem('activeWord'));
@@ -245,8 +276,8 @@ class TextbookComponent extends Component {
 
   async showDictionary() {
     await this.getDictionaryWords();
-    utils.switchMode(DICTIONARY);
-    this.currentMode = DICTIONARY;
+    utils.switchMode(Mode.DICTIONARY);
+    this.currentMode = Mode.DICTIONARY;
     this.getFilteredWords();
     utils.changeUserWordsCount(this.difficultWords.length, this.learntWords.length);
     document.querySelector('.active-state').classList.remove('active-state');
@@ -295,7 +326,7 @@ class TextbookComponent extends Component {
     const playAudio = (src: string) => {
       const audio = new Audio(`${BASE_URL + src}`);
       audio.play();
-      const currentWord = (this.currentMode === TEXTBOOK) ? this.pageWords[idx] : this.userWords[idx];
+      const currentWord = (this.currentMode === Mode.TEXTBOOK) ? this.pageWords[idx] : this.userWords[idx];
       audio.onended = () => {
         switch (src) {
           case currentWord.audio:
@@ -311,7 +342,7 @@ class TextbookComponent extends Component {
     }
 
     const playAudios = (): void => {
-      const currentAudio = (this.currentMode === TEXTBOOK) ? this.pageWords[idx].audio : this.userWords[idx].audio;
+      const currentAudio = (this.currentMode === Mode.TEXTBOOK) ? this.pageWords[idx].audio : this.userWords[idx].audio;
       playAudio(currentAudio);
     }
 
@@ -322,7 +353,7 @@ class TextbookComponent extends Component {
   drawActiveWord(idx: number): void {
     const wordTepmlate = document.querySelector('app-word');
     wordTepmlate.innerHTML = '';
-    const modeWordData: IWord = (this.currentMode === TEXTBOOK) ? this.pageWords[idx] : this.userWords[idx]
+    const modeWordData: IWord = (this.currentMode === Mode.TEXTBOOK) ? this.pageWords[idx] : this.userWords[idx]
     const appWord = new AppWord({
       selector: 'app-word',
       template: Word,
@@ -336,7 +367,7 @@ class TextbookComponent extends Component {
     const wordImage = <HTMLDivElement>document.querySelector('.word-image');
     wordImage.style.backgroundImage = `url('${BASE_URL + modeWordData.image}')`;
 
-    if (this.currentMode === DICTIONARY) {
+    if (this.currentMode === Mode.DICTIONARY) {
       (<HTMLDivElement>document.querySelector('.word-actions')).style.display = 'none';
     } else {
       window.localStorage.setItem('activeWord', JSON.stringify(idx));
@@ -435,7 +466,7 @@ class TextbookComponent extends Component {
         this.currentLevel = parentDiv.id.slice(parentDiv.id.length - 1);
         this.changeLevelView();
         utils.changeColorTheme(this.currentLevel);
-        if (this.currentMode === TEXTBOOK) {
+        if (this.currentMode === Mode.TEXTBOOK) {
           await this.initLevelWords();
           utils.checkPageProgress();
         } else {

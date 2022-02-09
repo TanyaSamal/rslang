@@ -37,18 +37,6 @@ export default class Controller {
     return rawResponse.json();
   }
 
-  async createUserWord(userId: string, wordId: string, word: IUserWord, token: string): Promise<void> {
-    await fetch(`${this.baseUrl + UrlPath.USERS}/${userId}/${UrlPath.WORDS}/${wordId}`, {
-      method: HttpMethod.POST,
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(word)
-    });
-  }
-
   async getUserWords(userId: string, token: string): Promise<IUserWordInfo[]> {
     const rawResponse = await fetch(`${this.baseUrl + UrlPath.USERS}/${userId}/${UrlPath.WORDS}`, {
       method: HttpMethod.GET,
@@ -83,6 +71,33 @@ export default class Controller {
       },
       body: JSON.stringify(word)
     });
+  }
+
+  async createUserWord(userId: string, wordId: string, word: IUserWord, token: string): Promise<void> {
+    const rawResponse = await fetch(`${this.baseUrl + UrlPath.USERS}/${userId}/${UrlPath.WORDS}/${wordId}`, {
+      method: HttpMethod.POST,
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(word)
+    });
+    if (!rawResponse.ok) {
+      this.updateUserWord(userId, token, wordId, word);
+    }
+  }
+
+  async getAgregatedWords(userId: string, token: string, group: string, filter: string) {
+    const rawResponse = await fetch(`${this.baseUrl + UrlPath.USERS}/${userId}/${UrlPath.AGREGATED}?group=${group}&wordsPerPage=20&filter=${filter}`, {
+      method: HttpMethod.GET,
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    });
+    return rawResponse.json();
   }
 
 }
