@@ -2,30 +2,9 @@ import './app.select-difficulty.scss';
 import SelectDifficulty from './app.select-difficulty.html';
 import { Component } from '../../../spa';
 import UTILS from './app.select-difficulty-utils';
-
-const SPRINT_STATE: string = 'sprintState';
-
+import UTILS_FROM_SPRINT from '../../pages/sprint/sprintUtils';
+import CONSTS from './app.select-difficulty.consts';
 class AppSelectDifficulty extends Component {
-  fillContent(): void {
-    const name = document.querySelector('.game-name') as HTMLElement;
-    const description = document.querySelector('.game-description') as HTMLElement;
-  
-    name.innerHTML = appSelectDifficulty.nameGame;
-    description.innerHTML = appSelectDifficulty.descriptionGame;
-  }
-
-  checkSourceWords(): void {
-    const dictionary = document.querySelector('.dictionary') as HTMLElement;
-    const difficulty = document.querySelector('.difficulty') as HTMLElement;
-
-    if (localStorage[SPRINT_STATE]) {
-      dictionary.classList.remove('hide');
-      UTILS.activateButton();
-    } else {
-      difficulty.classList.remove('hide');
-    }
-  }
-
   getEventsClick(event: Event): void {
     if (event.target instanceof Element) {
       const level1 = event.target.closest('.level1') as HTMLElement;
@@ -34,6 +13,7 @@ class AppSelectDifficulty extends Component {
       const level4 = event.target.closest('.level4') as HTMLElement;
       const level5 = event.target.closest('.level5') as HTMLElement;
       const level6 = event.target.closest('.level6') as HTMLElement;
+      const buttonStartSprint = event.target.closest('.start-sprint') as HTMLElement;
     
       if (level1) {
         UTILS.resetStyleElement();
@@ -69,6 +49,28 @@ class AppSelectDifficulty extends Component {
         UTILS.resetStyleElement();
         UTILS.changeStyleElement(level6);
         UTILS.activateButton();
+      }
+
+      if (buttonStartSprint) {
+        const welcomeContainer = document.querySelector('.welcome-container') as HTMLElement;
+
+        if (localStorage[CONSTS.SPRINT_STATE]) {
+          UTILS.hideContainer(welcomeContainer);
+        } else {
+          const group: string = UTILS.getGroup();
+          const page: string = String(UTILS.randomNumber(CONSTS.MIN_PAGE, CONSTS.MAX_PAGE));
+
+          localStorage.setItem(CONSTS.GROUP, group);
+          localStorage.setItem(CONSTS.PAGE, page);
+
+          localStorage.setItem(CONSTS.BONUS_STAR, String(CONSTS.BONUS_STAR_MEDAL.minStar));
+          localStorage.setItem(CONSTS.BONUS_MEDAL, String(CONSTS.BONUS_STAR_MEDAL.minMedal));
+
+          localStorage.setItem(CONSTS.SCORE, '0');
+
+          UTILS.hideContainer(welcomeContainer);
+          UTILS_FROM_SPRINT.showStopwatch(group, page);
+        }
       }
     }
   }
@@ -148,9 +150,6 @@ export const appSelectDifficulty = new AppSelectDifficulty({
   selector: 'app-select-difficulty',
   template: SelectDifficulty,
 });
-
-document.addEventListener('DOMContentLoaded', appSelectDifficulty.fillContent);
-document.addEventListener('DOMContentLoaded', appSelectDifficulty.checkSourceWords);
 
 document.addEventListener('click', appSelectDifficulty.getEventsClick);
 document.addEventListener('mouseover', appSelectDifficulty.getEventsMouseOver);

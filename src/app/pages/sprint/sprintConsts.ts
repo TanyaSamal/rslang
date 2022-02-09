@@ -1,5 +1,3 @@
-import { GAME } from "./sprintTypes";
-
 const MIN_PAGE: number = 0;
 const MAX_PAGE: number = 29;
 const DELAY: number = 8;
@@ -43,16 +41,6 @@ enum BONUS_STAR_MEDAL {
     maxMedal = 4,
 }
 
-const GAME_SPRINT_OPTION: GAME = {
-    name: 'Спринт',
-    description: 'Необходимо проверить соответствует ли перевод истине. На это отводится 60 сек.'
-};
-  
-const GAME_AUDIOCALL_OPTION: GAME = {
-    name: 'Аудиовызов',
-    description: 'Необходимо из предложенных вариантов ответа выбрать правильный перевод слова, которое услышите.'
-};
-
 export default {
     MIN_PAGE,
     MAX_PAGE,
@@ -80,6 +68,5 @@ export default {
     START_BONUS_POINTS,
     BONUS_POINTS,
     SCORE,
-    GAME_SPRINT_OPTION,
     SPRINT_STATE
 };

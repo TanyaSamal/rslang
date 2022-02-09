@@ -10,35 +10,12 @@ import { appSelectDifficulty } from '../../components/select-dificult/app.select
 class SprintComponent extends Component {
   getEventsClick(event: Event): void {
     if (event.target instanceof Element) {
-      const buttonStartSprint = event.target.closest('.start-sprint') as HTMLElement;
       const volume = event.target.closest('.volume') as HTMLElement;
       const buttonTrue = event.target.closest('.button-true') as HTMLElement;
       const buttonFalse = event.target.closest('.button-false') as HTMLElement;
 
       if (volume) {
         volume.classList.toggle('volume-mute');
-      }
-
-      if (buttonStartSprint) {
-        const welcomeContainer = document.querySelector('.welcome-container') as HTMLElement;
-
-        if (localStorage[CONSTS.SPRINT_STATE]) {
-          UTILS.hideContainer(welcomeContainer);
-        } else {
-          const group: string = UTILS.getGroup();
-          const page: string = String(UTILS.randomNumber(CONSTS.MIN_PAGE, CONSTS.MAX_PAGE));
-
-          localStorage.setItem(CONSTS.GROUP, group);
-          localStorage.setItem(CONSTS.PAGE, page);
-
-          localStorage.setItem(CONSTS.BONUS_STAR, String(CONSTS.BONUS_STAR_MEDAL.minStar));
-          localStorage.setItem(CONSTS.BONUS_MEDAL, String(CONSTS.BONUS_STAR_MEDAL.minMedal));
-
-          localStorage.setItem(CONSTS.SCORE, '0');
-
-          UTILS.hideContainer(welcomeContainer);
-          UTILS.showStopwatch(group, page);
-        }
       }
 
       if (buttonTrue) {
@@ -124,9 +101,6 @@ export const sprintComponent = new SprintComponent({
   ],
   template: Sprint,
 });
-
-appSelectDifficulty.nameGame = CONSTS.GAME_SPRINT_OPTION.name;
-appSelectDifficulty.descriptionGame = CONSTS.GAME_SPRINT_OPTION.description;
 
 document.addEventListener('click', sprintComponent.getEventsClick);
 document.addEventListener('keydown', sprintComponent.getEventsKeyDown);

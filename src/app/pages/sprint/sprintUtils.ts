@@ -3,13 +3,6 @@ import { IWord } from "../../../spa/tools/controllerTypes";
 import CONSTS from "./sprintConsts";
 import { Bonus } from "./sprintTypes";
 
-function getGroup(): string {
-    const level = document.querySelector('.click-level') as HTMLElement;
-    const group: string = level.dataset.difficult;
-    
-    return group;
-}
-
 function randomNumber(start: number, stop: number): number {
     return Math.floor(Math.random() * (stop - start + 1)) + start;
 }
@@ -324,8 +317,7 @@ function animateContainer(color: string): void {
 // }
 
 export default {
-    getGroup, 
-    hideContainer,
+    //hideContainer,
     showStopwatch,
     randomNumber, 
     startGameSprint,
