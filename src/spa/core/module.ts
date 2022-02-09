@@ -1,6 +1,6 @@
 import { IComponent, IModule, IRoute, IModuleConfig } from './coreTypes';
 import { router } from '../tools/router';
-
+import { GAME, GAME_AUDIOCALL_OPTIONS, GAME_SPRINT_OPTIONS, SPRINT_STATE } from './coreConsts';
 
 export default class Module implements IModule {
   routes: IRoute[];
@@ -40,6 +40,14 @@ export default class Module implements IModule {
 
     document.querySelector('router-outlet').innerHTML = `<${route.component.selector}></${route.component.selector}>`;
     Module.renderComponent(route.component);
+
+    if (url === 'sprint') {
+      this.initGame(GAME_SPRINT_OPTIONS);
+    }
+
+    if (url === 'audiocall') {
+      this.initGame(GAME_AUDIOCALL_OPTIONS);
+    }
   }
 
   private initRoutes(): void  {
@@ -57,4 +65,28 @@ export default class Module implements IModule {
     if (this.routes) this.initRoutes();
   }
   
+  initGame(optionsGame: GAME): void {
+    const name = document.querySelector('.game-name') as HTMLElement;
+    const description = document.querySelector('.game-description') as HTMLElement;
+
+    name.innerHTML = optionsGame.name;
+    description.innerHTML = optionsGame.description;
+
+    this.checkSourceWords();
+  }
+
+  checkSourceWords(): void {
+    const dictionary = document.querySelector('.dictionary') as HTMLElement;
+    const difficulty = document.querySelector('.difficulty') as HTMLElement;
+
+    if (localStorage[SPRINT_STATE]) {
+      dictionary?.classList.remove('hide');
+      
+      const button = document.querySelector('.start-sprint') as HTMLElement;
+      button.removeAttribute('disabled');
+      button.classList.add('start-sprint-enable');
+    } else {
+      difficulty?.classList.remove('hide');
+    }
+  }
 }
