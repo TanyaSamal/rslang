@@ -8,6 +8,7 @@ import { IAuth, IWord, WordStatus } from '../../../spa/tools/controllerTypes';
 import { AppAudioQuestion } from '../../components/audio-question/app.audio-question';
 import { ICallQuestion } from '../../../spa/core/coreTypes';
 import { IGameState, IGameStatistic, Mode } from '../../componentTypes';
+import { appSelectDifficulty } from '../../components/select-dificult/app.select-difficulty';
 
 const BASE_URL = 'https://rslang-2022.herokuapp.com/';
 const ANSWERS_COUNT = 5;
@@ -211,7 +212,9 @@ class AudiocallComponent extends Component {
         gameWords = gameState.textbookWords;
       }
     } else {
-      gameWords = await this.controller.getWords('0', '0');
+      const page = JSON.parse(localStorage.getItem('page'));
+      this.level = JSON.parse(localStorage.getItem('group'));
+      gameWords = await this.controller.getWords(this.level, page);
     }
     this.gameWords = utils.shuffleArray(gameWords);
     this.answers = Array(this.gameWords.length).fill(0);
@@ -245,44 +248,63 @@ class AudiocallComponent extends Component {
   drawQuestion(idx: number) {
     this.currentQuestion = idx;
     this.isAnswered = false;
-    document.querySelector('.question-container').innerHTML = '';
-    document.querySelector('.question-container').insertAdjacentHTML('afterbegin',
-      `<audio-question></audio-question>`);
-    const questionTepmlate = document.querySelector('audio-question');
-    questionTepmlate.innerHTML = '';
+    const questionEl = (<HTMLDivElement>document.querySelector('.audiocall-question'));
+    if (questionEl) questionEl.style.marginLeft = '-300%';
+    setTimeout(() => {
+      document.querySelector('.question-container').innerHTML = '';
+      document.querySelector('.question-container').insertAdjacentHTML('afterbegin',
+        `<audio-question></audio-question>`);
+      const questionTepmlate = document.querySelector('audio-question');
+      questionTepmlate.innerHTML = '';
 
-    const questionData: ICallQuestion = this.makeQuestionData(idx);
-    const appAudioQuestion = new AppAudioQuestion({
-      selector: 'audio-question',
-      template: AudioQuestion,
-      wordData: {...questionData},
-    });
-    const word = document.querySelector('audio-question');
-    word.innerHTML = appAudioQuestion.template;
-    appAudioQuestion.render('audio-question');
+      const questionData: ICallQuestion = this.makeQuestionData(idx);
+      const appAudioQuestion = new AppAudioQuestion({
+        selector: 'audio-question',
+        template: AudioQuestion,
+        wordData: {...questionData},
+      });
+      const word = document.querySelector('audio-question');
+      word.innerHTML = appAudioQuestion.template;
+      appAudioQuestion.render('audio-question');
 
-    const wordImage = <HTMLDivElement>document.querySelector('.question-image');
-    wordImage.style.backgroundImage = `url('${BASE_URL + questionData.image}')`;
+      const wordImage = <HTMLDivElement>document.querySelector('.question-image');
+      wordImage.style.backgroundImage = `url('${BASE_URL + questionData.image}')`;
+      setTimeout(() => {
+        (<HTMLDivElement>document.querySelector('.audiocall-question')).style.marginRight = '0';
 
-    this.playQuestion();
+        this.playQuestion();
+      }, 700);
 
-    document.querySelector('.play-answer').addEventListener('click', this.playQuestion.bind(this));
-    document.querySelector('.play-question').addEventListener('click', this.playQuestion.bind(this));
-    this.addListenets();
+      document.querySelector('.play-answer').addEventListener('click', this.playQuestion.bind(this));
+      document.querySelector('.play-question').addEventListener('click', this.playQuestion.bind(this));
+      this.addListenets();
+    }, 500);
   }
 
-  async afterInit() {
-    await this.getRoundWords();
-    this.drawQuestion(this.currentQuestion);
-    this.drawProgress();
-    this.addWindowListenets();
+  showGame() {
+    (<HTMLDivElement>document.querySelector('.welcome-container')).style.display = 'none';
+    (<HTMLDivElement>document.querySelector('.game-audiocall')).style.display = 'block';
+  }
+
+  afterInit() {
+    const startGame = async () => {
+      this.showGame();
+      await this.getRoundWords();
+      this.drawQuestion(this.currentQuestion);
+      this.drawProgress();
+      this.addWindowListenets();
+    }
+
+    const startBtn = document.querySelector('.start-sprint');
+    startBtn.addEventListener('click', startGame);
   }
 }
 
 export const audiocallComponent = new AudiocallComponent({
   selector: 'app-audiocall',
   components: [
-    appHeader
+    appHeader,
+    appSelectDifficulty
   ],
   template: Audiocall,
 });

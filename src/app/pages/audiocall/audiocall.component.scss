@@ -10,6 +10,10 @@
     justify-content: space-evenly;
     align-items: center;
 
+    .game-audiocall {
+      display: none;
+    }
+
     .progress-status {
       display: flex;
       justify-content: center;

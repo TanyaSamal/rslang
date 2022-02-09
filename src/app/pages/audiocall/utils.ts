@@ -44,8 +44,14 @@ export const showAnswer = (correctness: string, questionNumber: number) => {
 }
 
 export const showAnswerInfo = () => {
-  const answer = <HTMLDivElement>document.querySelector('.question-info');
-  answer.style.display = 'flex';
   const play = <HTMLDivElement>document.querySelector('.play-question');
-  play.style.display = 'none';
+  const answer = <HTMLDivElement>document.querySelector('.question-info');
+  play.style.transform = 'scale(0)';
+  setTimeout(() => {
+    play.style.display = 'none';
+    answer.style.height = 'auto';
+    setTimeout(() => {
+      answer.style.transform = 'scale(1)';
+    }, 100);
+  }, 500);
 }
