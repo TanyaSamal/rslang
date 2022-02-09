@@ -1,5 +1,6 @@
 import { IComponent, IComponentConfig, ComponentEvent } from './coreTypes';
 import Observable from '../tools/observer';
+import { IWord } from '../tools/controllerTypes';
 
 export default class Component implements IComponent {
   template: string;
@@ -7,6 +8,8 @@ export default class Component implements IComponent {
   selector: string;
 
   components: IComponent[];
+
+  wordData: IWord;
 
   private el: NodeListOf<HTMLElement>;
 
@@ -20,6 +23,7 @@ export default class Component implements IComponent {
     this.template = config.template;
     this.selector = config.selector;
     this.components = config.components;
+    this.wordData = config.wordData;
     this.el = null;
     this.events = null;
     this.token = '';
@@ -31,8 +35,7 @@ export default class Component implements IComponent {
     this.el = document.querySelectorAll(elSelector);
     if (!this.el) throw new Error(`Component with selector ${this.selector} wasn't found`);
     this.el.forEach((elem: HTMLElement) => {
-      // elem.innerHTML = this.compileTemplate(this.template, this.data);
-      elem.innerHTML = this.template;
+      elem.innerHTML = this.compileTemplate(this.template, this.wordData);
     });
     this.initEvents();
   }
@@ -50,13 +53,13 @@ export default class Component implements IComponent {
     }
   }
 
-  // private compileTemplate(template: string, data: DataType): string {
-  //   if (typeof data === 'undefined') return template;
+  private compileTemplate(template: string, wordData: IWord): string {
+    if (typeof wordData === 'undefined') return template;
 
-  //   const regex = /\{{.*?}}/g;
-  //   return template.replace(regex, (str: string) => {
-  //     const key = str.substring(2, str.length - 2).trim();
-  //     return data[key];
-  //   });
-  // }
+    const regex = /\{{.*?}}/g;
+    return template.replace(regex, (str: string): string => {
+      const key = str.substring(2, str.length - 2).trim();
+      return wordData[key].toString();
+    });
+  }
 }

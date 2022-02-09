@@ -23,9 +23,16 @@ module.exports = {
     'import',
   ],
   rules: {
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": ["off"],
     'import/extensions': 'off',
     'import/prefer-default-export': 'off',
     'no-param-reassign': [2, { 'props': false }],
     'class-methods-use-this': 'off',
+    'lines-between-class-members': [
+      'error',
+      'always',
+      { 'exceptAfterSingleLine': true },
+    ]
   },
 };

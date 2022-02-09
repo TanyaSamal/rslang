@@ -1,9 +1,8 @@
 import './app.auth-form.scss';
 import AuthForm from './app.auth-form.html';
 import { ComponentEvent } from '../../../spa/core/coreTypes';
-import Controller from '../../../spa/tools/controller';
 import { IAuth } from '../../../spa/tools/controllerTypes';
-import { Component, router } from '../../../spa';
+import { Component, router, Controller } from '../../../spa';
 
 const LOGIN = 'login';
 const REGISTRATION = 'registration';
@@ -108,9 +107,9 @@ class AppAuthForm extends Component {
     const res = await this.controller.loginUser({email: userEmail, password: userPwd});
     if (res.status !== 404 && res.status !== 403) {
       const content: Promise<IAuth> = await res.json();
+      window.localStorage.setItem("userInfo", JSON.stringify(content));
       const { token } = await content;
       this.observable.notify(token);
-      window.localStorage.setItem('userToken', token);
       if (content) router.navigate('textbook');
     } else {
       const errorMessage = <HTMLSpanElement>document.querySelector('.errorMsg');
