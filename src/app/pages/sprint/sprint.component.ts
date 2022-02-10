@@ -6,6 +6,7 @@ import UTILS from './sprintUtils';
 import CONSTS from './sprintConsts';
 import { IWord } from '../../../spa/tools/controllerTypes';
 import { appSelectDifficulty } from '../../components/select-dificult/app.select-difficulty';
+import { appResultGame } from '../../components/result-game/app.result-game';
 
 class SprintComponent extends Component {
   getEventsClick(event: Event): void {
@@ -55,7 +56,6 @@ class SprintComponent extends Component {
           UTILS.makeNextWordCard();
         } else {
           UTILS.makeNextPage();
-          //buttonTrue.setAttribute('disabled', 'true');
         }
       }
 
@@ -72,7 +72,6 @@ class SprintComponent extends Component {
           UTILS.makeNextWordCard();
         } else {
           UTILS.makeNextPage();
-          //buttonFalse.setAttribute('disabled', 'true');
         }
       }
     }
@@ -92,8 +91,6 @@ class SprintComponent extends Component {
         UTILS.makeNextWordCard();
       } else {
         UTILS.makeNextPage();
-        // const buttonFalse = document.querySelector('.button-false') as HTMLElement;
-        // buttonFalse.setAttribute('disabled', 'true');
       }
     }
 
@@ -110,8 +107,6 @@ class SprintComponent extends Component {
         UTILS.makeNextWordCard();
       } else {
         UTILS.makeNextPage();
-        // const buttonTrue = document.querySelector('.button-true') as HTMLElement;
-        // buttonTrue.setAttribute('disabled', 'true');
       }
     }
   }
@@ -122,6 +117,7 @@ export const sprintComponent = new SprintComponent({
   components: [
     appHeader,
     appSelectDifficulty,
+    appResultGame,
   ],
   template: Sprint,
 });

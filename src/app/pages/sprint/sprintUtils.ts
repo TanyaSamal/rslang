@@ -1,7 +1,8 @@
 import Controller from "../../../spa/tools/controller";
 import { IWord } from "../../../spa/tools/controllerTypes";
 import CONSTS from "./sprintConsts";
-import { Bonus } from "./sprintTypes";
+import { Bonus, IGameSprintStatistic } from "./sprintTypes";
+import { appResultGame } from '../../components/result-game/app.result-game';
 
 function getGroup(): string {
     const level = document.querySelector('.click-level') as HTMLElement;
@@ -66,6 +67,16 @@ function fillArrayWordTranslate(words: IWord[]): string[] {
 }
 
 function startGameSprint(group: string, page: string): void {
+    const resultGameStatistic: IGameSprintStatistic = {
+        score: 0,
+        rightAnswers: 0,
+        falseAnswers: 0,
+        rightWords: [],
+        falseWords: [],
+    };
+
+    localStorage.setItem(CONSTS.GAME_SPRINT_STATISTIC, JSON.stringify(resultGameStatistic));
+
     const gameContainer = document.querySelector('.game-container') as HTMLElement;
     showContainer(gameContainer);
 
@@ -85,12 +96,17 @@ function startGameSprint(group: string, page: string): void {
 function makeWordCard(words: IWord[], index: number, translates: string[]): void {
     const wordText = document.querySelector('.word-text') as HTMLElement;
     const wordTranslate = document.querySelector('.word-translate') as HTMLElement;
+    
     wordText.innerHTML = words[index].word;
+    localStorage.setItem(CONSTS.WORD_ENG, words[index].word);
 
     const trueTranslate: string = words[index].wordTranslate;
     const audioWord: string = words[index].audio;
     localStorage.setItem(CONSTS.TRUE_TRANSLATE, trueTranslate);
     localStorage.setItem(CONSTS.AUDIO_WORD, audioWord);
+
+    const resultGameStatistic: IGameSprintStatistic = JSON.parse(localStorage[CONSTS.GAME_SPRINT_STATISTIC]);
+
 
     const translatesCopy: string[] = translates.slice();
     translatesCopy.push(trueTranslate);
@@ -125,9 +141,10 @@ function startTimerGame(): void {
         
         if (currentTimer < 0) {
             clearInterval(timerId);
-            // stop;
+            getResultGame();
         } else {
             timerId = setTimeout(tick, 1000);
+            localStorage.setItem(CONSTS.TIMER_ID_SPRINT, String(timerId));
         }
     }, 1000);
 }
@@ -157,6 +174,9 @@ function makeNextPage(): void {
 }
 
 function checkAnswer(): void {
+    const resultGameStatistic: IGameSprintStatistic = JSON.parse(localStorage[CONSTS.GAME_SPRINT_STATISTIC]);
+    const wordEng: string = localStorage[CONSTS.WORD_ENG];
+    const wordRus: string = localStorage[CONSTS.CURRENT_TRANSLATE];
     const compareTranslate: boolean = localStorage[CONSTS.TRUE_TRANSLATE] === localStorage[CONSTS.CURRENT_TRANSLATE];
     const stateAnswer: boolean = localStorage[CONSTS.ANSWER] === 'true';
     const currentCard: number = Number(localStorage[CONSTS.CURRENT_CARD]);
@@ -167,8 +187,17 @@ function checkAnswer(): void {
         return;
     }
     
-    if (compareTranslate && stateAnswer) {
+    if ((compareTranslate && stateAnswer) || (!compareTranslate && !stateAnswer)) {
         animateContainer(CONSTS.COLOR_SHADOW.green);
+        
+        const rightAnswers = Number(resultGameStatistic.rightAnswers);
+        resultGameStatistic.rightAnswers = rightAnswers + 1;
+        resultGameStatistic.rightWords.push({
+            eng: wordEng,
+            rus: wordRus,
+            audioURL: localStorage[CONSTS.AUDIO_WORD],
+        });
+        localStorage.setItem(CONSTS.GAME_SPRINT_STATISTIC, JSON.stringify(resultGameStatistic));
 
         const star: number = countBonus().star;
         const medal: number = countBonus().medal;
@@ -181,35 +210,17 @@ function checkAnswer(): void {
         getScore();
     }
 
-    if (!compareTranslate && !stateAnswer) {
-        animateContainer(CONSTS.COLOR_SHADOW.green);
-
-        const star: number = countBonus().star;
-        const medal: number = countBonus().medal;
-
-        localStorage.setItem(CONSTS.BONUS_STAR, String(star));
-        localStorage.setItem(CONSTS.BONUS_MEDAL, String(medal));
-
-        getBonus(star, medal);
-        getPoints(medal);
-        getScore();
-    }
-
-    if (compareTranslate && !stateAnswer) {
+    if ((compareTranslate && !stateAnswer) || (!compareTranslate && stateAnswer)) {
         animateContainer(CONSTS.COLOR_SHADOW.red);
 
-        const star: number = minStar;
-        const medal: number = minMedal;
-
-        localStorage.setItem(CONSTS.BONUS_STAR, String(star));
-        localStorage.setItem(CONSTS.BONUS_MEDAL, String(medal));
-
-        deleteBonus();
-        getPoints(medal);
-    }
-
-    if (!compareTranslate && stateAnswer) {
-        animateContainer(CONSTS.COLOR_SHADOW.red);
+        const falseAnswers = Number(resultGameStatistic.falseAnswers);
+        resultGameStatistic.falseAnswers = falseAnswers + 1;
+        resultGameStatistic.falseWords.push({
+            eng: wordEng,
+            rus: wordRus,
+            audioURL: localStorage[CONSTS.AUDIO_WORD],
+        });
+        localStorage.setItem(CONSTS.GAME_SPRINT_STATISTIC, JSON.stringify(resultGameStatistic));
 
         const star: number = minStar;
         const medal: number = minMedal;
@@ -265,6 +276,10 @@ function getScore(): void {
     
     scoreGame.innerHTML = `${newScore}`;
     localStorage.setItem(CONSTS.SCORE, String(newScore));
+
+    const resultGameStatistic: IGameSprintStatistic = JSON.parse(localStorage[CONSTS.GAME_SPRINT_STATISTIC]);
+    resultGameStatistic.score = newScore;
+    localStorage.setItem(CONSTS.GAME_SPRINT_STATISTIC, JSON.stringify(resultGameStatistic));
 }
 
 function getBonus(star: number, medal: number): void {
@@ -335,11 +350,25 @@ function playAudioWord(): void {
 }
 
 function closeGame(): void {
-    const gameContainer = document.querySelector('.word-card') as HTMLElement;
-    gameContainer.classList.add('close-container');
+    const wordCard = document.querySelector('.word-card') as HTMLElement;
+    wordCard.classList.add('close-container');
 
     setTimeout(() => {
         window.location.hash = '#';
+    }, 600);
+}
+
+function getResultGame(): void {
+    const wordCard = document.querySelector('.word-card') as HTMLElement;
+    const gameContainer = document.querySelector('.game-container') as HTMLElement;
+    const resultContainer = document.querySelector('.result-game-container') as HTMLElement;
+
+    wordCard.classList.add('close-container');
+
+    setTimeout(() => {
+        hideContainer(gameContainer);
+        resultContainer.classList.remove('hide');
+        appResultGame.makeResultGame();
     }, 600);
 }
 
@@ -354,7 +383,6 @@ function closeGame(): void {
 // }
 
 export default {
-    //hideContainer,
     getGroup,
     showStopwatch,
     randomNumber, 

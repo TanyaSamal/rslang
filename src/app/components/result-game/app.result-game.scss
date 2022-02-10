@@ -1,0 +1,88 @@
+@keyframes animate-height {
+    from {
+        transform: scale(0);
+    }
+
+    to {
+        transform: scale(1);
+    }
+}
+
+.common-container {
+    max-width: 500px;
+    width: 60vw;
+    height: fit-content;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    background-color: hsla(189, 61%, 31%, 0.3);
+    backdrop-filter: blur(4px);
+    animation: animate-height .5s linear;
+    animation-fill-mode: both;
+}
+
+.result-game-container {
+    display: flex;
+    flex-direction: column;
+    
+    .game-close {
+        font-size: 40px;
+        height: 30px;
+        width: 35px;
+        display: flex;
+        align-self: end;
+
+        i {
+            position: relative;
+            top: -5px;
+        }
+    }
+
+    .game-close:hover {
+        cursor: pointer;
+        background-color: #e91212;
+    }
+
+    h1 {
+        text-transform: uppercase;
+    }
+    
+    p, 
+    .score-game {
+        font-size: 24px;
+    }
+
+    .false-answer-container,
+    .true-answer-container {
+        h2 {
+            margin-top: 20px;
+            font-size: 24px;
+        }
+
+        h2:last-child {
+            margin-top: 50px;
+        }
+        
+        .word-list {
+            list-style: none;
+            text-align: left;
+            margin-left: 20px;
+            font-size: 20px;
+            height: 200px;
+            overflow: auto;
+
+            .item-audio {
+                margin-right: 10px;
+            }
+
+            .item-audio i:hover {
+                cursor: pointer;
+                background-color: #fe8366;
+            }
+        }
+    }
+}
+
+.hide {
+    display: none;
+}

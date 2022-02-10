@@ -25,6 +25,9 @@ const BONUS_POINTS: string = 'bonus_points';
 const SCORE: string = 'score';
 const SPRINT_STATE: string = 'sprintState';
 const AUDIO_MUTE: string = 'audio_mute';
+const GAME_SPRINT_STATISTIC: string = 'game_sprint_statistic';
+const WORD_ENG: string = 'word_eng';
+const TIMER_ID_SPRINT: string = 'timer_id_sprint';
 
 enum KEYS {
     arrowLeft = 'ArrowLeft',
@@ -73,4 +76,7 @@ export default {
     SPRINT_STATE,
     AUDIO_WORD,
     AUDIO_MUTE,
+    GAME_SPRINT_STATISTIC,
+    WORD_ENG,
+    TIMER_ID_SPRINT,
 };
