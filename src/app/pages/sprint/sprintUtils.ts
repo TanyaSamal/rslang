@@ -3,12 +3,23 @@ import { IWord } from "../../../spa/tools/controllerTypes";
 import CONSTS from "./sprintConsts";
 import { Bonus } from "./sprintTypes";
 
+function getGroup(): string {
+    const level = document.querySelector('.click-level') as HTMLElement;
+    const group: string = level.dataset.difficult;
+    
+    return group;
+}
+
 function randomNumber(start: number, stop: number): number {
     return Math.floor(Math.random() * (stop - start + 1)) + start;
 }
 
 function hideContainer(container: HTMLElement): void {
     container.classList.add('hide');
+}
+
+function hideVisibilityContainer(container: HTMLElement): void {
+    container.classList.add('hide-visibility');
 }
 
 function showContainer(container: HTMLElement): void {
@@ -18,7 +29,11 @@ function showContainer(container: HTMLElement): void {
 function showStopwatch(group: string, page: string): void {
     const stopwatchСontainer = document.querySelector('.stopwatch-container') as HTMLElement;
     const stopwatch = document.querySelector('.stopwatch') as HTMLElement;
+    const headerContainer = document.querySelector('header') as HTMLElement;
     showContainer(stopwatchСontainer);
+    hideVisibilityContainer(headerContainer);
+
+    console.log(headerContainer);
 
     const count = document.createElement('span') as HTMLElement;
     stopwatch.append(count);
@@ -306,6 +321,15 @@ function animateContainer(color: string): void {
     });
 }
 
+function closeGame(): void {
+    const gameContainer = document.querySelector('.word-card') as HTMLElement;
+    gameContainer.classList.add('close-container');
+
+    setTimeout(() => {
+        window.location.hash = '#';
+    }, 600);
+}
+
 
 // function shuffle(array: string[]) {
 //     for (let i = array.length - 1; i > 0; i--) {
@@ -318,10 +342,12 @@ function animateContainer(color: string): void {
 
 export default {
     //hideContainer,
+    getGroup,
     showStopwatch,
     randomNumber, 
     startGameSprint,
     checkAnswer,
     makeNextWordCard,
     makeNextPage,
+    closeGame,
 };

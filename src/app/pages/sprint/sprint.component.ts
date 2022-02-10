@@ -10,12 +10,28 @@ import { appSelectDifficulty } from '../../components/select-dificult/app.select
 class SprintComponent extends Component {
   getEventsClick(event: Event): void {
     if (event.target instanceof Element) {
+      const buttonStartSprint = event.target.closest('.start-sprint') as HTMLElement;
       const volume = event.target.closest('.volume') as HTMLElement;
+      const close = event.target.closest('.fa-window-close') as HTMLElement;
       const buttonTrue = event.target.closest('.button-true') as HTMLElement;
       const buttonFalse = event.target.closest('.button-false') as HTMLElement;
 
+      if (buttonStartSprint) {
+        const group: string = UTILS.getGroup();
+        const page: string = String(UTILS.randomNumber(CONSTS.MIN_PAGE, CONSTS.MAX_PAGE));
+
+        UTILS.showStopwatch(group, page);
+      }
+
       if (volume) {
         volume.classList.toggle('volume-mute');
+      }
+
+      if (close) {
+        UTILS.closeGame();
+        // const gameContainer = document.querySelector('.word-card') as HTMLElement;
+        // gameContainer.classList.add('close-container');
+        // window.location.hash = '#';
       }
 
       if (buttonTrue) {
@@ -68,8 +84,8 @@ class SprintComponent extends Component {
         UTILS.makeNextWordCard();
       } else {
         UTILS.makeNextPage();
-        const buttonFalse = document.querySelector('.button-false');
-        buttonFalse.setAttribute('disabled', 'true');
+        // const buttonFalse = document.querySelector('.button-false') as HTMLElement;
+        // buttonFalse.setAttribute('disabled', 'true');
       }
     }
 
@@ -86,8 +102,8 @@ class SprintComponent extends Component {
         UTILS.makeNextWordCard();
       } else {
         UTILS.makeNextPage();
-        const buttonTrue = document.querySelector('.button-true');
-        buttonTrue.setAttribute('disabled', 'true');
+        // const buttonTrue = document.querySelector('.button-true') as HTMLElement;
+        // buttonTrue.setAttribute('disabled', 'true');
       }
     }
   }

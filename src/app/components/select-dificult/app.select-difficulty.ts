@@ -2,7 +2,6 @@ import './app.select-difficulty.scss';
 import SelectDifficulty from './app.select-difficulty.html';
 import { Component } from '../../../spa';
 import UTILS from './app.select-difficulty-utils';
-import UTILS_FROM_SPRINT from '../../pages/sprint/sprintUtils';
 import CONSTS from './app.select-difficulty.consts';
 class AppSelectDifficulty extends Component {
   getEventsClick(event: Event): void {
@@ -69,7 +68,6 @@ class AppSelectDifficulty extends Component {
           localStorage.setItem(CONSTS.SCORE, '0');
 
           UTILS.hideContainer(welcomeContainer);
-          UTILS_FROM_SPRINT.showStopwatch(group, page);
         }
       }
     }
