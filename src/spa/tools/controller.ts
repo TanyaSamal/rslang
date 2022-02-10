@@ -1,4 +1,4 @@
-import { IUser, IWord, IUserWord, IUserWordInfo, UrlPath, HttpMethod } from "./controllerTypes";
+import { IUser, IWord, IUserWord, IUserWordInfo, UrlPath, HttpMethod, IAuth } from "./controllerTypes";
 
 export default class Controller {
   private baseUrl = 'https://rslang-2022.herokuapp.com/';
@@ -37,6 +37,21 @@ export default class Controller {
     return rawResponse.json();
   }
 
+  async getNewToken(userId: string): Promise<string> {
+    const { refreshToken } = JSON.parse(localStorage.getItem('userInfo'));
+    const rawResponse = await fetch(`${this.baseUrl + UrlPath.USERS}/${userId}/${UrlPath.TOKENS}`, {
+      method: HttpMethod.GET,
+      headers: {
+        'Authorization': `Bearer ${refreshToken}`,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+    });
+    const content: Promise<IAuth> = await rawResponse.json();
+    window.localStorage.setItem('userInfo', JSON.stringify(content));
+    return (await content).token;
+  }
+
   async getUserWords(userId: string, token: string): Promise<IUserWordInfo[]> {
     const rawResponse = await fetch(`${this.baseUrl + UrlPath.USERS}/${userId}/${UrlPath.WORDS}`, {
       method: HttpMethod.GET,
@@ -46,6 +61,11 @@ export default class Controller {
         'Content-Type': 'application/json'
       },
     });
+    if (!rawResponse.ok) {
+      const newToken = await this.getNewToken(userId);
+      await this.getUserWords(userId, newToken);
+      return null;
+    }
     return rawResponse.json();
   }
 
@@ -58,11 +78,16 @@ export default class Controller {
         'Content-Type': 'application/json'
       },
     });
+    if (!rawResponse.ok) {
+      const newToken = await this.getNewToken(userId);
+      await this.getUserWordById(userId, newToken, wordId);
+      return null;
+    }
     return rawResponse.json();
   }
 
   async updateUserWord(userId: string, token: string, wordId: string, word: IUserWord) {
-    await fetch(`${this.baseUrl + UrlPath.USERS}/${userId}/${UrlPath.WORDS}/${wordId}`, {
+    const rawResponse = await fetch(`${this.baseUrl + UrlPath.USERS}/${userId}/${UrlPath.WORDS}/${wordId}`, {
       method: HttpMethod.PUT,
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -71,6 +96,10 @@ export default class Controller {
       },
       body: JSON.stringify(word)
     });
+    if (!rawResponse.ok) {
+      const newToken = await this.getNewToken(userId);
+      await this.updateUserWord(userId, newToken, wordId, word);
+    }
   }
 
   async createUserWord(userId: string, wordId: string, word: IUserWord, token: string): Promise<void> {
@@ -97,6 +126,11 @@ export default class Controller {
         'Content-Type': 'application/json'
       }
     });
+    if (!rawResponse.ok) {
+      const newToken = await this.getNewToken(userId);
+      await this.getAgregatedWords(userId, newToken, group, filter);
+      return null;
+    }
     return rawResponse.json();
   }
 

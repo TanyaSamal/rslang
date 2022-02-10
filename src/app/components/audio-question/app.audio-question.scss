@@ -67,6 +67,11 @@
       border-radius: 50%;
       cursor: pointer;
       transition: 0.3s;
+
+      @media (max-width: 1440px) {
+        width: 80px;
+        height: 80px;
+      }
       
       path {
         stroke:white;
@@ -98,7 +103,7 @@
       }
 
       button {
-        font-size: 1rem;
+        font-size: 1em;
         text-transform: uppercase;
         background-color: transparent;
         border: 2px solid white;
@@ -134,7 +139,7 @@
   }
 
   .forward-btn {
-    font-size: 1.1rem;
+    font-size: 1.1em;
     text-transform: uppercase;
     background-color: rgb(221, 221, 221);
     border: none;
@@ -146,7 +151,8 @@
     cursor: pointer;
 
     @media (max-width: 1440px) {
-      font-size: 1rem;
+      font-size: 1em;
+      padding: 10px 30px;
     }
 
     &:hover {
