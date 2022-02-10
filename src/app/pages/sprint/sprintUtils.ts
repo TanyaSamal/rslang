@@ -30,10 +30,9 @@ function showStopwatch(group: string, page: string): void {
     const stopwatchСontainer = document.querySelector('.stopwatch-container') as HTMLElement;
     const stopwatch = document.querySelector('.stopwatch') as HTMLElement;
     const headerContainer = document.querySelector('header') as HTMLElement;
+    
     showContainer(stopwatchСontainer);
     hideVisibilityContainer(headerContainer);
-
-    console.log(headerContainer);
 
     const count = document.createElement('span') as HTMLElement;
     stopwatch.append(count);
@@ -89,7 +88,9 @@ function makeWordCard(words: IWord[], index: number, translates: string[]): void
     wordText.innerHTML = words[index].word;
 
     const trueTranslate: string = words[index].wordTranslate;
+    const audioWord: string = words[index].audio;
     localStorage.setItem(CONSTS.TRUE_TRANSLATE, trueTranslate);
+    localStorage.setItem(CONSTS.AUDIO_WORD, audioWord);
 
     const translatesCopy: string[] = translates.slice();
     translatesCopy.push(trueTranslate);
@@ -321,6 +322,18 @@ function animateContainer(color: string): void {
     });
 }
 
+function playAudioWord(): void {
+    const audioWordURL: string = `${CONSTS.BASE_URL}${localStorage[CONSTS.AUDIO_WORD]}`;
+    const isMute = localStorage[CONSTS.AUDIO_MUTE];
+    
+    const playAudio = document.createElement('audio') as HTMLAudioElement;
+    playAudio.setAttribute('src', audioWordURL);
+
+    if (!isMute) {
+        playAudio.play();
+    }
+}
+
 function closeGame(): void {
     const gameContainer = document.querySelector('.word-card') as HTMLElement;
     gameContainer.classList.add('close-container');
@@ -350,4 +363,5 @@ export default {
     makeNextWordCard,
     makeNextPage,
     closeGame,
+    playAudioWord,
 };

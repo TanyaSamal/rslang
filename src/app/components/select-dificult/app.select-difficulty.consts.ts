@@ -7,6 +7,7 @@ const PAGE: string = 'page';
 const BONUS_STAR: string = 'bonus_star';
 const BONUS_MEDAL: string = 'bonus_medal';
 const SCORE: string = 'score';
+const AUDIO_MUTE: string = 'audio_mute';
 
 enum BONUS_STAR_MEDAL {
     minStar = 0,
@@ -24,5 +25,6 @@ export default {
     BONUS_STAR,
     BONUS_MEDAL,
     BONUS_STAR_MEDAL,
-    SCORE
+    SCORE,
+    AUDIO_MUTE
 };

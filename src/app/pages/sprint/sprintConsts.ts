@@ -16,6 +16,7 @@ const TRUE: string = 'true';
 const FALSE: string = 'false';
 const WORDS: string = 'words';
 const WORDS_TRANSLATE: string = 'words_translate';
+const AUDIO_WORD: string = 'audio_word';
 const GROUP: string = 'group';
 const PAGE: string = 'page';
 const BONUS_STAR: string = 'bonus_star';
@@ -23,6 +24,7 @@ const BONUS_MEDAL: string = 'bonus_medal';
 const BONUS_POINTS: string = 'bonus_points';
 const SCORE: string = 'score';
 const SPRINT_STATE: string = 'sprintState';
+const AUDIO_MUTE: string = 'audio_mute';
 
 enum KEYS {
     arrowLeft = 'ArrowLeft',
@@ -68,5 +70,7 @@ export default {
     START_BONUS_POINTS,
     BONUS_POINTS,
     SCORE,
-    SPRINT_STATE
+    SPRINT_STATE,
+    AUDIO_WORD,
+    AUDIO_MUTE,
 };

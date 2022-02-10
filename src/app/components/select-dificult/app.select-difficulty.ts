@@ -66,6 +66,7 @@ class AppSelectDifficulty extends Component {
           localStorage.setItem(CONSTS.BONUS_MEDAL, String(CONSTS.BONUS_STAR_MEDAL.minMedal));
 
           localStorage.setItem(CONSTS.SCORE, '0');
+          localStorage.removeItem(CONSTS.AUDIO_MUTE);
 
           UTILS.hideContainer(welcomeContainer);
         }

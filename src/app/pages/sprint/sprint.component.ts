@@ -15,6 +15,7 @@ class SprintComponent extends Component {
       const close = event.target.closest('.fa-window-close') as HTMLElement;
       const buttonTrue = event.target.closest('.button-true') as HTMLElement;
       const buttonFalse = event.target.closest('.button-false') as HTMLElement;
+      const audioWord = event.target.closest('.word-sound') as HTMLElement;
 
       if (buttonStartSprint) {
         const group: string = UTILS.getGroup();
@@ -25,13 +26,20 @@ class SprintComponent extends Component {
 
       if (volume) {
         volume.classList.toggle('volume-mute');
+        
+        if (volume.classList.contains('volume-mute')) {
+          localStorage.setItem(CONSTS.AUDIO_MUTE, 'true');
+        } else {
+          localStorage.removeItem(CONSTS.AUDIO_MUTE);
+        }
       }
 
       if (close) {
         UTILS.closeGame();
-        // const gameContainer = document.querySelector('.word-card') as HTMLElement;
-        // gameContainer.classList.add('close-container');
-        // window.location.hash = '#';
+      }
+
+      if (audioWord) {
+        UTILS.playAudioWord();
       }
 
       if (buttonTrue) {
