@@ -61,7 +61,7 @@ export default class Controller {
         'Content-Type': 'application/json'
       },
     });
-    if (!rawResponse.ok) {
+    if (rawResponse.status === 401) {
       const newToken = await this.getNewToken(userId);
       await this.getUserWords(userId, newToken);
       return null;
@@ -78,9 +78,12 @@ export default class Controller {
         'Content-Type': 'application/json'
       },
     });
-    if (!rawResponse.ok) {
+    if (rawResponse.status === 401) {
       const newToken = await this.getNewToken(userId);
       await this.getUserWordById(userId, newToken, wordId);
+      return null;
+    }
+    if (rawResponse.status === 404) {
       return null;
     }
     return rawResponse.json();
@@ -96,7 +99,7 @@ export default class Controller {
       },
       body: JSON.stringify(word)
     });
-    if (!rawResponse.ok) {
+    if (rawResponse.status === 401) {
       const newToken = await this.getNewToken(userId);
       await this.updateUserWord(userId, newToken, wordId, word);
     }
@@ -112,7 +115,7 @@ export default class Controller {
       },
       body: JSON.stringify(word)
     });
-    if (!rawResponse.ok) {
+    if (rawResponse.status === 401) {
       this.updateUserWord(userId, token, wordId, word);
     }
   }
@@ -126,7 +129,7 @@ export default class Controller {
         'Content-Type': 'application/json'
       }
     });
-    if (!rawResponse.ok) {
+    if (rawResponse.status === 401) {
       const newToken = await this.getNewToken(userId);
       await this.getAgregatedWords(userId, newToken, group, filter);
       return null;

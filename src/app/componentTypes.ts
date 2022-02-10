@@ -22,3 +22,5 @@ export interface IGameStatistic {
   totalAnswers: number,
   newWords: number
 }
+
+export type IPageState = Omit<IGameState, 'textbookWords' | 'dictionaryWords'>

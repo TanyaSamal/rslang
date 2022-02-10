@@ -7,7 +7,7 @@ import { AppWord } from '../../components/word/app.word';
 import Word from '../../components/word/app.word.html';
 import { IAuth, IUserWordInfo, IWord, WordStatus } from '../../../spa/tools/controllerTypes';
 import { ComponentEvent } from '../../../spa/core/coreTypes';
-import { Mode } from '../../componentTypes';
+import { IPageState, Mode } from '../../componentTypes';
 import * as utils from './utils';
 
 const BASE_URL = 'https://rslang-2022.herokuapp.com/';
@@ -88,7 +88,7 @@ class TextbookComponent extends Component {
   }
 ];
 
-  saveInLocalStorage(setItem: string) {
+  saveStateInLocalStorage(setItem: string) {
     localStorage.setItem(setItem, JSON.stringify({
       mode: this.currentMode,
       state: this.currentState,
@@ -100,13 +100,23 @@ class TextbookComponent extends Component {
     }));
   }
 
+  savePageInLocalStorage() {
+    localStorage.setItem('currentPage', JSON.stringify({
+      mode: this.currentMode,
+      state: this.currentState,
+      level: this.currentLevel,
+      textbookPage: this.currentPage,
+      dictionaryPage: this.currentDictPage,
+    }));
+  }
+
   goToAudioCall() {
-    this.saveInLocalStorage('audiocallState');
+    this.saveStateInLocalStorage('audiocallState');
     router.navigate('audiocall');
   }
 
   goToSpring() {
-    this.saveInLocalStorage('sprintState');
+    this.saveStateInLocalStorage('sprintState');
     router.navigate('sprint');
   }
 
@@ -122,9 +132,10 @@ class TextbookComponent extends Component {
     document.querySelector('.current-dict__page').classList.remove('current-dict__page');
     const newCurrent = document.querySelector(`[aria-label="page ${this.currentDictPage + 1}"]`);
     newCurrent.classList.add('current-dict__page');
-    const MARGIN = 592;
-    (<HTMLDivElement>document.querySelector('.dictionary-words__container')).style.marginTop =
-      `-${MARGIN * this.currentDictPage}px`;
+    const wordContainer = <HTMLDivElement>document.querySelector('.dictionary-words__container');
+    const containerWidth = wordContainer.getBoundingClientRect().width;
+    const MARGIN = (containerWidth > 1000) ? 592 : 480;
+    wordContainer.style.marginTop = `-${MARGIN * this.currentDictPage}px`;
   }
 
   changeDictPage(event: MouseEvent) {
@@ -199,7 +210,7 @@ class TextbookComponent extends Component {
   drawDictionaryPagination(currentPage: number, pagesCount: number) {
     const paginationList = utils.createPaginationView(currentPage, pagesCount);
     document.querySelector('.pagination-dict__list').innerHTML = paginationList.trim();
-    document.querySelector('.pagination-dict__list li:first-child button').classList.add('current-dict__page');
+    document.querySelector('.pagination-dict__list li:first-child button')?.classList.add('current-dict__page');
     if (pagesCount === 1 || pagesCount === currentPage) {
       (<HTMLButtonElement>document.querySelector('.next-dict__page')).disabled = true;
     } else {
@@ -233,15 +244,22 @@ class TextbookComponent extends Component {
     });
     const pagesCount = utils.culcPagesCount(this.difficultWords.length);
     this.drawDictionaryPagination(1, pagesCount);
+
+    const gameLinks = document.querySelectorAll('.link-container');
+    gameLinks.forEach((link: HTMLDivElement) => {
+      if (link.classList.contains('disabled')) link.classList.remove('disabled');
+    });
+    this.savePageInLocalStorage();
   }
 
-  async showLearntWords(event: MouseEvent) {
+  async showLearntWords() {
     this.currentState = WordStatus.learnt;
     this.currentDictPage = 0;
     (<HTMLDivElement>document.querySelector('.dictionary-words__container')).style.marginTop = '0px';
     document.querySelector('.active-state').classList.remove('active-state');
-    const target = <HTMLDivElement>event.target;
-    target.closest('.user-words').classList.add('active-state');
+    const target = <HTMLDivElement>document.querySelector('.learnt-words');
+    target.classList.add('active-state');
+
     const usersDifficulty = document.querySelectorAll('.users-difficulty');
     (<HTMLParagraphElement>usersDifficulty[0]).classList.add('hide');
     (<HTMLParagraphElement>usersDifficulty[1]).classList.remove('hide');
@@ -250,6 +268,12 @@ class TextbookComponent extends Component {
     this.drawDictionaryWords(this.learntWords, this.userWords);
     const pagesCount = utils.culcPagesCount(this.learntWords.length);
     this.drawDictionaryPagination(1, pagesCount);
+
+    const gameLinks = document.querySelectorAll('.link-container');
+    gameLinks.forEach((link: HTMLDivElement) => {
+      link.classList.add('disabled');
+    });
+    this.savePageInLocalStorage();
   }
 
   async getDictionaryWords() {
@@ -273,6 +297,7 @@ class TextbookComponent extends Component {
     document.querySelector('.dictionary-word__description').innerHTML = '';
     const activeWord = JSON.parse(localStorage.getItem('activeWord'));
     this.drawActiveWord(+activeWord);
+    this.savePageInLocalStorage();
   }
 
   async showDictionary() {
@@ -287,13 +312,17 @@ class TextbookComponent extends Component {
     gameLinks.forEach((link: HTMLDivElement) => {
       if (link.classList.contains('disabled')) link.classList.remove('disabled');
     });
-    await this.showDifficultWords();
+    if (JSON.parse(localStorage.getItem('currentPage')).state === WordStatus.learnt)
+      await this.showLearntWords();
+    else
+      await this.showDifficultWords();
+    this.savePageInLocalStorage();
   }
 
   changeLevelView(): void {
     document.querySelector('.active-level').classList.remove('active-level');
     document.querySelector(`#level-${this.currentLevel}`).classList.add('active-level');
-    utils.savePageInLocalStorage(this.currentLevel, this.currentPage);
+    this.savePageInLocalStorage();
   }
 
   async changePage(event: MouseEvent) {
@@ -303,7 +332,7 @@ class TextbookComponent extends Component {
       await this.initLevelWords();
       utils.channgePaginationView(this.currentPage);
       utils.checkPageProgress();
-      utils.savePageInLocalStorage(this.currentLevel, this.currentPage);
+      this.savePageInLocalStorage();
     }
   }
 
@@ -312,7 +341,7 @@ class TextbookComponent extends Component {
     await this.initLevelWords();
     utils.channgePaginationView(this.currentPage);
     utils.checkPageProgress();
-    utils.savePageInLocalStorage(this.currentLevel, this.currentPage);
+    this.savePageInLocalStorage();
   }
 
   async goToNextPage() {
@@ -320,7 +349,7 @@ class TextbookComponent extends Component {
     await this.initLevelWords();
     utils.checkPageProgress();
     utils.channgePaginationView(this.currentPage);
-    utils.savePageInLocalStorage(this.currentLevel, this.currentPage);
+    this.savePageInLocalStorage();
   }
 
   addAudio(idx: number): void {
@@ -495,15 +524,23 @@ class TextbookComponent extends Component {
   }
 
   async afterInit() {
+    await this.initLevelWords();
     if (localStorage.getItem('currentPage')) {
-      const storageData = JSON.parse(localStorage.getItem('currentPage'));
-      this.currentPage = storageData.page;
+      const storageData: IPageState = JSON.parse(localStorage.getItem('currentPage'));
+      this.currentMode = storageData.mode;
+      this.currentState = storageData.state;
       this.currentLevel = storageData.level;
+      this.currentPage = storageData.textbookPage;
+      this.currentDictPage = storageData.dictionaryPage;
+      if (this.currentMode === Mode.TEXTBOOK) {
+        await this.initLevelWords();
+        utils.channgePaginationView(this.currentPage);
+      } else if (localStorage.getItem('userInfo')) {
+        await this.showDictionary();
+      }
       this.changeLevelView();
       utils.changeColorTheme(this.currentLevel);
-      utils.channgePaginationView(this.currentPage);
     }
-    await this.initLevelWords();
     this.addWordsListeners();
     this.addLevelListeners();
     utils.checkPageProgress();

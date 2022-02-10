@@ -75,7 +75,7 @@ class AudiocallComponent extends Component {
     } else {
       this.newWords += 1;
       const userWord = {
-        difficulty: this.level,
+        difficulty: String(this.level),
         optional: {
           updatedDate: new Date().toLocaleDateString(),
           status: WordStatus.inProgress,
@@ -183,7 +183,7 @@ class AudiocallComponent extends Component {
     let gameWords: IWord[] = [];
     if (localStorage.getItem('audiocallState')) {
       const gameState: IGameState = JSON.parse(localStorage.getItem('audiocallState'));
-      this.level = gameState.level;
+      this.level = String(gameState.level);
       if (localStorage.getItem('userInfo')) {
         const userInfo: IAuth = JSON.parse(localStorage.getItem('userInfo'));
         // const resp = await this.controller.getAgregatedWords(userInfo.userId, userInfo.token, state.level,

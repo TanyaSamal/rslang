@@ -37,13 +37,6 @@ export const changeColorTheme = (currentLevel: string): void => {
   userContent.className = `dictionary-words dictionary-view colorTheme-${currentLevel}`;
 }
 
-export const savePageInLocalStorage = (currentLevel: string, currentPage: number): void => {
-  localStorage.setItem('currentPage', JSON.stringify({
-    level: currentLevel,
-    page: currentPage
-  }));
-}
-
 export const channgePaginationView = (currentPage: number): void => {
   const pagination = <HTMLUListElement>document.querySelector('.pagination-list');
   const oldCurrPage = <HTMLButtonElement>pagination.querySelector('.current-page');
