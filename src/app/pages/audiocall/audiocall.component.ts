@@ -134,7 +134,7 @@ class AudiocallComponent extends Component {
     document.querySelector('.forward-btn').textContent = 'Дальше';
   }
 
-  addListenets() {
+  addListeners() {
     const checkAnswer = (event: MouseEvent) => {
       const target = <HTMLButtonElement>event.target;
       this.checkWord(target);
@@ -147,7 +147,7 @@ class AudiocallComponent extends Component {
     forwardBtn.addEventListener('click', this.nextQuestion.bind(this));
   }
 
-  addWindowListenets() {
+  addWindowListeners() {
     const ckeckKey = (event: KeyboardEvent) => {
       if (Number(event.key) >= 1 && Number(event.key) <= 5) {
         const target = <HTMLButtonElement>document.querySelector(`.answer:nth-child(${event.key}) button`);
@@ -283,7 +283,7 @@ class AudiocallComponent extends Component {
 
       document.querySelector('.play-answer').addEventListener('click', this.playQuestion.bind(this));
       document.querySelector('.play-question').addEventListener('click', this.playQuestion.bind(this));
-      this.addListenets();
+      this.addListeners();
     }, 500);
   }
 
@@ -298,7 +298,7 @@ class AudiocallComponent extends Component {
       await this.getRoundWords();
       this.drawQuestion(this.currentQuestion);
       this.drawProgress();
-      this.addWindowListenets();
+      this.addWindowListeners();
     }
 
     const startBtn = document.querySelector('.start-sprint');

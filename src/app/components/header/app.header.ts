@@ -22,9 +22,9 @@ class AppHeader extends Component {
 
   changeLoginStatus() {
     const loginBtn = <HTMLAnchorElement>document.querySelector('.auth-btn');
-    const logoutBtn = <HTMLAnchorElement>document.querySelector('.logout-btn');
+    const logoutBtn = <HTMLAnchorElement>document.querySelector('.user-info');
     loginBtn.style.display = (this.isLoggedIn) ? 'none' : 'block';
-    logoutBtn.style.display = (this.isLoggedIn) ? 'block' : 'none';
+    logoutBtn.style.display = (this.isLoggedIn) ? 'flex' : 'none';
   }
 
   afterInit() {

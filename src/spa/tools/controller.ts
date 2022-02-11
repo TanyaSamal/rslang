@@ -3,7 +3,7 @@ import { IUser, IWord, IUserWord, IUserWordInfo, UrlPath, HttpMethod, IAuth } fr
 export default class Controller {
   private baseUrl = 'https://rslang-2022.herokuapp.com/';
 
-  async createUser(user: IUser): Promise<IUser> {
+  async createUser(user: IUser): Promise<Response> {
     const rawResponse = await fetch(`${this.baseUrl + UrlPath.USERS}`, {
       method: HttpMethod.POST,
       headers: {
@@ -12,7 +12,7 @@ export default class Controller {
       },
       body: JSON.stringify(user)
     });
-    return rawResponse.json();
+    return rawResponse;
   }
 
   async loginUser(user: IUser): Promise<Response> {
@@ -25,6 +25,19 @@ export default class Controller {
       body: JSON.stringify(user)
     });
     return rawResponse;
+  }
+
+  async getUserName(userId: string, token: string): Promise<string> {
+    const rawResponse = await fetch(`${this.baseUrl + UrlPath.USERS}/${userId}`, {
+      method: HttpMethod.GET,
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+    });
+    const body: IUser = await rawResponse.json();
+    return body.name;
   }
 
   async getWords(group: string, page: string): Promise<IWord[]> {
