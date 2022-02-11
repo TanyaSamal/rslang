@@ -30,6 +30,8 @@ const GAME_SPRINT_STATISTIC: string = 'game_sprint_statistic';
 const WORD_ENG: string = 'word_eng';
 const TIMER_ID_SPRINT: string = 'timer_id_sprint';
 
+const NAME_COUNT: string[] = ['слово', 'слова', 'слов'];
+
 enum KEYS {
     arrowLeft = 'ArrowLeft',
     ArrowRight = 'ArrowRight',
@@ -95,4 +97,5 @@ export default {
     TIMER_ID_SPRINT,
     COLOR_DIAGRAMM,
     CITATION,
+    NAME_COUNT,
 };

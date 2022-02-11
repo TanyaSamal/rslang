@@ -100,6 +100,10 @@
                 background-color: #e91212;
             }
 
+            .game-close:active {
+                transform: scale(0.9);
+            }
+
             .volume {
                 font-size: 40px;
                 width: 45px;
@@ -121,6 +125,11 @@
             .volume-mute:hover {
                 cursor: pointer;
                 color: #fe8365;
+            }
+
+            .volume-on:active,
+            .volume-mute:active {
+                transform: scale(0.9);
             }
         }
 
@@ -169,6 +178,10 @@
                 .word-sound:hover {
                     cursor: pointer;
                     background-color: #fe8365;
+                }
+
+                .word-sound:active {
+                    transform: scale(0.9);
                 }
 
                 .word-translate {

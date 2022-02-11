@@ -122,15 +122,15 @@
     }
 
     .result-words {
+        .true-answer-container {
+            margin-top: 20px;
+        }
+
         .false-answer-container,
         .true-answer-container {
             h2 {
-                margin-top: 20px;
+                margin-bottom: 10px;
                 font-size: 24px;
-            }
-    
-            h2:last-child {
-                margin-top: 50px;
             }
             
             .word-list {
@@ -138,7 +138,7 @@
                 text-align: left;
                 margin-left: 20px;
                 font-size: 20px;
-                height: 200px;
+                height: 185px;
                 overflow: auto;
                 border: 1px solid;
     
@@ -149,6 +149,14 @@
                 .item-audio i:hover {
                     cursor: pointer;
                     background-color: #fe8366;
+                }
+
+                .item-audio i:active {
+                    transform: scale(0.9);
+                }
+
+                .word-rus {
+                    color: #a52a2a;
                 }
             }
         }
@@ -179,15 +187,6 @@
     .hide {
         display: none;
     }
-
-    // h1 {
-    //     text-transform: uppercase;
-    // }
-    
-    // p, 
-    // .score-game {
-    //     font-size: 24px;
-    // }
 }
 
 .hide {

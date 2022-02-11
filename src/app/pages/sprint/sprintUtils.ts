@@ -366,8 +366,6 @@ function getResultGame(): void {
     setTimeout(() => {
         hideContainer(gameContainer);
         resultContainer.classList.remove('hide');
-
-        // const resultGameStatistic: IGameSprintStatistic = JSON.parse(localStorage[CONSTS.GAME_SPRINT_STATISTIC]);
         appResultGame.makeResult();
     }, 600);
 }
