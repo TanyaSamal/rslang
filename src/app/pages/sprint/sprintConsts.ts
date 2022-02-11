@@ -6,7 +6,7 @@ const BASE_URL: string = 'https://rslang-2022.herokuapp.com/';
 const START_NUMBER_CARD: number = 0;
 const MAX_LENGTH_ARRAY_TRANSLATE: number = 6;
 const TIMER: number = 60;
-const START_BONUS_POINTS: number = 10;
+const START_BONUS_POINTS: number = 1;
 
 const CURRENT_CARD: string = 'current_card';
 const TRUE_TRANSLATE: string = 'true_translate';
@@ -30,7 +30,8 @@ const GAME_SPRINT_STATISTIC: string = 'game_sprint_statistic';
 const WORD_ENG: string = 'word_eng';
 const TIMER_ID_SPRINT: string = 'timer_id_sprint';
 
-const NAME_COUNT: string[] = ['слово', 'слова', 'слов'];
+const NAME_COUNT_WORDS: string[] = ['слово', 'слова', 'слов'];
+const NAME_COUNT_POINTS: string[] = ['балл', 'балла', 'баллов'];
 
 enum KEYS {
     arrowLeft = 'ArrowLeft',
@@ -97,5 +98,6 @@ export default {
     TIMER_ID_SPRINT,
     COLOR_DIAGRAMM,
     CITATION,
-    NAME_COUNT,
+    NAME_COUNT_WORDS,
+    NAME_COUNT_POINTS
 };

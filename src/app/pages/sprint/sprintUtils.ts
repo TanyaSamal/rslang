@@ -80,6 +80,9 @@ function startGameSprint(group: string, page: string): void {
     const gameContainer = document.querySelector('.game-container') as HTMLElement;
     showContainer(gameContainer);
 
+    const rightNamePoints = document.querySelector('.right-name-points') as HTMLElement;
+    rightNamePoints.innerHTML = 'балл';
+
     const wordsPromise: Promise<IWord[]> = new Controller().getWords(group, page);
 
     wordsPromise.then((words: IWord[]) => {
@@ -258,9 +261,11 @@ function countBonus(): Bonus {
 
 function getPoints(medal: number): void {
     const bonusPoints = document.querySelector('.bonus-points') as HTMLElement;
-    const points: number = medal ? 20 * medal : 10;
+    const rightNamePoints = document.querySelector('.right-name-points') as HTMLElement;
+    const points: number = medal ? 2 * medal : 1;
 
     bonusPoints.innerHTML = `${points}`;
+    rightNamePoints.innerHTML = CONSTS.NAME_COUNT_POINTS[rightDeclensionWord(points)];
 
     localStorage.setItem(CONSTS.BONUS_POINTS, String(points));
 }
@@ -269,7 +274,6 @@ function getScore(): void {
     const scoreGame = document.querySelector('.score') as HTMLElement;
     const points: number = Number(localStorage[CONSTS.BONUS_POINTS]);
     const currentScore: number = Number(localStorage[CONSTS.SCORE]);
-
     const newScore: number = currentScore + points;
     
     scoreGame.innerHTML = `${newScore}`;
@@ -370,6 +374,21 @@ function getResultGame(): void {
     }, 600);
 }
 
+export function rightDeclensionWord(value: number): number {
+    let result: number = value % 100;
+  
+    if (result > 19) {
+        result = result % 10;
+    }
+  
+    switch (result) {
+        case 1: return 0;
+        case 2: return 1;
+        case 3: return 1;
+        case 4: return 1;
+        default: return 2;
+    }
+}
 
 // function shuffle(array: string[]) {
 //     for (let i = array.length - 1; i > 0; i--) {
@@ -390,4 +409,5 @@ export default {
     makeNextPage,
     closeGame,
     playAudioWord,
+    rightDeclensionWord,
 };
