@@ -4,7 +4,6 @@ import Component from './core/component';
 import { router } from './tools/router';
 import Controller from './tools/controller';
 import Observable from './tools/observer';
-import * as utils from './tools/utils';
 
 export {
   Module,
@@ -12,6 +11,5 @@ export {
   Controller,
   Observable,
   bootstrap,
-  router,
-  utils
+  router
 };

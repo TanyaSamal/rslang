@@ -1,4 +1,4 @@
-import { Component, Controller, utils } from '../../../spa';
+import { Component, Controller, router } from '../../../spa';
 import Textbook from './textbook.component.html';
 import './textbook.component.scss';
 import { appHeader } from '../../components/header/app.header';
@@ -7,17 +7,17 @@ import { AppWord } from '../../components/word/app.word';
 import Word from '../../components/word/app.word.html';
 import { IAuth, IUserWordInfo, IWord, WordStatus } from '../../../spa/tools/controllerTypes';
 import { ComponentEvent } from '../../../spa/core/coreTypes';
+import { IPageState, Mode } from '../../componentTypes';
+import * as utils from './utils';
 
 const BASE_URL = 'https://rslang-2022.herokuapp.com/';
-const DICTIONARY = 'dictionary';
-const TEXTBOOK = 'textbook';
 const WORDS_ON_PAGE = 20;
 
 class TextbookComponent extends Component {
   private controller = new Controller();
   private currentPage = 0;
   private currentDictPage = 0;
-  private currentMode = TEXTBOOK;
+  private currentMode = Mode.TEXTBOOK;
   private currentState = WordStatus.difficult;
   private currentLevel = '0';
   private pageWords: IWord[] = [];
@@ -75,8 +75,50 @@ class TextbookComponent extends Component {
     event: 'click',
     className: '.learnt-words',
     listener: this.showLearntWords,
+  },
+  {
+    event: 'click',
+    className: '.game-sprint',
+    listener: this.goToSpring,
+  },
+  {
+    event: 'click',
+    className: '.game-audiocall',
+    listener: this.goToAudioCall,
   }
 ];
+
+  saveStateInLocalStorage(setItem: string) {
+    localStorage.setItem(setItem, JSON.stringify({
+      mode: this.currentMode,
+      state: this.currentState,
+      level: this.currentLevel,
+      textbookPage: this.currentPage,
+      dictionaryPage: this.currentDictPage,
+      textbookWords: this.pageWords,
+      dictionaryWords: this.userWords
+    }));
+  }
+
+  savePageInLocalStorage() {
+    localStorage.setItem('currentPage', JSON.stringify({
+      mode: this.currentMode,
+      state: this.currentState,
+      level: this.currentLevel,
+      textbookPage: this.currentPage,
+      dictionaryPage: this.currentDictPage,
+    }));
+  }
+
+  goToAudioCall() {
+    this.saveStateInLocalStorage('audiocallState');
+    router.navigate('audiocall');
+  }
+
+  goToSpring() {
+    this.saveStateInLocalStorage('sprintState');
+    router.navigate('sprint');
+  }
 
   changeDictPaginationState() {
     let pagesCount = 1;
@@ -90,9 +132,10 @@ class TextbookComponent extends Component {
     document.querySelector('.current-dict__page').classList.remove('current-dict__page');
     const newCurrent = document.querySelector(`[aria-label="page ${this.currentDictPage + 1}"]`);
     newCurrent.classList.add('current-dict__page');
-    const MARGIN = 592;
-    (<HTMLDivElement>document.querySelector('.dictionary-words__container')).style.marginTop =
-      `-${MARGIN * this.currentDictPage}px`;
+    const wordContainer = <HTMLDivElement>document.querySelector('.dictionary-words__container');
+    const containerWidth = wordContainer.getBoundingClientRect().width;
+    const MARGIN = (containerWidth > 1000) ? 592 : 480;
+    wordContainer.style.marginTop = `-${MARGIN * this.currentDictPage}px`;
   }
 
   changeDictPage(event: MouseEvent) {
@@ -115,7 +158,7 @@ class TextbookComponent extends Component {
 
   async deleteFromDifficult(target: Element) {
     const wordCard = <HTMLDivElement>target.closest('.word-card');
-    const wordIdx = wordCard.id.slice(DICTIONARY.length);
+    const wordIdx = wordCard.id.slice(Mode.DICTIONARY.length);
     const wordId = this.userWords[+wordIdx].id;
     const userInfo: IAuth = JSON.parse(window.localStorage.getItem('userInfo'));
     const userWordInfo: IUserWordInfo = await this.controller.getUserWordById(userInfo.userId, userInfo.token, wordId);
@@ -167,7 +210,7 @@ class TextbookComponent extends Component {
   drawDictionaryPagination(currentPage: number, pagesCount: number) {
     const paginationList = utils.createPaginationView(currentPage, pagesCount);
     document.querySelector('.pagination-dict__list').innerHTML = paginationList.trim();
-    document.querySelector('.pagination-dict__list li:first-child button').classList.add('current-dict__page');
+    document.querySelector('.pagination-dict__list li:first-child button')?.classList.add('current-dict__page');
     if (pagesCount === 1 || pagesCount === currentPage) {
       (<HTMLButtonElement>document.querySelector('.next-dict__page')).disabled = true;
     } else {
@@ -201,15 +244,22 @@ class TextbookComponent extends Component {
     });
     const pagesCount = utils.culcPagesCount(this.difficultWords.length);
     this.drawDictionaryPagination(1, pagesCount);
+
+    const gameLinks = document.querySelectorAll('.link-container');
+    gameLinks.forEach((link: HTMLDivElement) => {
+      if (link.classList.contains('disabled')) link.classList.remove('disabled');
+    });
+    this.savePageInLocalStorage();
   }
 
-  async showLearntWords(event: MouseEvent) {
+  async showLearntWords() {
     this.currentState = WordStatus.learnt;
     this.currentDictPage = 0;
     (<HTMLDivElement>document.querySelector('.dictionary-words__container')).style.marginTop = '0px';
     document.querySelector('.active-state').classList.remove('active-state');
-    const target = <HTMLDivElement>event.target;
-    target.closest('.user-words').classList.add('active-state');
+    const target = <HTMLDivElement>document.querySelector('.learnt-words');
+    target.classList.add('active-state');
+
     const usersDifficulty = document.querySelectorAll('.users-difficulty');
     (<HTMLParagraphElement>usersDifficulty[0]).classList.add('hide');
     (<HTMLParagraphElement>usersDifficulty[1]).classList.remove('hide');
@@ -218,6 +268,12 @@ class TextbookComponent extends Component {
     this.drawDictionaryWords(this.learntWords, this.userWords);
     const pagesCount = utils.culcPagesCount(this.learntWords.length);
     this.drawDictionaryPagination(1, pagesCount);
+
+    const gameLinks = document.querySelectorAll('.link-container');
+    gameLinks.forEach((link: HTMLDivElement) => {
+      link.classList.add('disabled');
+    });
+    this.savePageInLocalStorage();
   }
 
   async getDictionaryWords() {
@@ -235,18 +291,19 @@ class TextbookComponent extends Component {
   }
 
   async showTextbook() {
-    utils.switchMode(TEXTBOOK);
-    this.currentMode = TEXTBOOK;
+    utils.switchMode(Mode.TEXTBOOK);
+    this.currentMode = Mode.TEXTBOOK;
     await this.initLevelWords();
     document.querySelector('.dictionary-word__description').innerHTML = '';
     const activeWord = JSON.parse(localStorage.getItem('activeWord'));
     this.drawActiveWord(+activeWord);
+    this.savePageInLocalStorage();
   }
 
   async showDictionary() {
     await this.getDictionaryWords();
-    utils.switchMode(DICTIONARY);
-    this.currentMode = DICTIONARY;
+    utils.switchMode(Mode.DICTIONARY);
+    this.currentMode = Mode.DICTIONARY;
     this.getFilteredWords();
     utils.changeUserWordsCount(this.difficultWords.length, this.learntWords.length);
     document.querySelector('.active-state').classList.remove('active-state');
@@ -255,13 +312,17 @@ class TextbookComponent extends Component {
     gameLinks.forEach((link: HTMLDivElement) => {
       if (link.classList.contains('disabled')) link.classList.remove('disabled');
     });
-    await this.showDifficultWords();
+    if (JSON.parse(localStorage.getItem('currentPage')).state === WordStatus.learnt)
+      await this.showLearntWords();
+    else
+      await this.showDifficultWords();
+    this.savePageInLocalStorage();
   }
 
   changeLevelView(): void {
     document.querySelector('.active-level').classList.remove('active-level');
     document.querySelector(`#level-${this.currentLevel}`).classList.add('active-level');
-    utils.savePageInLocalStorage(this.currentLevel, this.currentPage);
+    this.savePageInLocalStorage();
   }
 
   async changePage(event: MouseEvent) {
@@ -271,7 +332,7 @@ class TextbookComponent extends Component {
       await this.initLevelWords();
       utils.channgePaginationView(this.currentPage);
       utils.checkPageProgress();
-      utils.savePageInLocalStorage(this.currentLevel, this.currentPage);
+      this.savePageInLocalStorage();
     }
   }
 
@@ -280,7 +341,7 @@ class TextbookComponent extends Component {
     await this.initLevelWords();
     utils.channgePaginationView(this.currentPage);
     utils.checkPageProgress();
-    utils.savePageInLocalStorage(this.currentLevel, this.currentPage);
+    this.savePageInLocalStorage();
   }
 
   async goToNextPage() {
@@ -288,14 +349,14 @@ class TextbookComponent extends Component {
     await this.initLevelWords();
     utils.checkPageProgress();
     utils.channgePaginationView(this.currentPage);
-    utils.savePageInLocalStorage(this.currentLevel, this.currentPage);
+    this.savePageInLocalStorage();
   }
 
   addAudio(idx: number): void {
     const playAudio = (src: string) => {
       const audio = new Audio(`${BASE_URL + src}`);
       audio.play();
-      const currentWord = (this.currentMode === TEXTBOOK) ? this.pageWords[idx] : this.userWords[idx];
+      const currentWord = (this.currentMode === Mode.TEXTBOOK) ? this.pageWords[idx] : this.userWords[idx];
       audio.onended = () => {
         switch (src) {
           case currentWord.audio:
@@ -311,7 +372,7 @@ class TextbookComponent extends Component {
     }
 
     const playAudios = (): void => {
-      const currentAudio = (this.currentMode === TEXTBOOK) ? this.pageWords[idx].audio : this.userWords[idx].audio;
+      const currentAudio = (this.currentMode === Mode.TEXTBOOK) ? this.pageWords[idx].audio : this.userWords[idx].audio;
       playAudio(currentAudio);
     }
 
@@ -319,10 +380,16 @@ class TextbookComponent extends Component {
     audioBtn.addEventListener('click', playAudios);
   }
 
+  async showWordStatistic(wordId: string) {
+    const userInfo: IAuth = JSON.parse(localStorage.getItem('userInfo'));
+    const userWordInfo = await this.controller.getUserWordById(userInfo.userId, userInfo.token, wordId);
+    if (userWordInfo) utils.drawGameData(userWordInfo);
+  }
+
   drawActiveWord(idx: number): void {
     const wordTepmlate = document.querySelector('app-word');
     wordTepmlate.innerHTML = '';
-    const modeWordData: IWord = (this.currentMode === TEXTBOOK) ? this.pageWords[idx] : this.userWords[idx]
+    const modeWordData: IWord = (this.currentMode === Mode.TEXTBOOK) ? this.pageWords[idx] : this.userWords[idx]
     const appWord = new AppWord({
       selector: 'app-word',
       template: Word,
@@ -336,10 +403,14 @@ class TextbookComponent extends Component {
     const wordImage = <HTMLDivElement>document.querySelector('.word-image');
     wordImage.style.backgroundImage = `url('${BASE_URL + modeWordData.image}')`;
 
-    if (this.currentMode === DICTIONARY) {
+    if (this.currentMode === Mode.DICTIONARY) {
       (<HTMLDivElement>document.querySelector('.word-actions')).style.display = 'none';
     } else {
       window.localStorage.setItem('activeWord', JSON.stringify(idx));
+    }
+
+    if (appHeader.token) {
+      this.showWordStatistic(modeWordData.id);
     }
 
     const activeWord = <HTMLDivElement>document.querySelector('.active-card');
@@ -435,7 +506,7 @@ class TextbookComponent extends Component {
         this.currentLevel = parentDiv.id.slice(parentDiv.id.length - 1);
         this.changeLevelView();
         utils.changeColorTheme(this.currentLevel);
-        if (this.currentMode === TEXTBOOK) {
+        if (this.currentMode === Mode.TEXTBOOK) {
           await this.initLevelWords();
           utils.checkPageProgress();
         } else {
@@ -453,15 +524,23 @@ class TextbookComponent extends Component {
   }
 
   async afterInit() {
+    await this.initLevelWords();
     if (localStorage.getItem('currentPage')) {
-      const storageData = JSON.parse(localStorage.getItem('currentPage'));
-      this.currentPage = storageData.page;
+      const storageData: IPageState = JSON.parse(localStorage.getItem('currentPage'));
+      this.currentMode = storageData.mode;
+      this.currentState = storageData.state;
       this.currentLevel = storageData.level;
+      this.currentPage = storageData.textbookPage;
+      this.currentDictPage = storageData.dictionaryPage;
+      if (this.currentMode === Mode.TEXTBOOK) {
+        await this.initLevelWords();
+        utils.channgePaginationView(this.currentPage);
+      } else if (localStorage.getItem('userInfo')) {
+        await this.showDictionary();
+      }
       this.changeLevelView();
       utils.changeColorTheme(this.currentLevel);
-      utils.channgePaginationView(this.currentPage);
     }
-    await this.initLevelWords();
     this.addWordsListeners();
     this.addLevelListeners();
     utils.checkPageProgress();

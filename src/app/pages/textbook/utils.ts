@@ -1,3 +1,5 @@
+import { IUserWordInfo } from "../../../spa/tools/controllerTypes";
+
 export const checkPageProgress = (): void => {
   const statuses = document.querySelectorAll('.status-info');
   let activeCount = 0;
@@ -33,13 +35,6 @@ export const changeColorTheme = (currentLevel: string): void => {
   userWords.className = `dictionary-container colorTheme-${currentLevel}`;
   const userContent = document.querySelector('.dictionary-words');
   userContent.className = `dictionary-words dictionary-view colorTheme-${currentLevel}`;
-}
-
-export const savePageInLocalStorage = (currentLevel: string, currentPage: number): void => {
-  localStorage.setItem('currentPage', JSON.stringify({
-    level: currentLevel,
-    page: currentPage
-  }));
 }
 
 export const channgePaginationView = (currentPage: number): void => {
@@ -166,4 +161,13 @@ export const culcPagesCount = (arrLength: number): number => {
   return (arrLength % WORDS_ON_PAGE !== 0) ? 
     Math.floor(arrLength / WORDS_ON_PAGE) + 1 :
     arrLength / WORDS_ON_PAGE;
+}
+
+export const drawGameData = (userData: IUserWordInfo) => {
+  const audiocall = <HTMLDivElement>document.querySelector('.audiocall-statistic');
+  const sprint = <HTMLDivElement>document.querySelector('.sprint-statistic');
+  audiocall.firstElementChild.firstElementChild.textContent = `${userData.optional.gameProgress.audiocall.right}`;
+  audiocall.lastElementChild.firstElementChild.textContent = `${userData.optional.gameProgress.audiocall.wrong}`;
+  sprint.firstElementChild.firstElementChild.textContent = `${userData.optional.gameProgress.sprint.right}`;
+  sprint.lastElementChild.firstElementChild.textContent = `${userData.optional.gameProgress.sprint.wrong}`;
 }

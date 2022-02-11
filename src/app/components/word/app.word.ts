@@ -1,7 +1,8 @@
 import './app.word.scss';
-import { Component, Controller, utils } from '../../../spa';
+import { Component, Controller } from '../../../spa';
 import { ComponentEvent, IComponentConfig } from '../../../spa/core/coreTypes';
 import { IAuth, IUserWord, WordStatus } from '../../../spa/tools/controllerTypes';
+import * as utils from '../../pages/textbook/utils';
 
 export class AppWord extends Component {
   private controller = new Controller();

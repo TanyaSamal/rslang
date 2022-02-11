@@ -1,13 +1,15 @@
 export enum WordStatus {
   learnt = 'learnt',
   difficult = 'difficult',
-  inProgress = 'inProgress' // для изучаемых через игры, придумать логику, когда они переходят в статус выученных
+  inProgress = 'inProgress'
 }
 
 export enum UrlPath {
   USERS = 'users',
   WORDS = 'words',
-  SIGNIN = 'signin'
+  SIGNIN = 'signin',
+  TOKENS = 'tokens',
+  AGREGATED = 'aggregatedWords'
 }
 
 export enum HttpMethod {

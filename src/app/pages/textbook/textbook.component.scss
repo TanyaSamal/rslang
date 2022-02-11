@@ -135,6 +135,7 @@
       }
 
       @media (max-width: 1440px) {
+        height: 50px;
         width: 135px;
       }
 
@@ -148,17 +149,17 @@
       }
 
       .level-name {
-        font-size: 1.2rem;
+        font-size: 1.2em;
         width: 115px;
 
         @media (max-width: 1440px) {
-          font-size: 1.1rem;
+          font-size: 1.1em;
           width: 108px;
         }
       }
 
       .level-abbr {
-        font-size: 1.4rem;
+        font-size: 1.4em;
         z-index: 2;
       }
 
@@ -220,12 +221,17 @@
       width: 160px;
     }
 
-    @media (max-width: 1040px) {
-      width: 130px;
+    @media (max-width: 1440px) {
+      width: 125px;
+      height: 80px;
     }
 
-    @media (max-width: 360px) {
-      width: 110px;
+    @media (max-width: 1040px) {
+      width: 145px;
+    }
+
+    @media (max-width: 560px) {
+      width: 100%;
     }
 
     &:hover {
@@ -233,11 +239,11 @@
     }
 
     .word-en {
-      font-size: 1.3rem;
+      font-size: 1.3em;
     }
 
     .word-ru {
-      font-size: 1rem;
+      font-size: 1em;
     }
 
     svg {
@@ -254,7 +260,7 @@
       display: none;
 
       .status-info {
-        font-size: 1.2rem;
+        font-size: 1.2em;
         position: relative;
       }
 
@@ -406,6 +412,10 @@
         max-height: 590px;
         overflow: hidden;
 
+        @media (max-width: 1440px) {
+          max-height: 480px;
+        }
+
         .dictionary-words__container {
           display: flex;
           flex-wrap: wrap;
@@ -415,6 +425,7 @@
 
           @media (max-width: 1440px) {
             gap: 1rem;
+            width: 680px;
           }
 
           @media (max-width: 560px) {
@@ -528,6 +539,11 @@
         transition: .5s;
         overflow: hidden;
 
+        @media (max-width: 1440px) {
+          height: 50px;
+          width: 180px;
+        }
+
         @media (max-width: 560px) {
           width: 150px;
         }
@@ -542,10 +558,10 @@
         }
 
         .word__name {
-          font-size: 1.2rem;
+          font-size: 1.2em;
 
           @media (max-width: 560px) {
-            font-size: 1.1rem;
+            font-size: 1.1em;
             width: 100px;
           }
 
@@ -555,7 +571,7 @@
         }
 
         .word__abbr {
-          font-size: 1.4rem;
+          font-size: 1.4em;
           z-index: 2;
         }
 
@@ -568,7 +584,7 @@
           top: -1rem;
           left: -3rem;
 
-          @media (max-width: 560px) {
+          @media (max-width: 1440px) {
             width: 90px;
           }
 
