@@ -105,10 +105,8 @@ function makeWordCard(words: IWord[], index: number, translates: string[]): void
     localStorage.setItem(CONSTS.TRUE_TRANSLATE, trueTranslate);
     localStorage.setItem(CONSTS.AUDIO_WORD, audioWord);
 
-    const resultGameStatistic: IGameSprintStatistic = JSON.parse(localStorage[CONSTS.GAME_SPRINT_STATISTIC]);
-
-
     const translatesCopy: string[] = translates.slice();
+    translatesCopy.push(trueTranslate);
     translatesCopy.push(trueTranslate);
     translatesCopy.unshift(trueTranslate);
 
@@ -368,7 +366,9 @@ function getResultGame(): void {
     setTimeout(() => {
         hideContainer(gameContainer);
         resultContainer.classList.remove('hide');
-        appResultGame.makeResultGame();
+
+        // const resultGameStatistic: IGameSprintStatistic = JSON.parse(localStorage[CONSTS.GAME_SPRINT_STATISTIC]);
+        appResultGame.makeResult();
     }, 600);
 }
 

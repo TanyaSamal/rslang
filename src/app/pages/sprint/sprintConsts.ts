@@ -23,6 +23,7 @@ const BONUS_STAR: string = 'bonus_star';
 const BONUS_MEDAL: string = 'bonus_medal';
 const BONUS_POINTS: string = 'bonus_points';
 const SCORE: string = 'score';
+const BEST_SCORE: string = 'best_score';
 const SPRINT_STATE: string = 'sprintState';
 const AUDIO_MUTE: string = 'audio_mute';
 const GAME_SPRINT_STATISTIC: string = 'game_sprint_statistic';
@@ -39,11 +40,23 @@ enum COLOR_SHADOW {
     green = 'green',
 }
 
+enum COLOR_DIAGRAMM {
+    old = '#0f66dd',
+    new = '#599106',
+}
+
 enum BONUS_STAR_MEDAL {
     minStar = 0,
     maxStar = 3,
     minMedal = 0,
     maxMedal = 4,
+}
+
+enum CITATION {
+    first = 'Это хорошее начало',
+    one = 'Стабильность – признак мастерства!',
+    two = 'Я знаю, что ты можешь лучше!',
+    three = 'Молодец, так держать!',
 }
 
 export default {
@@ -73,10 +86,13 @@ export default {
     START_BONUS_POINTS,
     BONUS_POINTS,
     SCORE,
+    BEST_SCORE,
     SPRINT_STATE,
     AUDIO_WORD,
     AUDIO_MUTE,
     GAME_SPRINT_STATISTIC,
     WORD_ENG,
     TIMER_ID_SPRINT,
+    COLOR_DIAGRAMM,
+    CITATION,
 };
