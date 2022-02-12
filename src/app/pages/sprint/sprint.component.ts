@@ -17,10 +17,11 @@ class SprintComponent extends Component {
       const buttonTrue = event.target.closest('.button-true') as HTMLElement;
       const buttonFalse = event.target.closest('.button-false') as HTMLElement;
       const audioWord = event.target.closest('.word-sound') as HTMLElement;
+      const gameAgain = event.target.closest('.game-again') as HTMLElement;
 
       if (buttonStartSprint) {
         const group: string = UTILS.getGroup();
-        const page: string = String(UTILS.randomNumber(CONSTS.MIN_PAGE, CONSTS.MAX_PAGE));
+        const page = String(UTILS.randomNumber(CONSTS.MIN_PAGE, CONSTS.MAX_PAGE));
 
         UTILS.showStopwatch(group, page);
       }
@@ -48,7 +49,7 @@ class SprintComponent extends Component {
         UTILS.checkAnswer();
 
         const words: IWord[] = JSON.parse(localStorage[CONSTS.WORDS]);
-        const currentCard: number = Number(localStorage[CONSTS.CURRENT_CARD]);
+        const currentCard = Number(localStorage[CONSTS.CURRENT_CARD]);
         const newCard: number = currentCard + 1;
         
         if (newCard < words.length) {
@@ -64,7 +65,7 @@ class SprintComponent extends Component {
         UTILS.checkAnswer();
 
         const words: IWord[] = JSON.parse(localStorage[CONSTS.WORDS]);
-        const currentCard: number = Number(localStorage[CONSTS.CURRENT_CARD]);
+        const currentCard = Number(localStorage[CONSTS.CURRENT_CARD]);
         const newCard: number = currentCard + 1;
         
         if (newCard < words.length) {
@@ -73,6 +74,10 @@ class SprintComponent extends Component {
         } else {
           UTILS.makeNextPage();
         }
+      }
+
+      if (gameAgain) {
+        // appSelectDifficulty.render('app-select-difficulty');
       }
     }
   }
@@ -83,7 +88,7 @@ class SprintComponent extends Component {
       UTILS.checkAnswer();
 
       const words: IWord[] = JSON.parse(localStorage[CONSTS.WORDS]);
-      const currentCard: number = Number(localStorage[CONSTS.CURRENT_CARD]);
+      const currentCard = Number(localStorage[CONSTS.CURRENT_CARD]);
       const newCard: number = currentCard + 1;
       
       if (newCard < words.length) {
@@ -99,7 +104,7 @@ class SprintComponent extends Component {
       UTILS.checkAnswer();
 
       const words: IWord[] = JSON.parse(localStorage[CONSTS.WORDS]);
-      const currentCard: number = Number(localStorage[CONSTS.CURRENT_CARD]);
+      const currentCard = Number(localStorage[CONSTS.CURRENT_CARD]);
       const newCard: number = currentCard + 1;
       
       if (newCard < words.length) {

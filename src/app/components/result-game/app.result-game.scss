@@ -8,18 +8,6 @@
     }
 }
 
-// .common-container {
-//     max-width: 500px;
-//     width: 90vw;
-//     height: fit-content;
-//     border-radius: 10px;
-//     text-align: center;
-//     background-color: rgba(31, 113, 127, 0.3);
-//     backdrop-filter: blur(4px);
-//     animation: animate-height .5s linear;
-//     animation-fill-mode: both;
-// }
-
 .result-game-container {
     display: flex;
     flex-direction: column;
@@ -47,7 +35,7 @@
             border: none;
             background-color: rgba(31, 113, 127, 0.3);
             backdrop-filter: blur(4px);
-            box-shadow: 0px 0px 14px 2px #ffffff;
+            box-shadow: 0px 0px 14px 2px #095371;
             font-size: 24px;
             padding: 20px;
             width: 255px;
@@ -62,15 +50,10 @@
             border-top-right-radius: 10px;
         }
 
-        // .btn-result:active,
-        // .btn-words:active {
-        //     transform: scale(0.99);
-        // }
-
         .btn-active {
-            background-color: hsl(187, 18%, 74%);
+            background-color: rgba(31, 113, 127, 0.3);
             backdrop-filter: blur(4px);
-            box-shadow: none;
+            box-shadow: inset 3px 4px 12px 0px #b2cacb;
         }
     }
     
@@ -109,27 +92,27 @@
             width: 300px;
             height: 300px;
             border-radius: 50%;
-            background-color: #ffd692;
+            background-color: #ffcb74;
         }
         
         .count-words {
             position: absolute;
             z-index: 10;
             bottom: 220px;
-            color: #0f66dd;
+            color: #802026;
         }
 
         .percent-result {
             position: absolute;
             z-index: 10;
             font-size: 60px;
-            color: #9a47e6;
+            color: #802026;
         }
         
         .inside-new {
             position: absolute;
             top: 220px;
-            color: #599106;
+            color: #802026;
         }
         
         .circle-1 {

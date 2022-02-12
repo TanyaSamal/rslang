@@ -1,7 +1,7 @@
 import { IComponent, IModule, IRoute, IModuleConfig } from './coreTypes';
 import { router } from '../tools/router';
 import { GAME, GAME_AUDIOCALL_OPTIONS, GAME_SPRINT_OPTIONS, SPRINT_STATE } from './coreConsts';
-import CONSTS from '../../app/pages/sprint//sprintConsts';
+import CONSTS from '../../app/pages/sprint/sprintConsts';
 
 export default class Module implements IModule {
   routes: IRoute[];

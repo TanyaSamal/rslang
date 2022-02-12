@@ -3,7 +3,6 @@ import ResultGame from './app.result-game.html';
 import { Component } from '../../../spa';
 import CONSTS from '../../pages/sprint/sprintConsts';
 import { checkScore, makeDiagram, makeWordsList } from './app.result-game-utils';
-import { sprintComponent } from '../../pages/sprint/sprint.component';
 
 class AppResultGame extends Component {
   getEventsClick(event: Event): void {
@@ -15,7 +14,7 @@ class AppResultGame extends Component {
       const gameClose = event.target.closest('.game-close') as HTMLElement;
       
       if (itemAudio) {
-        const audioURL: string = `${CONSTS.BASE_URL}${itemAudio.dataset.sound}`;
+        const audioURL = `${CONSTS.BASE_URL}${itemAudio.dataset.sound}`;
         const playAudio = document.createElement('audio') as HTMLAudioElement;
         playAudio.setAttribute('src', audioURL);
         playAudio.play();
