@@ -125,6 +125,7 @@ class AppAuthForm extends Component {
     if (res.status !== 404 && res.status !== 403) {
       const content: IAuth = await res.json();
       window.localStorage.setItem("userInfo", JSON.stringify(content));
+      window.localStorage.setItem("userId", content.userId);
       const { token } = await content;
       this.observable.notify(token);
       if (content) router.navigate('textbook');

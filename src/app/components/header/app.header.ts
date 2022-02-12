@@ -31,7 +31,8 @@ class AppHeader extends Component {
       (<HTMLDivElement>document.querySelector('.user-name')).textContent = userName;
       if (localStorage.getItem('audiocallPoints')) {
         const localResults: IGamePoints = JSON.parse(localStorage.getItem('audiocallPoints'));
-        if (localResults.date === new Date().toLocaleDateString()) {
+        if (localResults.date === new Date().toLocaleDateString() &&
+          localResults.userId === JSON.parse(localStorage.getItem('userInfo')).userId) {
           document.querySelector('.game-points').textContent = localResults.points;
         }
       }
@@ -65,9 +66,9 @@ class AppHeader extends Component {
   logout(): void {
     this.isLoggedIn = false;
     this.token = '';
+    localStorage.removeItem('userInfo');
+    localStorage.removeItem('currentPage');
     router.navigate('#');
-    window.localStorage.removeItem("userInfo");
-    window.localStorage.removeItem("currentPage"); // clear?
     this.changeLoginStatus();
     this.showHomePageLoginForm();
   }

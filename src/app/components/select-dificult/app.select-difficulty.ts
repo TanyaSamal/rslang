@@ -65,6 +65,12 @@ class AppSelectDifficulty extends Component {
         if (localStorage[CONSTS.SPRINT_STATE]) {
           UTILS.hideContainer(welcomeContainer);
         } else {
+          // const group: string = UTILS.getGroup();
+          // const page = String(UTILS.randomNumber(CONSTS.MIN_PAGE, CONSTS.MAX_PAGE));
+
+          // localStorage.setItem(CONSTS.GROUP, group);
+          // localStorage.setItem(CONSTS.PAGE, page);
+
           localStorage.setItem(CONSTS.BONUS_STAR, String(CONSTS.BONUS_STAR_MEDAL.minStar));
           localStorage.setItem(CONSTS.BONUS_MEDAL, String(CONSTS.BONUS_STAR_MEDAL.minMedal));
 

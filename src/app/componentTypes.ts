@@ -24,6 +24,7 @@ export interface IGameStatistic {
 }
 
 export interface IGamePoints {
+  userId: string,
   points: string,
   date: string
 }

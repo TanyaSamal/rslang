@@ -1,4 +1,5 @@
 import { IGameSprintStatistic, WordAnswer } from '../../pages/sprint/sprintTypes';
+import { router } from '../../../spa';
 import CONSTS from '../../pages/sprint/sprintConsts';
 
 function rightDeclensionWord(value: number): number {
@@ -18,7 +19,9 @@ function rightDeclensionWord(value: number): number {
 }
 
 export function makeDiagram(): void {
-  const resultGameStatistic: IGameSprintStatistic = JSON.parse(localStorage[CONSTS.GAME_SPRINT_STATISTIC]);
+  const game = router.getUrl();
+  const gameStatistic = (game === 'sprint') ? CONSTS.GAME_SPRINT_STATISTIC : CONSTS.GAME_AUDIOCALL_STATISTIC;
+  const resultGameStatistic: IGameSprintStatistic = JSON.parse(localStorage[gameStatistic]);
   const resultWordsContainer = document.querySelector('.result-words') as HTMLElement;
   const resultDiagramContainer = document.querySelector('.result-diagram-main') as HTMLElement;
 
@@ -142,7 +145,9 @@ function fillContainer(container: HTMLElement, words: WordAnswer[]): void {
 }
 
 function makeResultGame():void {
-  const resultGameStatistic: IGameSprintStatistic = JSON.parse(localStorage[CONSTS.GAME_SPRINT_STATISTIC]);
+  const game = router.getUrl();
+  const gameStatistic = (game === 'sprint') ? CONSTS.GAME_SPRINT_STATISTIC : CONSTS.GAME_AUDIOCALL_STATISTIC;
+  const resultGameStatistic: IGameSprintStatistic = JSON.parse(localStorage[gameStatistic]);
   const trueAnswerContainer = document.querySelector('.true-answer-container') as HTMLElement;
   const falseAnswerContainer = document.querySelector('.false-answer-container') as HTMLElement;
   const trueAnswer = document.querySelector('.true-answer') as HTMLElement;

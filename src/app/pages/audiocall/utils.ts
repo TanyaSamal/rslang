@@ -1,3 +1,4 @@
+import { IAuth } from "../../../spa/tools/controllerTypes";
 import { IGamePoints } from "../../componentTypes";
 
 export const getRandomNumber = (max: number): number => Math.floor(Math.random() * max);
@@ -79,6 +80,7 @@ export const addStars = (points: number) => {
 
 export const savePoints = () => {
   let points = Number((<HTMLDivElement>document.querySelector('.stars-count')).textContent);
+  const userInfo: IAuth = JSON.parse(localStorage.getItem('userInfo'));
   const today = new Date().toLocaleDateString();
   if (localStorage.getItem('audiocallPoints')) {
     const localResults: IGamePoints = JSON.parse(localStorage.getItem('audiocallPoints'));
@@ -89,6 +91,7 @@ export const savePoints = () => {
     }
   }
   localStorage.setItem('audiocallPoints', JSON.stringify({
+    userId: userInfo.userId,
     points: points.toString(),
     date: today
   }));

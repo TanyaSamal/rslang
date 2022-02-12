@@ -1,3 +1,4 @@
+import { router } from "./router";
 import { IUser, IWord, IUserWord, IUserWordInfo, UrlPath, HttpMethod, IAuth, IStatistics } from "./controllerTypes";
 
 export default class Controller {
@@ -60,6 +61,11 @@ export default class Controller {
         'Content-Type': 'application/json'
       },
     });
+    if (rawResponse.status === 401) {
+      localStorage.removeItem('userInfo');
+      router.navigate('auth');
+      return null;
+    }
     const content: Promise<IAuth> = await rawResponse.json();
     window.localStorage.setItem('userInfo', JSON.stringify(content));
     return (await content).token;
@@ -118,7 +124,7 @@ export default class Controller {
     }
   }
 
-  async createUserWord(userId: string, wordId: string, word: IUserWord, token: string): Promise<void> {
+  async createUserWord(userId: string, wordId: string, word: IUserWord, token: string) {
     const rawResponse = await fetch(`${this.baseUrl + UrlPath.USERS}/${userId}/${UrlPath.WORDS}/${wordId}`, {
       method: HttpMethod.POST,
       headers: {
@@ -129,7 +135,10 @@ export default class Controller {
       body: JSON.stringify(word)
     });
     if (rawResponse.status === 401) {
-      this.updateUserWord(userId, token, wordId, word);
+      this.createUserWord(userId, wordId, word, token);
+    }
+    if (rawResponse.status === 417) {
+      await this.updateUserWord(userId, token, wordId, word);
     }
   }
 

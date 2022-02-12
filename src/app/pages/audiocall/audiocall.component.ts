@@ -9,6 +9,8 @@ import { AppAudioQuestion } from '../../components/audio-question/app.audio-ques
 import { ComponentEvent, ICallQuestion } from '../../../spa/core/coreTypes';
 import { IGameState, IGameStatistic, Mode } from '../../componentTypes';
 import { appSelectDifficulty } from '../../components/select-dificult/app.select-difficulty';
+import { WordAnswer } from './audiocallTypes';
+import { appResultGame } from '../../components/result-game/app.result-game';
 
 const BASE_URL = 'https://rslang-2022.herokuapp.com/';
 const ANSWERS_COUNT = 5;
@@ -56,6 +58,55 @@ class AudiocallComponent extends Component {
     }
   }
 
+  addResultListenets() {
+    const playAgain = (event: MouseEvent) => {
+      event.preventDefault();
+      const resultContainer = <HTMLDivElement>document.querySelector('.result-game-container');
+      resultContainer.classList.add('hide');
+      (<HTMLDivElement>document.querySelector('.welcome-container')).style.display = 'block';
+      (<HTMLDivElement>document.querySelector('.game-audiocall')).style.display = 'none';
+      document.querySelector('.stars-count').textContent = '0';
+      this.answers = Array(this.gameWords.length).fill(0);
+    }
+
+    const gameAgain = <HTMLAnchorElement>document.querySelector('.game-again');
+    gameAgain.addEventListener('click', playAgain);
+  }
+
+  showResultWindow() {
+    const gameContainer = <HTMLDivElement>document.querySelector('.game-audiocall');
+    const resultContainer = <HTMLDivElement>document.querySelector('.result-game-container');
+    gameContainer.style.display = 'none';
+    resultContainer.classList.remove('hide');
+    appResultGame.makeResult();
+    this.addResultListenets();
+  }
+
+  saveResultsForResultWindow() {
+    const score = Number((<HTMLDivElement>document.querySelector('.stars-count')).textContent);
+    const rightWords: WordAnswer[] = [];
+    const falseWords: WordAnswer[] = [];
+    this.answers.forEach((answer, idx) => {
+      if (answer === 1) rightWords.push({
+        eng: this.gameWords[idx].word,
+        rus: this.gameWords[idx].wordTranslate,
+        audioURL: this.gameWords[idx].audio,
+      });
+      if (answer === -1) falseWords.push({
+        eng: this.gameWords[idx].word,
+        rus: this.gameWords[idx].wordTranslate,
+        audioURL: this.gameWords[idx].audio,
+      });
+    });
+    localStorage.setItem('game_audiocall_statistic', JSON.stringify({
+      score,
+      rightWords,
+      falseWords,
+      rightAnswers: rightWords.length,
+      falseAnswers: falseWords.length
+    }));
+  }
+
   saveGameResults() {
     let longest = utils.findLongestSeries(this.answers);
     let rightAnswers = this.answers.filter((answer) => answer === 1).length;
@@ -77,6 +128,7 @@ class AudiocallComponent extends Component {
       totalAnswers,
       newWords
     }));
+    this.saveResultsForResultWindow();
   }
 
   async sendAnswer(wordId: string, correctness: string) {
@@ -132,6 +184,8 @@ class AudiocallComponent extends Component {
       this.currentQuestion += 1;
       if (this.currentQuestion === this.gameWords.length) {
         this.saveGameResults();
+        this.showResultWindow();
+        utils.savePoints();
       } else {
         this.drawQuestion(this.currentQuestion);
       }
@@ -254,8 +308,10 @@ class AudiocallComponent extends Component {
       }
       localStorage.removeItem('audiocallState');
     } else {
-      const page = JSON.parse(localStorage.getItem('page'));
+      let page = JSON.parse(localStorage.getItem('page'));
       this.level = JSON.parse(localStorage.getItem('group'));
+      if (!page) page = '0';
+      if (!this.level) this.level = '0';
       gameWords = await this.controller.getWords(this.level, page);
     }
     this.gameWords = utils.shuffleArray(gameWords);
@@ -346,7 +402,8 @@ export const audiocallComponent = new AudiocallComponent({
   selector: 'app-audiocall',
   components: [
     appHeader,
-    appSelectDifficulty
+    appSelectDifficulty,
+    appResultGame
   ],
   template: Audiocall,
 });
