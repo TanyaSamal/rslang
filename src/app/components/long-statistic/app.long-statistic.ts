@@ -35,22 +35,35 @@ class AppLongStatistic extends Component {
   async getChartData() {
     const userInfo: IAuth = JSON.parse(localStorage.getItem('userInfo'));
     const statisticInfo: IStatistics =  await this.controller.getStatistics(userInfo.userId, userInfo.token);
-    const statistic: IStatOptions[] = JSON.parse(statisticInfo.optional.stat);
     this.labels.length = 0;
     this.chartLineData.length = 0;
     this.chartBarData.length = 0;
-    statistic.forEach((el) => {
-      this.labels.push(el.date);
-      this.chartLineData.push(el.newWords);
-      this.chartBarData.push(el.totalWords);
-    });
+    if (statisticInfo) {
+      const statistic: IStatOptions[] = JSON.parse(statisticInfo.optional.stat);
+      statistic.forEach((el) => {
+        this.labels.push(el.date);
+        this.chartLineData.push(el.newWords);
+        this.chartBarData.push(el.totalWords);
+      });
+    } else {
+      this.labels.push(new Date().toLocaleDateString());
+      this.chartLineData[0] = 0;
+      this.chartBarData[0] = 0;
+    }
   }
 
   showChart(type: string) {
     Chart.register(...registerables);
     
     const ctx = <HTMLCanvasElement>document.getElementById('statisticChart');
-
+    const opt = {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: false
+        }
+      }
+    };
     if (type === LINE) {
       this.chart = new Chart(ctx, {
           type: LINE,
@@ -63,13 +76,7 @@ class AppLongStatistic extends Component {
               tension: 0.1,
             }]
           },
-          options: {
-            plugins: {
-              legend: {
-                display: false
-              }
-            }
-          }
+          options: opt
       });
     } else {
       this.chart = new Chart(ctx, {
@@ -83,13 +90,7 @@ class AppLongStatistic extends Component {
             borderWidth: 1,
           }]
         },
-        options: {
-          plugins: {
-            legend: {
-              display: false
-            }
-          }
-        }
+        options: opt
     });
     }
   }

@@ -29,6 +29,8 @@ class AppHeader extends Component {
     const userName = localStorage.getItem('userName');
     if (userName) {
       (<HTMLDivElement>document.querySelector('.user-name')).textContent = userName;
+    }
+    if (localStorage.getItem('userInfo')) {
       if (localStorage.getItem('audiocallPoints')) {
         const localResults: IGamePoints = JSON.parse(localStorage.getItem('audiocallPoints'));
         if (localResults.date === new Date().toLocaleDateString() &&
