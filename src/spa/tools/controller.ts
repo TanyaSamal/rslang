@@ -1,4 +1,4 @@
-import { IUser, IWord, IUserWord, IUserWordInfo, UrlPath, HttpMethod, IAuth } from "./controllerTypes";
+import { IUser, IWord, IUserWord, IUserWordInfo, UrlPath, HttpMethod, IAuth, IStatistics } from "./controllerTypes";
 
 export default class Controller {
   private baseUrl = 'https://rslang-2022.herokuapp.com/';
@@ -148,6 +148,42 @@ export default class Controller {
       return null;
     }
     return rawResponse.json();
+  }
+
+  async getStatistics(userId: string, token: string): Promise<IStatistics> {
+    const rawResponse = await fetch(`${this.baseUrl + UrlPath.USERS}/${userId}/${UrlPath.STATISTICS}`, {
+      method: HttpMethod.GET,
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    });
+    if (rawResponse.status === 401) {
+      const newToken = await this.getNewToken(userId);
+      await this.getStatistics(userId, newToken);
+      return null;
+    }
+    if (rawResponse.status === 404) {
+      return null;
+    }
+    return rawResponse.json();
+  }
+
+  async setStatistics(userId: string, token: string, statistic: IStatistics): Promise<void> {
+    const rawResponse = await fetch(`${this.baseUrl + UrlPath.USERS}/${userId}/${UrlPath.STATISTICS}`, {
+      method: HttpMethod.PUT,
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(statistic)
+    });
+    if (rawResponse.status === 401) {
+      const newToken = await this.getNewToken(userId);
+      await this.setStatistics(userId, newToken, statistic);
+    }
   }
 
 }
