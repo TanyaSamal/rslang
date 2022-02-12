@@ -114,8 +114,10 @@ class AppAuthForm extends Component {
 
   async setUserName(userId: string, token: string) {
     const userName = await this.controller.getUserName(userId, token);
-    if (userName)
+    if (userName) {
       (<HTMLDivElement>document.querySelector('.user-name')).textContent = userName;
+      localStorage.setItem('userName', userName);
+    }
   }
 
   async loginUser(userEmail: string, userPwd: string): Promise<void> {

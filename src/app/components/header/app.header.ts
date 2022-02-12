@@ -25,6 +25,12 @@ class AppHeader extends Component {
     const logoutBtn = <HTMLAnchorElement>document.querySelector('.user-info');
     loginBtn.style.display = (this.isLoggedIn) ? 'none' : 'block';
     logoutBtn.style.display = (this.isLoggedIn) ? 'flex' : 'none';
+    const userName = localStorage.getItem('userName');
+    if (userName) {
+      (<HTMLDivElement>document.querySelector('.user-name')).textContent = userName;
+      if (localStorage.getItem('audiocallPoints'))
+        document.querySelector('.game-points').textContent = JSON.parse(localStorage.getItem('audiocallPoints'));
+    }
   }
 
   afterInit() {

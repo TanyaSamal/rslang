@@ -55,3 +55,31 @@ export const showAnswerInfo = () => {
     }, 100);
   }, 500);
 }
+
+export const addStars = (points: number) => {
+  const stars = <HTMLDivElement>document.querySelector('.add-stars');
+  const starsCount = <HTMLDivElement>document.querySelector('.stars-count');
+  stars.textContent = `+${points}`;
+  stars.style.visibility = 'visible';
+  setTimeout(() => {
+    stars.style.transform = 'translateY(0)';
+    stars.style.fontSize = '1em';
+    stars.style.opacity = '0';
+    setTimeout(() => {
+      stars.style.transform = 'translateY(50px)';
+      stars.style.fontSize = '1.5em';
+      stars.style.opacity = '1';
+      stars.style.visibility = 'hidden';
+      starsCount.textContent = `${Number(starsCount.textContent) + points}`;
+    }, 1000);
+  }, 0);
+}
+
+export const savePoints = () => {
+  let points = Number((<HTMLDivElement>document.querySelector('.stars-count')).textContent);
+  if (localStorage.getItem('audiocallPoints')) {
+    points += +JSON.parse(localStorage.getItem('audiocallPoints'));
+  }
+  localStorage.setItem('audiocallPoints', points.toString());
+  document.querySelector('.game-points').textContent = `${points}`;
+}

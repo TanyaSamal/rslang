@@ -1,4 +1,4 @@
-import { Component, Controller} from '../../../spa';
+import { Component, Controller, router} from '../../../spa';
 import Audiocall from './audiocall.component.html';
 import * as utils from './utils';
 import './audiocall.component.scss';
@@ -6,7 +6,7 @@ import AudioQuestion from '../../components/audio-question/app.audio-question.ht
 import { appHeader } from '../../components/header/app.header';
 import { IAuth, IWord, WordStatus } from '../../../spa/tools/controllerTypes';
 import { AppAudioQuestion } from '../../components/audio-question/app.audio-question';
-import { ICallQuestion } from '../../../spa/core/coreTypes';
+import { ComponentEvent, ICallQuestion } from '../../../spa/core/coreTypes';
 import { IGameState, IGameStatistic, Mode } from '../../componentTypes';
 import { appSelectDifficulty } from '../../components/select-dificult/app.select-difficulty';
 
@@ -23,6 +23,38 @@ class AudiocallComponent extends Component {
   private isAnswered = false;
   private level = '0';
   private newWords = 0;
+
+  events = (): ComponentEvent[] =>  [{
+    event: 'click',
+    className: '.fullscreen-btn',
+    listener: this.toggleFullScreen,
+  },
+  {
+    event: 'click',
+    className: '.exit-game',
+    listener: this.exitFromGame,
+  }];
+
+  exitFromGame(event: MouseEvent) {
+    const target = <HTMLDivElement>event.target;
+    if (target.tagName === 'DIV') {
+      utils.savePoints();
+      router.navigate('textbook');
+    }
+  }
+
+  toggleFullScreen(event: MouseEvent) {
+    const target = <HTMLDivElement>event.target;
+    if (target.tagName === 'DIV') {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+        target.classList.remove('nofull');
+      } else if (document.exitFullscreen) {
+        document.exitFullscreen();
+        target.classList.add('nofull');
+      }
+    }
+  }
 
   saveGameResults() {
     let longest = utils.findLongestSeries(this.answers);
@@ -123,6 +155,7 @@ class AudiocallComponent extends Component {
     if (answerWord === this.gameWords[this.currentQuestion].wordTranslate) {
       correctness = CORRECT;
       this.answers[this.currentQuestion] = 1;
+      utils.addStars(+this.level + 1);
     } else {
       this.answers[this.currentQuestion] = -1;
     }
@@ -176,7 +209,9 @@ class AudiocallComponent extends Component {
   }
 
   playQuestion() {
-    utils.playWord(this.gameWords[this.currentQuestion].audio);
+    setTimeout(() => {
+      utils.playWord(this.gameWords[this.currentQuestion].audio);
+    }, 500);
   }
 
   async getRoundWords() {
@@ -217,6 +252,7 @@ class AudiocallComponent extends Component {
       } else {
         gameWords = gameState.textbookWords;
       }
+      localStorage.removeItem('audiocallState');
     } else {
       const page = JSON.parse(localStorage.getItem('page'));
       this.level = JSON.parse(localStorage.getItem('group'));
@@ -224,7 +260,6 @@ class AudiocallComponent extends Component {
     }
     this.gameWords = utils.shuffleArray(gameWords);
     this.answers = Array(this.gameWords.length).fill(0);
-    localStorage.removeItem('audiocallState');
   }
 
   generateAnswers(idx: number): Array<number> {
@@ -279,12 +314,12 @@ class AudiocallComponent extends Component {
         (<HTMLDivElement>document.querySelector('.audiocall-question')).style.marginRight = '0';
 
         this.playQuestion();
-      }, 700);
+      }, 300);
 
       document.querySelector('.play-answer').addEventListener('click', this.playQuestion.bind(this));
       document.querySelector('.play-question').addEventListener('click', this.playQuestion.bind(this));
       this.addListeners();
-    }, 500);
+    }, 700);
   }
 
   showGame() {
@@ -294,6 +329,7 @@ class AudiocallComponent extends Component {
 
   afterInit() {
     const startGame = async () => {
+      this.currentQuestion = 0;
       this.showGame();
       await this.getRoundWords();
       this.drawQuestion(this.currentQuestion);
