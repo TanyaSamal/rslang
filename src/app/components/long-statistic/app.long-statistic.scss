@@ -1,0 +1,57 @@
+.charts-switch {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+
+  .toggle-slider {
+    position: relative;
+    margin-top: -1px;
+    margin-right: -1px;
+    background: rgba(0,0,0,.25);
+    height: 20px;
+    width: 33px;
+    float: right;
+    border-radius: 30px;
+    cursor: pointer;
+
+    input {
+      display: none;
+    }
+
+    .toggle-switch {
+        position: absolute;
+        height: 12px;
+        width: 12px;
+        top: 4px;
+        left: 3px;
+        display: inline-block;
+        transform-origin: 50% 50%;
+        transition: transform 0.15s ease;
+        vertical-align: top;
+    }
+
+    &:hover {
+      background: rgba(0,0,0,.4);
+    }
+  }
+
+  .on:not(.disabled) .toggle-switch {
+    transform: translateX(14px) scale(1.25);
+  }
+
+  .on:not(.disabled).toggle-slider {
+    background: #71DEC5;
+  }
+
+  .on:not(.disabled).toggle-slider:hover {
+    background: #7df5d9;
+  }
+
+}
+
+.chart-container {
+  position: relative;
+  height: 400px;
+  width: 80%;
+  margin: 20px auto;
+}

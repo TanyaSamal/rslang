@@ -65,13 +65,8 @@ class AppSelectDifficulty extends Component {
         if (localStorage[CONSTS.SPRINT_STATE]) {
           UTILS.hideContainer(welcomeContainer);
         } else {
-<<<<<<< HEAD
-          const group: string = UTILS.getGroup();
-          const page = String(UTILS.randomNumber(CONSTS.MIN_PAGE, CONSTS.MAX_PAGE));
-=======
           // const group: string = UTILS.getGroup();
           // const page = String(UTILS.randomNumber(CONSTS.MIN_PAGE, CONSTS.MAX_PAGE));
->>>>>>> 7-audiocall
 
           // localStorage.setItem(CONSTS.GROUP, group);
           // localStorage.setItem(CONSTS.PAGE, page);
