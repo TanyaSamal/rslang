@@ -3,6 +3,7 @@ import Header from './app.header.html';
 
 import { Component, router } from '../../../spa';
 import { ComponentEvent } from '../../../spa/core/coreTypes';
+import { IGamePoints } from '../../componentTypes';
 
 class AppHeader extends Component {
   isMenuOpen = false;
@@ -28,8 +29,12 @@ class AppHeader extends Component {
     const userName = localStorage.getItem('userName');
     if (userName) {
       (<HTMLDivElement>document.querySelector('.user-name')).textContent = userName;
-      if (localStorage.getItem('audiocallPoints'))
-        document.querySelector('.game-points').textContent = JSON.parse(localStorage.getItem('audiocallPoints'));
+      if (localStorage.getItem('audiocallPoints')) {
+        const localResults: IGamePoints = JSON.parse(localStorage.getItem('audiocallPoints'));
+        if (localResults.date === new Date().toLocaleDateString()) {
+          document.querySelector('.game-points').textContent = localResults.points;
+        }
+      }
     }
   }
 

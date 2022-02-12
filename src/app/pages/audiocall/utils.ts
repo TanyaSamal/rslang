@@ -1,3 +1,5 @@
+import { IGamePoints } from "../../componentTypes";
+
 export const getRandomNumber = (max: number): number => Math.floor(Math.random() * max);
 
 export const shuffleArray = <T>(answers: Array<T>): Array<T> => {
@@ -77,9 +79,18 @@ export const addStars = (points: number) => {
 
 export const savePoints = () => {
   let points = Number((<HTMLDivElement>document.querySelector('.stars-count')).textContent);
+  const today = new Date().toLocaleDateString();
   if (localStorage.getItem('audiocallPoints')) {
-    points += +JSON.parse(localStorage.getItem('audiocallPoints'));
+    const localResults: IGamePoints = JSON.parse(localStorage.getItem('audiocallPoints'));
+    if (localResults.date === today) {
+      points += +(localResults.points);
+    } else {
+      localStorage.removeItem('audiocallPoints');
+    }
   }
-  localStorage.setItem('audiocallPoints', points.toString());
+  localStorage.setItem('audiocallPoints', JSON.stringify({
+    points: points.toString(),
+    date: today
+  }));
   document.querySelector('.game-points').textContent = `${points}`;
 }
