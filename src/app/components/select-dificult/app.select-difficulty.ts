@@ -2,7 +2,6 @@ import './app.select-difficulty.scss';
 import SelectDifficulty from './app.select-difficulty.html';
 import { Component } from '../../../spa';
 import UTILS from './app.select-difficulty-utils';
-import UTILS_FROM_SPRINT from '../../pages/sprint/sprintUtils';
 import CONSTS from './app.select-difficulty.consts';
 
 class AppSelectDifficulty extends Component {
@@ -66,16 +65,13 @@ class AppSelectDifficulty extends Component {
         if (localStorage[CONSTS.SPRINT_STATE]) {
           UTILS.hideContainer(welcomeContainer);
         } else {
-          const group: string = UTILS.getGroup();
-          const page = String(UTILS.randomNumber(CONSTS.MIN_PAGE, CONSTS.MAX_PAGE));
-
           localStorage.setItem(CONSTS.BONUS_STAR, String(CONSTS.BONUS_STAR_MEDAL.minStar));
           localStorage.setItem(CONSTS.BONUS_MEDAL, String(CONSTS.BONUS_STAR_MEDAL.minMedal));
 
           localStorage.setItem(CONSTS.SCORE, '0');
+          localStorage.removeItem(CONSTS.AUDIO_MUTE);
 
           UTILS.hideContainer(welcomeContainer);
-          UTILS_FROM_SPRINT.showStopwatch(group, page);
         }
       }
     }
@@ -126,27 +122,27 @@ class AppSelectDifficulty extends Component {
       const level6 = event.target.closest('.level6') as HTMLElement;
     
       if (level1) {
-        UTILS.mouseOutElement(level1);
+        UTILS.mouseOutElement();
       }
 
       if (level2) {
-        UTILS.mouseOutElement(level2);
+        UTILS.mouseOutElement();
       }
 
       if (level3) {
-        UTILS.mouseOutElement(level3);
+        UTILS.mouseOutElement();
       }
 
       if (level4) {
-        UTILS.mouseOutElement(level4);
+        UTILS.mouseOutElement();
       }
 
       if (level5) {
-        UTILS.mouseOutElement(level5);
+        UTILS.mouseOutElement();
       }
 
       if (level6) {
-        UTILS.mouseOutElement(level6);
+        UTILS.mouseOutElement();
       }
     }
   }

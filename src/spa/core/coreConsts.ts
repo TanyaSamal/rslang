@@ -13,4 +13,4 @@ export const GAME_AUDIOCALL_OPTIONS: GAME = {
     description: 'Необходимо из предложенных вариантов ответа выбрать правильный перевод слова, которое услышите.'
 };
 
-export const SPRINT_STATE: string = 'sprintState';
+export const SPRINT_STATE = 'sprintState';

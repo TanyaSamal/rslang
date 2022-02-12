@@ -6,16 +6,42 @@ import UTILS from './sprintUtils';
 import CONSTS from './sprintConsts';
 import { IWord } from '../../../spa/tools/controllerTypes';
 import { appSelectDifficulty } from '../../components/select-dificult/app.select-difficulty';
+import { appResultGame } from '../../components/result-game/app.result-game';
 
 class SprintComponent extends Component {
   getEventsClick(event: Event): void {
     if (event.target instanceof Element) {
+      const buttonStartSprint = event.target.closest('.start-sprint') as HTMLElement;
       const volume = event.target.closest('.volume') as HTMLElement;
+      const close = event.target.closest('.fa-window-close') as HTMLElement;
       const buttonTrue = event.target.closest('.button-true') as HTMLElement;
       const buttonFalse = event.target.closest('.button-false') as HTMLElement;
+      const audioWord = event.target.closest('.word-sound') as HTMLElement;
+      const gameAgain = event.target.closest('.game-again') as HTMLElement;
+
+      if (buttonStartSprint) {
+        const group: string = UTILS.getGroup();
+        const page = String(UTILS.randomNumber(CONSTS.MIN_PAGE, CONSTS.MAX_PAGE));
+
+        UTILS.showStopwatch(group, page);
+      }
 
       if (volume) {
         volume.classList.toggle('volume-mute');
+        
+        if (volume.classList.contains('volume-mute')) {
+          localStorage.setItem(CONSTS.AUDIO_MUTE, 'true');
+        } else {
+          localStorage.removeItem(CONSTS.AUDIO_MUTE);
+        }
+      }
+
+      if (close) {
+        UTILS.closeGame();
+      }
+
+      if (audioWord) {
+        UTILS.playAudioWord();
       }
 
       if (buttonTrue) {
@@ -23,7 +49,7 @@ class SprintComponent extends Component {
         UTILS.checkAnswer();
 
         const words: IWord[] = JSON.parse(localStorage[CONSTS.WORDS]);
-        const currentCard: number = Number(localStorage[CONSTS.CURRENT_CARD]);
+        const currentCard = Number(localStorage[CONSTS.CURRENT_CARD]);
         const newCard: number = currentCard + 1;
         
         if (newCard < words.length) {
@@ -31,7 +57,6 @@ class SprintComponent extends Component {
           UTILS.makeNextWordCard();
         } else {
           UTILS.makeNextPage();
-          //buttonTrue.setAttribute('disabled', 'true');
         }
       }
 
@@ -40,7 +65,7 @@ class SprintComponent extends Component {
         UTILS.checkAnswer();
 
         const words: IWord[] = JSON.parse(localStorage[CONSTS.WORDS]);
-        const currentCard: number = Number(localStorage[CONSTS.CURRENT_CARD]);
+        const currentCard = Number(localStorage[CONSTS.CURRENT_CARD]);
         const newCard: number = currentCard + 1;
         
         if (newCard < words.length) {
@@ -48,8 +73,11 @@ class SprintComponent extends Component {
           UTILS.makeNextWordCard();
         } else {
           UTILS.makeNextPage();
-          //buttonFalse.setAttribute('disabled', 'true');
         }
+      }
+
+      if (gameAgain) {
+        // appSelectDifficulty.render('app-select-difficulty');
       }
     }
   }
@@ -60,7 +88,7 @@ class SprintComponent extends Component {
       UTILS.checkAnswer();
 
       const words: IWord[] = JSON.parse(localStorage[CONSTS.WORDS]);
-      const currentCard: number = Number(localStorage[CONSTS.CURRENT_CARD]);
+      const currentCard = Number(localStorage[CONSTS.CURRENT_CARD]);
       const newCard: number = currentCard + 1;
       
       if (newCard < words.length) {
@@ -68,8 +96,6 @@ class SprintComponent extends Component {
         UTILS.makeNextWordCard();
       } else {
         UTILS.makeNextPage();
-        const buttonFalse = document.querySelector('.button-false');
-        buttonFalse.setAttribute('disabled', 'true');
       }
     }
 
@@ -78,7 +104,7 @@ class SprintComponent extends Component {
       UTILS.checkAnswer();
 
       const words: IWord[] = JSON.parse(localStorage[CONSTS.WORDS]);
-      const currentCard: number = Number(localStorage[CONSTS.CURRENT_CARD]);
+      const currentCard = Number(localStorage[CONSTS.CURRENT_CARD]);
       const newCard: number = currentCard + 1;
       
       if (newCard < words.length) {
@@ -86,8 +112,6 @@ class SprintComponent extends Component {
         UTILS.makeNextWordCard();
       } else {
         UTILS.makeNextPage();
-        const buttonTrue = document.querySelector('.button-true');
-        buttonTrue.setAttribute('disabled', 'true');
       }
     }
   }
@@ -98,6 +122,7 @@ export const sprintComponent = new SprintComponent({
   components: [
     appHeader,
     appSelectDifficulty,
+    appResultGame,
   ],
   template: Sprint,
 });

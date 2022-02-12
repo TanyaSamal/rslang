@@ -1,29 +1,28 @@
-// @keyframes animate-color {
-//     from {
-//         transform: rotate(0deg);
-//     }
+@keyframes animate-height-up {
+    from {
+        transform: scale(0);
+    }
 
-//     to {
-//         transform: rotate(360deg);
-//         border-radius: 50%;
-//     }
-// }
+    to {
+        transform: scale(1);
+    }
+}
 
-// @keyframes animate-height {
-//     from {
-//         transform: scale(0);
-//     }
+@keyframes animate-height-down {
+    from {
+        transform: scale(1);
+    }
 
-//     to {
-//         transform: scale(1);
-//     }
-// }
+    to {
+        transform: scale(0);
+    }
+}
 
 .sprint-page-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: calc(100vh - 78.5px);
+    height: 100vh;
     background: url('../../../assets/bg-sprint.jpg');
     background-repeat: no-repeat;
     background-size: cover;
@@ -37,145 +36,9 @@
         text-align: center;
         background-color: hsla(189, 61%, 31%, 0.3);
         backdrop-filter: blur(4px);
-        animation: animate-height .5s linear;
+        animation: animate-height-up .5s linear;
         animation-fill-mode: both;
     }
-
-    // .welcome-container {
-    //     h1 {
-    //         text-transform: uppercase;
-    //         margin-bottom: 20px;
-    //     }
-
-    //     p {
-    //         font-size: 22px;
-    //     }
-
-    //     p:last-of-type {
-    //         margin-top: 20px;
-    //     }
-
-    //     ul {
-    //         list-style: none;
-    //         margin-top: 10px;
-    //         display: flex;
-    //         justify-content: center;
-    //         column-gap: 15px;
-    //         row-gap: 15px;
-    //         flex-wrap: wrap;
-
-    //         li {
-    //             padding: 10px;
-    //             cursor: pointer;
-    //         }
-
-    //         .level1 {
-    //             border-color: #9a47e6;
-    //             background-color: #000000;
-    //             color: #ffffff;
-    //             box-shadow: 0px 0px 10px 3px #9a47e6;
-    //         }
-
-    //         .level1:hover {
-    //             animation: animate-color .5s linear;
-    //             animation-fill-mode: both;
-    //             background-color: #9a47e6;
-    //             transition: 1s;
-    //         }
-
-    //         .level2 {
-    //             border-color: #476ce6;
-    //             background-color: #000000;
-    //             color: #ffffff;
-    //             box-shadow: 0px 0px 10px 3px #476ce6;
-    //         }
-
-    //         .level2:hover {
-    //             animation: animate-color .5s linear;
-    //             animation-fill-mode: both;
-    //             background-color: #476ce6;
-    //             transition: 1s;
-    //         }
-
-    //         .level3 {
-    //             border-color: #47e647;
-    //             background-color: #000000;
-    //             color: #ffffff;
-    //             box-shadow: 0px 0px 10px 3px #47e647;
-    //         }
-
-    //         .level3:hover {
-    //             animation: animate-color .5s linear;
-    //             animation-fill-mode: both;
-    //             background-color: #47e647;
-    //             transition: 1s;
-    //         }
-
-    //         .level4 {
-    //             border-color: #e7e408;
-    //             background-color: #000000;
-    //             color: #ffffff;
-    //             box-shadow: 0px 0px 10px 3px #e7e408;
-    //         }
-
-    //         .level4:hover {
-    //             animation: animate-color .5s linear;
-    //             animation-fill-mode: both;
-    //             background-color: #e7e408;
-    //             transition: 1s;
-    //         }
-
-    //         .level5 {
-    //             border-color: #1c9dd1;
-    //             background-color: #000000;
-    //             color: #ffffff;
-    //             box-shadow: 0px 0px 10px 3px #1c9dd1;
-    //         }
-
-    //         .level5:hover {
-    //             animation: animate-color .5s linear;
-    //             animation-fill-mode: both;
-    //             background-color: #1c9dd1;
-    //             transition: 1s;
-    //         }
-
-    //         .level6 {
-    //             border-color: #e647cc;
-    //             background-color: #000000;
-    //             color: #ffffff;
-    //             box-shadow: 0px 0px 10px 3px #e647cc;
-    //         }
-
-    //         .level6:hover {
-    //             animation: animate-color .5s linear;
-    //             animation-fill-mode: both;
-    //             background-color: #e647cc;
-    //             transition: 1s;
-    //         }
-    //     }
-
-    //     .start-sprint {
-    //         margin-top: 20px;
-    //         font-size: 18px;
-    //         padding: 10px 20px;
-    //         background-color: #f2f2f2;
-    //         border: 1px solid #fe8365;
-    //         border-radius: 42px;
-    //         color: #fe8365;
-    //     }
-
-    //     .start-sprint-enable {
-    //         background-color: #fe8365;
-    //         color: #f2f2f2;
-    //     }
-
-    //     .start-sprint-enable:hover {
-    //         cursor: pointer;
-    //         background-color: #f2f2f2;
-    //         color: #fe8365;
-    //         transition: .3s;
-    //     }
-    // }
     
     .stopwatch-container {
         display: none;
@@ -202,7 +65,6 @@
 
     .game-container {
         display: none;
-        height: calc(100vh - 78.5px);
 
         .header-game-container {
             margin: 30px;
@@ -238,6 +100,10 @@
                 background-color: #e91212;
             }
 
+            .game-close:active {
+                transform: scale(0.9);
+            }
+
             .volume {
                 font-size: 40px;
                 width: 45px;
@@ -259,6 +125,11 @@
             .volume-mute:hover {
                 cursor: pointer;
                 color: #fe8365;
+            }
+
+            .volume-on:active,
+            .volume-mute:active {
+                transform: scale(0.9);
             }
         }
 
@@ -291,7 +162,7 @@
                     }
                 }
 
-                .score {
+                .score-container {
                     font-size: 26px;
                 }
             }
@@ -307,6 +178,10 @@
                 .word-sound:hover {
                     cursor: pointer;
                     background-color: #fe8365;
+                }
+
+                .word-sound:active {
+                    transform: scale(0.9);
                 }
 
                 .word-translate {
@@ -348,12 +223,18 @@
                 }
             }
         }
+
+        .close-container {
+            animation: animate-height-down .5s linear;
+            animation-fill-mode: both;
+        }
     }
 
     .show {
         display: flex;
         flex-direction: column;
         align-items: center;
+        justify-content: center;
     }
 
     .hide {
@@ -361,3 +242,6 @@
     }
 }
 
+.hide-visibility {
+    display: none;
+}
