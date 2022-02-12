@@ -5,7 +5,14 @@ import { appHeader } from '../../components/header/app.header';
 import { appFooter } from '../../components/footer/app.footer';
 import { appLongStatistic } from '../../components/long-statistic/app.long-statistic';
 
-class StatisticComponent extends Component {}
+class StatisticComponent extends Component {
+
+  afterInit() {
+    if (!localStorage.getItem('userInfo')) {
+      document.querySelector('.statistic-page').innerHTML = '';
+    }
+  }
+}
 
 export const statisticComponent = new StatisticComponent({
   selector: 'app-statistic',

@@ -36,6 +36,7 @@ class AppHeader extends Component {
           document.querySelector('.game-points').textContent = localResults.points;
         }
       }
+      (<HTMLLIElement>document.querySelector('li.only-authorized')).style.display = 'inline';
     }
   }
 
@@ -68,6 +69,7 @@ class AppHeader extends Component {
     this.token = '';
     localStorage.removeItem('userInfo');
     localStorage.removeItem('currentPage');
+    localStorage.removeItem('userName');
     router.navigate('#');
     this.changeLoginStatus();
     this.showHomePageLoginForm();

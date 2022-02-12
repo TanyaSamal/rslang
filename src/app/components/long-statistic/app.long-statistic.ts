@@ -36,6 +36,9 @@ class AppLongStatistic extends Component {
     const userInfo: IAuth = JSON.parse(localStorage.getItem('userInfo'));
     const statisticInfo: IStatistics =  await this.controller.getStatistics(userInfo.userId, userInfo.token);
     const statistic: IStatOptions[] = JSON.parse(statisticInfo.optional.stat);
+    this.labels.length = 0;
+    this.chartLineData.length = 0;
+    this.chartBarData.length = 0;
     statistic.forEach((el) => {
       this.labels.push(el.date);
       this.chartLineData.push(el.newWords);
@@ -92,8 +95,10 @@ class AppLongStatistic extends Component {
   }
 
   async afterInit() {
-    await this.getChartData();
-    this.showChart(this.currentChart);
+    if (localStorage.getItem('userInfo')) {
+      await this.getChartData();
+      this.showChart(this.currentChart);
+    }
   }
 }
 

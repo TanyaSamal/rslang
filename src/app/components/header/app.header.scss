@@ -119,6 +119,10 @@ header {
         align-items: start;
       }
 
+      .only-authorized {
+        display: none;
+      }
+
       .menu-element {
         position: relative;
         padding: 10px 0;
@@ -232,6 +236,7 @@ header {
     .user-info {
       display: none;
       flex-direction: row;
+      margin-left: 5px;
 
       @media (max-width: 780px) {
         flex-direction: row-reverse;
