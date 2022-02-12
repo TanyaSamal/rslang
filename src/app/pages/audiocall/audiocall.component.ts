@@ -4,7 +4,7 @@ import * as utils from './utils';
 import './audiocall.component.scss';
 import AudioQuestion from '../../components/audio-question/app.audio-question.html';
 import { appHeader } from '../../components/header/app.header';
-import { IAuth, IWord, WordStatus } from '../../../spa/tools/controllerTypes';
+import { IAuth, IStatistics, IStatOptions, IWord, WordStatus } from '../../../spa/tools/controllerTypes';
 import { AppAudioQuestion } from '../../components/audio-question/app.audio-question';
 import { ComponentEvent, ICallQuestion } from '../../../spa/core/coreTypes';
 import { IGameState, IGameStatistic, Mode } from '../../componentTypes';
@@ -131,6 +131,12 @@ class AudiocallComponent extends Component {
     this.saveResultsForResultWindow();
   }
 
+  async sendStatistic(userId: string, token: string) {
+    const currentStatistic: IStatistics = await this.controller.getStatistics(userId, token);
+    const newStatistic = utils.makeStatistic(currentStatistic);
+    await this.controller.setStatistics(userId, token, newStatistic);
+  }
+
   async sendAnswer(wordId: string, correctness: string) {
     const userInfo: IAuth = JSON.parse(localStorage.getItem('userInfo'));
     const userWordInfo = await this.controller.getUserWordById(userInfo.userId, userInfo.token, wordId);
@@ -149,6 +155,7 @@ class AudiocallComponent extends Component {
       }
       if (userWordInfo.optional.gameProgress.audiocall.right === 3 && Number(this.level) < 3) {
         userWordInfo.optional.status = WordStatus.learnt;
+        this.sendStatistic(userInfo.userId, userInfo.token);
       } else if (userWordInfo.optional.gameProgress.audiocall.right === 5 && Number(this.level) >= 3) {
         userWordInfo.optional.status = WordStatus.learnt;
       } else if (userWordInfo.optional.status !== WordStatus.learnt) {

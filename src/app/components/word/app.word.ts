@@ -1,7 +1,8 @@
 import './app.word.scss';
 import { Component, Controller } from '../../../spa';
 import { ComponentEvent, IComponentConfig } from '../../../spa/core/coreTypes';
-import { IAuth, IStatistics, IUserWord, WordStatus, IStatOptions } from '../../../spa/tools/controllerTypes';
+import { IAuth, IStatistics, IUserWord, WordStatus } from '../../../spa/tools/controllerTypes';
+import { makeStatistic } from '../../pages/audiocall/utils';
 import * as utils from '../../pages/textbook/utils';
 
 export class AppWord extends Component {
@@ -58,39 +59,9 @@ export class AppWord extends Component {
   }
 
   async sendStatistic(userId: string, token: string) {
-    let currentStatistic: IStatistics = await this.controller.getStatistics(userId, token);
-    const today = new Date().toLocaleDateString();
-    const statistic: IStatOptions = {
-      date: today,
-      newWords: 1,
-      totalWords: 1
-    }
-    if (currentStatistic) {
-      delete currentStatistic.id;
-      const currentStat: IStatOptions[] = JSON.parse(currentStatistic.optional.stat);
-      if (currentStat[currentStat.length - 1].date === today) {
-        currentStatistic.learnedWords += 1;
-        currentStat[currentStat.length - 1].newWords += 1;
-        currentStat[currentStat.length - 1].totalWords += 1;
-      } else {
-        let learnt = 0;
-        currentStat.forEach(el => {
-          learnt += el.totalWords
-        });
-        statistic.totalWords = learnt + 1;
-        currentStatistic.learnedWords = learnt + 1;
-        currentStat.push(statistic);
-      }
-      currentStatistic.optional.stat = JSON.stringify(currentStat);
-    } else {
-      currentStatistic = {
-        learnedWords: 1,
-        optional: {
-          stat: JSON.stringify([statistic])
-        }
-      }
-    }
-    await this.controller.setStatistics(userId, token, currentStatistic);
+    const currentStatistic: IStatistics = await this.controller.getStatistics(userId, token);
+    const newStatistic = makeStatistic(currentStatistic);
+    await this.controller.setStatistics(userId, token, newStatistic);
   }
 
   async addInDifficult() {

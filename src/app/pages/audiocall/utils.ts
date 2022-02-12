@@ -1,4 +1,4 @@
-import { IAuth } from "../../../spa/tools/controllerTypes";
+import { IAuth, IStatistics, IStatOptions } from "../../../spa/tools/controllerTypes";
 import { IGamePoints } from "../../componentTypes";
 
 export const getRandomNumber = (max: number): number => Math.floor(Math.random() * max);
@@ -96,4 +96,40 @@ export const savePoints = () => {
     date: today
   }));
   document.querySelector('.game-points').textContent = `${points}`;
+}
+
+export const makeStatistic = (currentStatistic: IStatistics): IStatistics => {
+  const today = new Date().toLocaleDateString();
+  const statistic: IStatOptions = {
+    date: today,
+    newWords: 1,
+    totalWords: 1
+  }
+  if (currentStatistic) {
+    delete currentStatistic.id;
+    const currentStat: IStatOptions[] = JSON.parse(currentStatistic.optional.stat);
+    if (currentStat[currentStat.length - 1].date === today) {
+      currentStatistic.learnedWords += 1;
+      currentStat[currentStat.length - 1].newWords += 1;
+      currentStat[currentStat.length - 1].totalWords += 1;
+    } else {
+      let learnt = 0;
+      currentStat.forEach(el => {
+        learnt += el.totalWords
+      });
+      statistic.totalWords = learnt + 1;
+      currentStatistic.learnedWords = learnt + 1;
+      currentStat.push(statistic);
+    }
+    currentStatistic.optional.stat = JSON.stringify(currentStat);
+  } else {
+    // eslint-disable-next-line no-param-reassign
+    currentStatistic = {
+      learnedWords: 1,
+      optional: {
+        stat: JSON.stringify([statistic])
+      }
+    }
+  }
+  return currentStatistic;
 }
