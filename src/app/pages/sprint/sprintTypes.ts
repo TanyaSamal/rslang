@@ -3,3 +3,23 @@ export type Bonus = {
     medal: number;
 }
 
+export type WordAnswer = {
+    eng: string;
+    rus: string;
+    audioURL: string;
+}
+
+export interface IGameStatistic {
+    longest: number,
+    rightAnswers: number,
+    totalAnswers: number,
+    newWords: number
+}
+
+export interface IGameSprintStatistic {
+    score: number,
+    rightAnswers: number,
+    falseAnswers: number,
+    rightWords: WordAnswer[],
+    falseWords: WordAnswer[],
+}

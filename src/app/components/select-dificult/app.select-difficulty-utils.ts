@@ -1,6 +1,5 @@
 function changeStyleElement(element: HTMLElement): void {
-  const borderColor: string = window.getComputedStyle(element).borderColor;
-
+  const { borderColor } = window.getComputedStyle(element);
   element.classList.add('click-level');
   element.style.borderRadius = '50%';
   element.style.backgroundColor = borderColor;
@@ -24,12 +23,11 @@ function activateButton(): void {
 }
 
 function mouseOverElement(element: HTMLElement): void {
-  const borderColor: string = window.getComputedStyle(element).borderColor;
-
+  const { borderColor } = window.getComputedStyle(element);
   element.style.backgroundColor = borderColor;
 }
 
-function mouseOutElement(element: HTMLElement): void {
+function mouseOutElement(): void {
   const allLevel: NodeListOf<Element> = document.querySelectorAll('.level');
 
   allLevel.forEach((element: HTMLElement) => {

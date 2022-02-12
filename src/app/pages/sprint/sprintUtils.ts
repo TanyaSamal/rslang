@@ -1,7 +1,15 @@
 import Controller from "../../../spa/tools/controller";
 import { IWord } from "../../../spa/tools/controllerTypes";
 import CONSTS from "./sprintConsts";
-import { Bonus } from "./sprintTypes";
+import { Bonus, IGameSprintStatistic } from "./sprintTypes";
+import { appResultGame } from '../../components/result-game/app.result-game';
+
+function getGroup(): string {
+    const level = document.querySelector('.click-level') as HTMLElement;
+    const group: string = level.dataset.difficult;
+    
+    return group;
+}
 
 function randomNumber(start: number, stop: number): number {
     return Math.floor(Math.random() * (stop - start + 1)) + start;
@@ -11,33 +19,72 @@ function hideContainer(container: HTMLElement): void {
     container.classList.add('hide');
 }
 
+function hideVisibilityContainer(container: HTMLElement): void {
+    container.classList.add('hide-visibility');
+}
+
 function showContainer(container: HTMLElement): void {
     container.classList.add('show');
 }
 
-function showStopwatch(group: string, page: string): void {
-    const stopwatchСontainer = document.querySelector('.stopwatch-container') as HTMLElement;
-    const stopwatch = document.querySelector('.stopwatch') as HTMLElement;
-    showContainer(stopwatchСontainer);
+function getResultGame(): void {
+    const wordCard = document.querySelector('.word-card') as HTMLElement;
+    const gameContainer = document.querySelector('.game-container') as HTMLElement;
+    const resultContainer = document.querySelector('.result-game-container') as HTMLElement;
 
+    wordCard.classList.add('close-container');
+
+    setTimeout(() => {
+        hideContainer(gameContainer);
+        resultContainer.classList.remove('hide');
+        appResultGame.makeResult();
+    }, 600);
+}
+
+function startTimerGame(): void {
+    const gameTimer = document.querySelector('.game-timer') as HTMLElement;
     const count = document.createElement('span') as HTMLElement;
-    stopwatch.append(count);
+    gameTimer.append(count);
 
-    let currentDelay: number = CONSTS.DELAY;
+    let currentTimer: number = CONSTS.TIMER;
     let timerId = setTimeout(function tick() {
-        count.innerHTML = String(currentDelay);
+        count.innerHTML = String(currentTimer);
         
-        stopwatch.style.background = `conic-gradient(#e7161b ${CONSTS.SECTOR[CONSTS.SECTOR.length - currentDelay - 1]}%, transparent 0)`;
-        currentDelay = currentDelay - 1;
+        const sector: number = (100 * (60 - currentTimer)) / 60;
+        gameTimer.style.background = `conic-gradient(#e7161b ${sector}%, transparent 0)`;
+        currentTimer -= 1;
         
-        if (currentDelay < 0) {
+        if (currentTimer < 0) {
             clearInterval(timerId);
-            hideContainer(stopwatchСontainer);
-            startGameSprint(group, page);
+            getResultGame();
         } else {
             timerId = setTimeout(tick, 1000);
+            localStorage.setItem(CONSTS.TIMER_ID_SPRINT, String(timerId));
         }
     }, 1000);
+}
+
+function makeWordCard(words: IWord[], index: number, translates: string[]): void {
+    const wordText = document.querySelector('.word-text') as HTMLElement;
+    const wordTranslate = document.querySelector('.word-translate') as HTMLElement;
+    
+    wordText.innerHTML = words[index].word;
+    localStorage.setItem(CONSTS.WORD_ENG, words[index].word);
+
+    const trueTranslate: string = words[index].wordTranslate;
+    const audioWord: string = words[index].audio;
+    localStorage.setItem(CONSTS.TRUE_TRANSLATE, trueTranslate);
+    localStorage.setItem(CONSTS.AUDIO_WORD, audioWord);
+
+    const translatesCopy: string[] = translates.slice();
+    translatesCopy.push(trueTranslate);
+    translatesCopy.push(trueTranslate);
+    translatesCopy.unshift(trueTranslate);
+
+    const numberTranslate: number = randomNumber(0, translatesCopy.length - 1);
+    const currentTranslate: string = translatesCopy[numberTranslate];
+    localStorage.setItem(CONSTS.CURRENT_TRANSLATE, currentTranslate);
+    wordTranslate.innerHTML = currentTranslate;
 }
 
 function fillArrayWordTranslate(words: IWord[]): string[] {
@@ -52,8 +99,21 @@ function fillArrayWordTranslate(words: IWord[]): string[] {
 }
 
 function startGameSprint(group: string, page: string): void {
+    const resultGameStatistic: IGameSprintStatistic = {
+        score: 0,
+        rightAnswers: 0,
+        falseAnswers: 0,
+        rightWords: [],
+        falseWords: [],
+    };
+
+    localStorage.setItem(CONSTS.GAME_SPRINT_STATISTIC, JSON.stringify(resultGameStatistic));
+
     const gameContainer = document.querySelector('.game-container') as HTMLElement;
     showContainer(gameContainer);
+
+    const rightNamePoints = document.querySelector('.right-name-points') as HTMLElement;
+    rightNamePoints.innerHTML = 'балл';
 
     const wordsPromise: Promise<IWord[]> = new Controller().getWords(group, page);
 
@@ -68,57 +128,45 @@ function startGameSprint(group: string, page: string): void {
     });
 }
 
-function makeWordCard(words: IWord[], index: number, translates: string[]): void {
-    const wordText = document.querySelector('.word-text') as HTMLElement;
-    const wordTranslate = document.querySelector('.word-translate') as HTMLElement;
-    wordText.innerHTML = words[index].word;
+function showStopwatch(group: string, page: string): void {
+    const stopwatchСontainer = document.querySelector('.stopwatch-container') as HTMLElement;
+    const stopwatch = document.querySelector('.stopwatch') as HTMLElement;
+    const headerContainer = document.querySelector('header') as HTMLElement;
+    
+    showContainer(stopwatchСontainer);
+    hideVisibilityContainer(headerContainer);
 
-    const trueTranslate: string = words[index].wordTranslate;
-    localStorage.setItem(CONSTS.TRUE_TRANSLATE, trueTranslate);
-
-    const translatesCopy: string[] = translates.slice();
-    translatesCopy.push(trueTranslate);
-    translatesCopy.unshift(trueTranslate);
-
-    const numberTranslate: number = randomNumber(0, translatesCopy.length - 1);
-    const currentTranslate: string = translatesCopy[numberTranslate];
-    localStorage.setItem(CONSTS.CURRENT_TRANSLATE, currentTranslate);
-    wordTranslate.innerHTML = currentTranslate;
-}
-
-function makeNextWordCard(): void {
-    const words: IWord[] = JSON.parse(localStorage[CONSTS.WORDS]);
-    const wordsTranslate: string[] = fillArrayWordTranslate(words); 
-    const index: number = Number(localStorage[CONSTS.CURRENT_CARD]);
-
-    makeWordCard(words, index, wordsTranslate);
-}
-
-function startTimerGame(): void {
-    const gameTimer = document.querySelector('.game-timer') as HTMLElement;
     const count = document.createElement('span') as HTMLElement;
-    gameTimer.append(count);
+    stopwatch.append(count);
 
-    let currentTimer: number = CONSTS.TIMER;
+    let currentDelay: number = CONSTS.DELAY;
     let timerId = setTimeout(function tick() {
-        count.innerHTML = String(currentTimer);
+        count.innerHTML = String(currentDelay);
         
-        const sector: number = (100 * (60 - currentTimer)) / 60;
-        gameTimer.style.background = `conic-gradient(#e7161b ${sector}%, transparent 0)`;
-        currentTimer = currentTimer - 1;
+        stopwatch.style.background = `conic-gradient(#e7161b ${CONSTS.SECTOR[CONSTS.SECTOR.length - currentDelay - 1]}%, transparent 0)`;
+        currentDelay -= 1;
         
-        if (currentTimer < 0) {
+        if (currentDelay < 0) {
             clearInterval(timerId);
-            // stop;
+            hideContainer(stopwatchСontainer);
+            startGameSprint(group, page);
         } else {
             timerId = setTimeout(tick, 1000);
         }
     }, 1000);
 }
 
+function makeNextWordCard(): void {
+    const words: IWord[] = JSON.parse(localStorage[CONSTS.WORDS]);
+    const wordsTranslate: string[] = fillArrayWordTranslate(words); 
+    const index = Number(localStorage[CONSTS.CURRENT_CARD]);
+
+    makeWordCard(words, index, wordsTranslate);
+}
+
 function makeNextPage(): void {
     const group: string = localStorage[CONSTS.GROUP];
-    let page: number = Number(localStorage[CONSTS.PAGE]);
+    let page = Number(localStorage[CONSTS.PAGE]);
 
     if (page === 29) {
         page = 0;
@@ -140,115 +188,67 @@ function makeNextPage(): void {
     });
 }
 
-function checkAnswer(): void {
-    const compareTranslate: boolean = localStorage[CONSTS.TRUE_TRANSLATE] === localStorage[CONSTS.CURRENT_TRANSLATE];
-    const stateAnswer: boolean = localStorage[CONSTS.ANSWER] === 'true';
-    const currentCard: number = Number(localStorage[CONSTS.CURRENT_CARD]);
-    const words: IWord[] = JSON.parse(localStorage[CONSTS.WORDS]);
-    const { minStar, minMedal } = CONSTS.BONUS_STAR_MEDAL;
-
-    if (currentCard === words.length - 1) {
-        return;
+function rightDeclensionWord(value: number): number {
+    let result: number = value % 100;
+  
+    if (result > 19) {
+        result %= 10;
     }
-    
-    if (compareTranslate && stateAnswer) {
-        animateContainer(CONSTS.COLOR_SHADOW.green);
-
-        const star: number = countBonus().star;
-        const medal: number = countBonus().medal;
-
-        localStorage.setItem(CONSTS.BONUS_STAR, String(star));
-        localStorage.setItem(CONSTS.BONUS_MEDAL, String(medal));
-
-        getBonus(star, medal);
-        getPoints(medal);
-        getScore();
+  
+    switch (result) {
+        case 1: return 0;
+        case 2: return 1;
+        case 3: return 1;
+        case 4: return 1;
+        default: return 2;
     }
-
-    if (!compareTranslate && !stateAnswer) {
-        animateContainer(CONSTS.COLOR_SHADOW.green);
-
-        const star: number = countBonus().star;
-        const medal: number = countBonus().medal;
-
-        localStorage.setItem(CONSTS.BONUS_STAR, String(star));
-        localStorage.setItem(CONSTS.BONUS_MEDAL, String(medal));
-
-        getBonus(star, medal);
-        getPoints(medal);
-        getScore();
-    }
-
-    if (compareTranslate && !stateAnswer) {
-        animateContainer(CONSTS.COLOR_SHADOW.red);
-
-        const star: number = minStar;
-        const medal: number = minMedal;
-
-        localStorage.setItem(CONSTS.BONUS_STAR, String(star));
-        localStorage.setItem(CONSTS.BONUS_MEDAL, String(medal));
-
-        deleteBonus();
-        getPoints(medal);
-    }
-
-    if (!compareTranslate && stateAnswer) {
-        animateContainer(CONSTS.COLOR_SHADOW.red);
-
-        const star: number = minStar;
-        const medal: number = minMedal;
-
-        localStorage.setItem(CONSTS.BONUS_STAR, String(star));
-        localStorage.setItem(CONSTS.BONUS_MEDAL, String(medal));
-
-        deleteBonus();
-        getPoints(medal);
-    }
-}
-
-function countBonus(): Bonus {
-    let countBonusStar: number = Number(localStorage[CONSTS.BONUS_STAR]);
-    let countBonusMedal: number = Number(localStorage[CONSTS.BONUS_MEDAL]);
-
-    const { minStar, maxStar, maxMedal } = CONSTS.BONUS_STAR_MEDAL;
-
-    if (countBonusStar === maxStar && !(countBonusMedal === maxMedal)) {
-        countBonusMedal = (countBonusMedal === maxMedal) ? maxMedal : countBonusMedal + 1;
-        countBonusStar = minStar;
-        deleteBonusStar();
-    } else {
-        countBonusStar = (countBonusStar === maxStar) ? maxStar : countBonusStar + 1;
-    }
-
-    if (countBonusMedal === maxMedal) {
-        countBonusStar = maxStar;
-        getBonusStar();
-    }
-
-    return {
-        star: countBonusStar,
-        medal: countBonusMedal
-    };
 }
 
 function getPoints(medal: number): void {
     const bonusPoints = document.querySelector('.bonus-points') as HTMLElement;
-    const points: number = medal ? 20 * medal : 10;
+    const rightNamePoints = document.querySelector('.right-name-points') as HTMLElement;
+    const points: number = medal ? 2 * medal : 1;
 
     bonusPoints.innerHTML = `${points}`;
+    rightNamePoints.innerHTML = CONSTS.NAME_COUNT_POINTS[rightDeclensionWord(points)];
 
     localStorage.setItem(CONSTS.BONUS_POINTS, String(points));
 }
 
+function deleteBonus(): void {
+    const bonusStars = document.querySelectorAll('.fa-star') as NodeList;
+    const bonusMedal = document.querySelectorAll('.fa-medal') as NodeList;
+
+    bonusStars.forEach((star: HTMLElement) => {
+        star.classList.remove('mark-star');
+    });
+
+    bonusMedal.forEach((medal: HTMLElement) => {
+        medal.classList.remove('mark-medal');
+    });
+}
+
+function animateContainer(color: string): void {
+    const container = document.querySelector('.word-card') as HTMLElement;
+
+    container.animate([{ boxShadow: '0px 0px 0px 0px #ffffff' }, { boxShadow: `0px 0px 20px 5px ${color}` }], {
+        duration: 500,
+        iterations: 1,
+    });
+}
+
 function getScore(): void {
     const scoreGame = document.querySelector('.score') as HTMLElement;
-    const points: number = Number(localStorage[CONSTS.BONUS_POINTS]);
-    const currentScore: number = Number(localStorage[CONSTS.SCORE]);
-
+    const points = Number(localStorage[CONSTS.BONUS_POINTS]);
+    const currentScore = Number(localStorage[CONSTS.SCORE]);
     const newScore: number = currentScore + points;
     
     scoreGame.innerHTML = `${newScore}`;
     localStorage.setItem(CONSTS.SCORE, String(newScore));
+
+    const resultGameStatistic: IGameSprintStatistic = JSON.parse(localStorage[CONSTS.GAME_SPRINT_STATISTIC]);
+    resultGameStatistic.score = newScore;
+    localStorage.setItem(CONSTS.GAME_SPRINT_STATISTIC, JSON.stringify(resultGameStatistic));
 }
 
 function getBonus(star: number, medal: number): void {
@@ -276,19 +276,6 @@ function getBonusStar(): void {
     }
 }
 
-function deleteBonus(): void {
-    const bonusStars = document.querySelectorAll('.fa-star') as NodeList;
-    const bonusMedal = document.querySelectorAll('.fa-medal') as NodeList;
-
-    bonusStars.forEach((star: HTMLElement) => {
-        star.classList.remove('mark-star');
-    });
-
-    bonusMedal.forEach((medal: HTMLElement) => {
-        medal.classList.remove('mark-medal');
-    });
-}
-
 function deleteBonusStar(): void {
     const bonusStars = document.querySelectorAll('.fa-star') as NodeList;
 
@@ -297,31 +284,120 @@ function deleteBonusStar(): void {
     });
 }
 
-function animateContainer(color: string): void {
-    const container = document.querySelector('.word-card') as HTMLElement;
+function countBonus(): Bonus {
+    let countBonusStar = Number(localStorage[CONSTS.BONUS_STAR]);
+    let countBonusMedal = Number(localStorage[CONSTS.BONUS_MEDAL]);
 
-    container.animate([{ boxShadow: '0px 0px 0px 0px #ffffff' }, { boxShadow: `0px 0px 20px 5px ${color}` }], {
-        duration: 500,
-        iterations: 1,
-    });
+    const { minStar, maxStar, maxMedal } = CONSTS.BONUS_STAR_MEDAL;
+
+    if (countBonusStar === maxStar && !(countBonusMedal === maxMedal)) {
+        countBonusMedal = (countBonusMedal === maxMedal) ? maxMedal : countBonusMedal + 1;
+        countBonusStar = minStar;
+        deleteBonusStar();
+    } else {
+        countBonusStar = (countBonusStar === maxStar) ? maxStar : countBonusStar + 1;
+    }
+
+    if (countBonusMedal === maxMedal) {
+        countBonusStar = maxStar;
+        getBonusStar();
+    }
+
+    return {
+        star: countBonusStar,
+        medal: countBonusMedal
+    };
 }
 
+function checkAnswer(): void {
+    const resultGameStatistic: IGameSprintStatistic = JSON.parse(localStorage[CONSTS.GAME_SPRINT_STATISTIC]);
+    const wordEng: string = localStorage[CONSTS.WORD_ENG];
+    const wordRus: string = localStorage[CONSTS.CURRENT_TRANSLATE];
+    const compareTranslate: boolean = localStorage[CONSTS.TRUE_TRANSLATE] === localStorage[CONSTS.CURRENT_TRANSLATE];
+    const stateAnswer: boolean = localStorage[CONSTS.ANSWER] === 'true';
+    const currentCard = Number(localStorage[CONSTS.CURRENT_CARD]);
+    const words: IWord[] = JSON.parse(localStorage[CONSTS.WORDS]);
+    const { minStar, minMedal } = CONSTS.BONUS_STAR_MEDAL;
 
-// function shuffle(array: string[]) {
-//     for (let i = array.length - 1; i > 0; i--) {
-//         let j = Math.floor(Math.random() * (i + 1));
-//         [array[i], array[j]] = [array[j], array[i]];
-//     }
+    if (currentCard === words.length - 1) {
+        return;
+    }
+    
+    if ((compareTranslate && stateAnswer) || (!compareTranslate && !stateAnswer)) {
+        animateContainer(CONSTS.COLOR_SHADOW.green);
+        
+        const rightAnswers = Number(resultGameStatistic.rightAnswers);
+        resultGameStatistic.rightAnswers = rightAnswers + 1;
+        resultGameStatistic.rightWords.push({
+            eng: wordEng,
+            rus: wordRus,
+            audioURL: localStorage[CONSTS.AUDIO_WORD],
+        });
 
-//     return array;
-// }
+        localStorage.setItem(CONSTS.GAME_SPRINT_STATISTIC, JSON.stringify(resultGameStatistic));
+
+        const { star, medal } = countBonus();
+        localStorage.setItem(CONSTS.BONUS_STAR, String(star));
+        localStorage.setItem(CONSTS.BONUS_MEDAL, String(medal));
+
+        getBonus(star, medal);
+        getPoints(medal);
+        getScore();
+    }
+
+    if ((compareTranslate && !stateAnswer) || (!compareTranslate && stateAnswer)) {
+        animateContainer(CONSTS.COLOR_SHADOW.red);
+
+        const falseAnswers = Number(resultGameStatistic.falseAnswers);
+        resultGameStatistic.falseAnswers = falseAnswers + 1;
+        resultGameStatistic.falseWords.push({
+            eng: wordEng,
+            rus: wordRus,
+            audioURL: localStorage[CONSTS.AUDIO_WORD],
+        });
+        localStorage.setItem(CONSTS.GAME_SPRINT_STATISTIC, JSON.stringify(resultGameStatistic));
+
+        const star: number = minStar;
+        const medal: number = minMedal;
+
+        localStorage.setItem(CONSTS.BONUS_STAR, String(star));
+        localStorage.setItem(CONSTS.BONUS_MEDAL, String(medal));
+
+        deleteBonus();
+        getPoints(medal);
+    }
+}
+
+function playAudioWord(): void {
+    const audioWordURL = `${CONSTS.BASE_URL}${localStorage[CONSTS.AUDIO_WORD]}`;
+    const isMute = localStorage[CONSTS.AUDIO_MUTE];
+    
+    const playAudio = document.createElement('audio') as HTMLAudioElement;
+    playAudio.setAttribute('src', audioWordURL);
+
+    if (!isMute) {
+        playAudio.play();
+    }
+}
+
+function closeGame(): void {
+    const wordCard = document.querySelector('.word-card') as HTMLElement;
+    wordCard.classList.add('close-container');
+
+    setTimeout(() => {
+        window.location.hash = '#';
+    }, 600);
+}
 
 export default {
-    //hideContainer,
+    getGroup,
     showStopwatch,
     randomNumber, 
     startGameSprint,
     checkAnswer,
     makeNextWordCard,
     makeNextPage,
+    closeGame,
+    playAudioWord,
+    rightDeclensionWord,
 };
