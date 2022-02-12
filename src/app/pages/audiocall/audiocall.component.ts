@@ -4,7 +4,7 @@ import * as utils from './utils';
 import './audiocall.component.scss';
 import AudioQuestion from '../../components/audio-question/app.audio-question.html';
 import { appHeader } from '../../components/header/app.header';
-import { IAuth, IStatistics, IStatOptions, IWord, WordStatus } from '../../../spa/tools/controllerTypes';
+import { IAuth, IStatistics, IWord, WordStatus } from '../../../spa/tools/controllerTypes';
 import { AppAudioQuestion } from '../../components/audio-question/app.audio-question';
 import { ComponentEvent, ICallQuestion } from '../../../spa/core/coreTypes';
 import { IGameState, IGameStatistic, Mode } from '../../componentTypes';
@@ -158,8 +158,10 @@ class AudiocallComponent extends Component {
         this.sendStatistic(userInfo.userId, userInfo.token);
       } else if (userWordInfo.optional.gameProgress.audiocall.right === 5 && Number(this.level) >= 3) {
         userWordInfo.optional.status = WordStatus.learnt;
+        this.sendStatistic(userInfo.userId, userInfo.token);
       } else if (userWordInfo.optional.status !== WordStatus.learnt) {
         userWordInfo.optional.status = WordStatus.inProgress;
+        // delete from statistic?
       }
       userWordInfo.optional.updatedDate = new Date().toLocaleDateString();
       await this.controller.updateUserWord(userInfo.userId, userInfo.token, wordId, userWordInfo);
