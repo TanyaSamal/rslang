@@ -9,6 +9,7 @@ export enum UrlPath {
   WORDS = 'words',
   SIGNIN = 'signin',
   TOKENS = 'tokens',
+  STATISTICS = 'statistics',
   AGREGATED = 'aggregatedWords'
 }
 
@@ -62,6 +63,20 @@ export interface IUserWordOptions {
       right: number;
       wrong: number;
     };
+  }
+}
+
+export interface IStatOptions {
+  date: string,
+  newWords: number,
+  totalWords: number
+}
+
+export interface IStatistics {
+  id?: string,
+  learnedWords: number,
+  optional: {
+    stat: string
   }
 }
 

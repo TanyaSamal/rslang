@@ -2,12 +2,23 @@
 <main class="audiocall-page">
   <div class="container audiocall-container">
     <app-select-difficulty></app-select-difficulty>
-    <div class="game-audiocall">
+    <div class="game-audiocall container">
+      <div class="game-header">
+        <div class="stars">
+          <div class="stars-count">0</div>
+          <div class="add-stars">+1</div>
+        </div>
+        <div class="exit-game"></div>
+      </div>
       <div class="question-container"></div>
-      <div class="progress">
-        <ul class="progress-status">
-        </ul>
+      <div class="game-footer">
+        <div class="progress">
+          <ul class="progress-status">
+          </ul>
+        </div>
+        <div class="fullscreen-btn nofull"></div>
       </div>
     </div>
+    <app-result-game></app-result-game>
   </div>
 </main>

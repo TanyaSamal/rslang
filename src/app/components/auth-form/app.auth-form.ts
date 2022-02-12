@@ -103,28 +103,48 @@ class AppAuthForm extends Component {
     this.switchMode(REGISTRATION);
   }
 
+  showLoginError(msg: string) {
+    const errorMessage = <HTMLSpanElement>document.querySelector('.errorMsg');
+    errorMessage.textContent = msg;
+    errorMessage.style.opacity = '1';
+    setTimeout(() => {
+      errorMessage.style.opacity = '0';
+    }, 5000);
+  }
+
+  async setUserName(userId: string, token: string) {
+    const userName = await this.controller.getUserName(userId, token);
+    if (userName) {
+      (<HTMLDivElement>document.querySelector('.user-name')).textContent = userName;
+      localStorage.setItem('userName', userName);
+    }
+  }
+
   async loginUser(userEmail: string, userPwd: string): Promise<void> {
     const res = await this.controller.loginUser({email: userEmail, password: userPwd});
     if (res.status !== 404 && res.status !== 403) {
-      const content: Promise<IAuth> = await res.json();
+      const content: IAuth = await res.json();
       window.localStorage.setItem("userInfo", JSON.stringify(content));
+      window.localStorage.setItem("userId", content.userId);
       const { token } = await content;
       this.observable.notify(token);
       if (content) router.navigate('textbook');
+      await this.setUserName(content.userId, token);
     } else {
-      const errorMessage = <HTMLSpanElement>document.querySelector('.errorMsg');
-      errorMessage.style.opacity = '1';
-      setTimeout(() => {
-        errorMessage.style.opacity = '0';
-      }, 5000);
+      this.showLoginError('Неправильный e-mail или пароль');
     }
   }
 
   async registration(): Promise<void> {
+    const name = <HTMLInputElement>document.querySelector('#name');
     const email = <HTMLInputElement>document.querySelector('#email');
     const password = <HTMLInputElement>document.querySelector('#pwd');
-    await this.controller.createUser({email: email.value, password: password.value});
-    this.loginUser(email.value, password.value);
+    const res = await this.controller.createUser({name: name.value, email: email.value, password: password.value});
+    if (res.ok) {
+      this.loginUser(email.value, password.value);
+    } else {
+      this.showLoginError('Пользователь с таким e-mail уже существует');
+    }
   }
 
   login(): void {

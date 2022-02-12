@@ -1,3 +1,6 @@
+import { IAuth, IStatistics, IStatOptions } from "../../../spa/tools/controllerTypes";
+import { IGamePoints } from "../../componentTypes";
+
 export const getRandomNumber = (max: number): number => Math.floor(Math.random() * max);
 
 export const shuffleArray = <T>(answers: Array<T>): Array<T> => {
@@ -54,4 +57,79 @@ export const showAnswerInfo = () => {
       answer.style.transform = 'scale(1)';
     }, 100);
   }, 500);
+}
+
+export const addStars = (points: number) => {
+  const stars = <HTMLDivElement>document.querySelector('.add-stars');
+  const starsCount = <HTMLDivElement>document.querySelector('.stars-count');
+  stars.textContent = `+${points}`;
+  stars.style.visibility = 'visible';
+  setTimeout(() => {
+    stars.style.transform = 'translateY(0)';
+    stars.style.fontSize = '1em';
+    stars.style.opacity = '0';
+    setTimeout(() => {
+      stars.style.transform = 'translateY(50px)';
+      stars.style.fontSize = '1.5em';
+      stars.style.opacity = '1';
+      stars.style.visibility = 'hidden';
+      starsCount.textContent = `${Number(starsCount.textContent) + points}`;
+    }, 1000);
+  }, 0);
+}
+
+export const savePoints = () => {
+  let points = Number((<HTMLDivElement>document.querySelector('.stars-count')).textContent);
+  const userInfo: IAuth = JSON.parse(localStorage.getItem('userInfo'));
+  const today = new Date().toLocaleDateString();
+  if (localStorage.getItem('audiocallPoints')) {
+    const localResults: IGamePoints = JSON.parse(localStorage.getItem('audiocallPoints'));
+    if (localResults.date === today) {
+      points += +(localResults.points);
+    } else {
+      localStorage.removeItem('audiocallPoints');
+    }
+  }
+  localStorage.setItem('audiocallPoints', JSON.stringify({
+    userId: userInfo.userId,
+    points: points.toString(),
+    date: today
+  }));
+  document.querySelector('.game-points').textContent = `${points}`;
+}
+
+export const makeStatistic = (currentStatistic: IStatistics): IStatistics => {
+  const today = new Date().toLocaleDateString();
+  const statistic: IStatOptions = {
+    date: today,
+    newWords: 1,
+    totalWords: 1
+  }
+  if (currentStatistic) {
+    delete currentStatistic.id;
+    const currentStat: IStatOptions[] = JSON.parse(currentStatistic.optional.stat);
+    if (currentStat[currentStat.length - 1].date === today) {
+      currentStatistic.learnedWords += 1;
+      currentStat[currentStat.length - 1].newWords += 1;
+      currentStat[currentStat.length - 1].totalWords += 1;
+    } else {
+      let learnt = 0;
+      currentStat.forEach(el => {
+        learnt += el.totalWords
+      });
+      statistic.totalWords = learnt + 1;
+      currentStatistic.learnedWords = learnt + 1;
+      currentStat.push(statistic);
+    }
+    currentStatistic.optional.stat = JSON.stringify(currentStat);
+  } else {
+    // eslint-disable-next-line no-param-reassign
+    currentStatistic = {
+      learnedWords: 1,
+      optional: {
+        stat: JSON.stringify([statistic])
+      }
+    }
+  }
+  return currentStatistic;
 }
