@@ -29,6 +29,7 @@ const AUDIO_MUTE = 'audio_mute';
 const GAME_SPRINT_STATISTIC = 'game_sprint_statistic';
 const WORD_ENG = 'word_eng';
 const TIMER_ID_SPRINT = 'timer_id_sprint';
+const TIMER_ID_START_GAME = 'timer_id_start_game';
 
 const NAME_COUNT_WORDS: string[] = ['слово', 'слова', 'слов'];
 const NAME_COUNT_POINTS: string[] = ['балл', 'балла', 'баллов'];
@@ -45,7 +46,7 @@ enum COLOR_SHADOW {
 
 enum COLOR_DIAGRAMM {
     old = '#b8eee1',
-    new = '#71dec5',
+    new = '#21977c',
 }
 
 enum BONUS_STAR_MEDAL {
@@ -57,7 +58,7 @@ enum BONUS_STAR_MEDAL {
 
 enum CITATION {
     first = 'Это хорошее начало!',
-    one = 'Стабильность – признак мастерства!',
+    one = 'Не растраивайся, 0 - тоже результат:)',
     two = 'Я знаю, что ты можешь лучше!',
     three = 'Молодец, так держать!',
 }
@@ -96,6 +97,7 @@ export default {
     GAME_SPRINT_STATISTIC,
     WORD_ENG,
     TIMER_ID_SPRINT,
+    TIMER_ID_START_GAME,
     COLOR_DIAGRAMM,
     CITATION,
     NAME_COUNT_WORDS,

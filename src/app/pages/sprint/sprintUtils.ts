@@ -19,9 +19,9 @@ function hideContainer(container: HTMLElement): void {
     container.classList.add('hide');
 }
 
-function hideVisibilityContainer(container: HTMLElement): void {
-    container.classList.add('hide-visibility');
-}
+// function hideVisibilityContainer(container: HTMLElement): void {
+//     container.classList.add('hide-visibility');
+// }
 
 function showContainer(container: HTMLElement): void {
     container.classList.add('show');
@@ -131,10 +131,8 @@ function startGameSprint(group: string, page: string): void {
 function showStopwatch(group: string, page: string): void {
     const stopwatchСontainer = document.querySelector('.stopwatch-container') as HTMLElement;
     const stopwatch = document.querySelector('.stopwatch') as HTMLElement;
-    const headerContainer = document.querySelector('header') as HTMLElement;
-    
+
     showContainer(stopwatchСontainer);
-    hideVisibilityContainer(headerContainer);
 
     const count = document.createElement('span') as HTMLElement;
     stopwatch.append(count);
@@ -152,6 +150,7 @@ function showStopwatch(group: string, page: string): void {
             startGameSprint(group, page);
         } else {
             timerId = setTimeout(tick, 1000);
+            localStorage.setItem(CONSTS.TIMER_ID_START_GAME, String(timerId));
         }
     }, 1000);
 }
@@ -400,4 +399,5 @@ export default {
     closeGame,
     playAudioWord,
     rightDeclensionWord,
+    hideContainer,
 };

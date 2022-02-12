@@ -77,7 +77,10 @@ class SprintComponent extends Component {
       }
 
       if (gameAgain) {
-        // appSelectDifficulty.render('app-select-difficulty');
+        const resultGameContainer = document.querySelector('.result-game-container') as HTMLElement;
+        
+        UTILS.hideContainer(resultGameContainer);
+        appSelectDifficulty.render('app-select-difficulty');
       }
     }
   }
