@@ -3,6 +3,7 @@ import Header from './app.header.html';
 
 import { Component, router } from '../../../spa';
 import { ComponentEvent } from '../../../spa/core/coreTypes';
+import { IGamePoints } from '../../componentTypes';
 
 class AppHeader extends Component {
   isMenuOpen = false;
@@ -22,9 +23,20 @@ class AppHeader extends Component {
 
   changeLoginStatus() {
     const loginBtn = <HTMLAnchorElement>document.querySelector('.auth-btn');
-    const logoutBtn = <HTMLAnchorElement>document.querySelector('.logout-btn');
+    const logoutBtn = <HTMLAnchorElement>document.querySelector('.user-info');
     loginBtn.style.display = (this.isLoggedIn) ? 'none' : 'block';
-    logoutBtn.style.display = (this.isLoggedIn) ? 'block' : 'none';
+    logoutBtn.style.display = (this.isLoggedIn) ? 'flex' : 'none';
+    const userName = localStorage.getItem('userName');
+    if (userName) {
+      (<HTMLDivElement>document.querySelector('.user-name')).textContent = userName;
+      if (localStorage.getItem('audiocallPoints')) {
+        const localResults: IGamePoints = JSON.parse(localStorage.getItem('audiocallPoints'));
+        if (localResults.date === new Date().toLocaleDateString() &&
+          localResults.userId === JSON.parse(localStorage.getItem('userInfo')).userId) {
+          document.querySelector('.game-points').textContent = localResults.points;
+        }
+      }
+    }
   }
 
   afterInit() {
@@ -54,9 +66,9 @@ class AppHeader extends Component {
   logout(): void {
     this.isLoggedIn = false;
     this.token = '';
+    localStorage.removeItem('userInfo');
+    localStorage.removeItem('currentPage');
     router.navigate('#');
-    window.localStorage.removeItem("userInfo");
-    window.localStorage.removeItem("currentPage"); // clear?
     this.changeLoginStatus();
     this.showHomePageLoginForm();
   }

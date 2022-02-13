@@ -111,13 +111,13 @@ class TextbookComponent extends Component {
   }
 
   goToAudioCall() {
+    router.navigate('_audiocall');
     this.saveStateInLocalStorage('audiocallState');
-    router.navigate('audiocall');
   }
 
   goToSpring() {
+    router.navigate('_sprint');
     this.saveStateInLocalStorage('sprintState');
-    router.navigate('sprint');
   }
 
   changeDictPaginationState() {

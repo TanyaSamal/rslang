@@ -51,17 +51,25 @@ class AppSelectDifficulty extends Component {
         UTILS.activateButton();
       }
 
+      if (level1 || level2 || level3 || level4 || level5 || level6) {
+        const group: string = UTILS.getGroup();
+        const page = String(UTILS.randomNumber(CONSTS.MIN_PAGE, CONSTS.MAX_PAGE));
+
+        localStorage.setItem(CONSTS.GROUP, group);
+        localStorage.setItem(CONSTS.PAGE, page);
+      }
+
       if (buttonStartSprint) {
         const welcomeContainer = document.querySelector('.welcome-container') as HTMLElement;
 
         if (localStorage[CONSTS.SPRINT_STATE]) {
           UTILS.hideContainer(welcomeContainer);
         } else {
-          const group: string = UTILS.getGroup();
-          const page = String(UTILS.randomNumber(CONSTS.MIN_PAGE, CONSTS.MAX_PAGE));
+          // const group: string = UTILS.getGroup();
+          // const page = String(UTILS.randomNumber(CONSTS.MIN_PAGE, CONSTS.MAX_PAGE));
 
-          localStorage.setItem(CONSTS.GROUP, group);
-          localStorage.setItem(CONSTS.PAGE, page);
+          // localStorage.setItem(CONSTS.GROUP, group);
+          // localStorage.setItem(CONSTS.PAGE, page);
 
           localStorage.setItem(CONSTS.BONUS_STAR, String(CONSTS.BONUS_STAR_MEDAL.minStar));
           localStorage.setItem(CONSTS.BONUS_MEDAL, String(CONSTS.BONUS_STAR_MEDAL.minMedal));
@@ -144,13 +152,16 @@ class AppSelectDifficulty extends Component {
       }
     }
   }
+
+  afterInit() {
+    const container = document.querySelector('.welcome-container');
+    container.addEventListener('click', this.getEventsClick.bind(this));
+    container.addEventListener('mouseover', this.getEventsMouseOver.bind(this));
+    container.addEventListener('mouseout', this.getEventsMouseOut.bind(this));
+  }
 }
 
 export const appSelectDifficulty = new AppSelectDifficulty({
   selector: 'app-select-difficulty',
   template: SelectDifficulty,
 });
-
-document.addEventListener('click', appSelectDifficulty.getEventsClick);
-document.addEventListener('mouseover', appSelectDifficulty.getEventsMouseOver);
-document.addEventListener('mouseout', appSelectDifficulty.getEventsMouseOut);

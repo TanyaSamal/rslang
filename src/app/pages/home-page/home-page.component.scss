@@ -16,6 +16,17 @@
   box-shadow: 2px 4px 7px -2px rgba(34, 60, 80, 0.2);
 }
 
+.element-animation {
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+.element-animation.element-show {
+  opacity: 1;
+  transition: all 1.5s;
+  transform: translateY(0);
+}
+
 .promo {
   background: url('../../../assets/BG.png');
   background-position-y: -57px;

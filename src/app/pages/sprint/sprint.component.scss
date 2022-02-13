@@ -154,10 +154,12 @@
 
                     .mark-star {
                         color: #0094ff;
+                        filter: drop-shadow(0px 0px 5px red);
                     }
 
                     .mark-medal {
                         color: #ffd700;
+                        filter: drop-shadow(0px 0px 5px red);
                     }
                 }
 

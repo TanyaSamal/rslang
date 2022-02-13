@@ -1,7 +1,8 @@
 import './app.word.scss';
 import { Component, Controller } from '../../../spa';
 import { ComponentEvent, IComponentConfig } from '../../../spa/core/coreTypes';
-import { IAuth, IUserWord, WordStatus } from '../../../spa/tools/controllerTypes';
+import { IAuth, IStatistics, IUserWord, WordStatus } from '../../../spa/tools/controllerTypes';
+import { makeStatistic } from '../../pages/audiocall/utils';
 import * as utils from '../../pages/textbook/utils';
 
 export class AppWord extends Component {
@@ -57,6 +58,12 @@ export class AppWord extends Component {
     }
   }
 
+  async sendStatistic(userId: string, token: string) {
+    const currentStatistic: IStatistics = await this.controller.getStatistics(userId, token);
+    const newStatistic = makeStatistic(currentStatistic);
+    await this.controller.setStatistics(userId, token, newStatistic);
+  }
+
   async addInDifficult() {
     this.changeWordStatus('C');
     utils.checkPageProgress();
@@ -73,6 +80,7 @@ export class AppWord extends Component {
     const userInfo: IAuth = JSON.parse(localStorage.getItem('userInfo'));
     const wordID: string = JSON.parse(localStorage.getItem('activeWordID'));
     await this.controller.createUserWord(userInfo.userId, wordID, wordProgress, userInfo.token);
+    await this.sendStatistic(userInfo.userId, userInfo.token);
   }
 
   afterInit() {

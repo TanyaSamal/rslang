@@ -27,6 +27,7 @@ const BEST_SCORE = 'best_score';
 const SPRINT_STATE = 'sprintState';
 const AUDIO_MUTE = 'audio_mute';
 const GAME_SPRINT_STATISTIC = 'game_sprint_statistic';
+const GAME_AUDIOCALL_STATISTIC = 'game_audiocall_statistic';
 const WORD_ENG = 'word_eng';
 const TIMER_ID_SPRINT = 'timer_id_sprint';
 const TIMER_ID_START_GAME = 'timer_id_start_game';
@@ -95,6 +96,7 @@ export default {
     AUDIO_WORD,
     AUDIO_MUTE,
     GAME_SPRINT_STATISTIC,
+    GAME_AUDIOCALL_STATISTIC,
     WORD_ENG,
     TIMER_ID_SPRINT,
     TIMER_ID_START_GAME,

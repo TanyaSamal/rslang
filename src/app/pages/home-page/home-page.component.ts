@@ -13,6 +13,20 @@ class HomePageComponent extends Component {
     listener: this.readMore,
   }];
 
+  addAnimation() {
+    function onEntry(entry: IntersectionObserverEntry[]) {
+      entry.forEach(change => {
+        if (change.isIntersecting) {
+          change.target.classList.add('element-show');
+        }
+      });
+    }
+    const options = { threshold: [0.5] };
+    const observer: IntersectionObserver = new IntersectionObserver(onEntry, options);
+    const elements = document.querySelectorAll('.element-animation');
+    elements.forEach((elm) => observer.observe(elm));
+  }
+
   afterInit() {
     const liginBlocks = document.querySelectorAll('.authorization-block');
     liginBlocks.forEach((loginEl: HTMLDivElement) => {
@@ -28,6 +42,7 @@ class HomePageComponent extends Component {
     } else {
       regSection.style.display = 'flex';
     }
+    this.addAnimation();
   }
 
   readMore(): void {

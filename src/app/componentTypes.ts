@@ -23,4 +23,10 @@ export interface IGameStatistic {
   newWords: number
 }
 
+export interface IGamePoints {
+  userId: string,
+  points: string,
+  date: string
+}
+
 export type IPageState = Omit<IGameState, 'textbookWords' | 'dictionaryWords'>
