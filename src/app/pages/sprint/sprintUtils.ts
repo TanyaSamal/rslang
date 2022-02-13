@@ -1,5 +1,6 @@
 import Controller from "../../../spa/tools/controller";
 import { IWord } from "../../../spa/tools/controllerTypes";
+import { IGameState } from  "../../componentTypes";
 import CONSTS from "./sprintConsts";
 import { Bonus, IGameSprintStatistic } from "./sprintTypes";
 import { appResultGame } from '../../components/result-game/app.result-game';
@@ -98,7 +99,7 @@ function fillArrayWordTranslate(words: IWord[]): string[] {
     return wordsTranslate;
 }
 
-function startGameSprint(group: string, page: string): void {
+function startGameSprint(group?: string, page?: string): void {
     const resultGameStatistic: IGameSprintStatistic = {
         score: 0,
         rightAnswers: 0,
@@ -115,9 +116,9 @@ function startGameSprint(group: string, page: string): void {
     const rightNamePoints = document.querySelector('.right-name-points') as HTMLElement;
     rightNamePoints.innerHTML = 'балл';
 
-    const wordsPromise: Promise<IWord[]> = new Controller().getWords(group, page);
-
-    wordsPromise.then((words: IWord[]) => {
+    if (localStorage[CONSTS.SPRINT_STATE]) {
+        const gameState: IGameState = JSON.parse(localStorage[CONSTS.SPRINT_STATE]);
+        const words: IWord[] = gameState.textbookWords;
         const wordsTranslate: string[] = fillArrayWordTranslate(words);
 
         localStorage.setItem(CONSTS.WORDS, JSON.stringify(words));
@@ -125,10 +126,22 @@ function startGameSprint(group: string, page: string): void {
 
         startTimerGame();
         makeWordCard(words, CONSTS.START_NUMBER_CARD, wordsTranslate);
-    });
+    } else {
+        const wordsPromise: Promise<IWord[]> = new Controller().getWords(group, page);
+
+        wordsPromise.then((words: IWord[]) => {
+            const wordsTranslate: string[] = fillArrayWordTranslate(words);
+
+            localStorage.setItem(CONSTS.WORDS, JSON.stringify(words));
+            localStorage.setItem(CONSTS.CURRENT_CARD, String(CONSTS.START_NUMBER_CARD));
+
+            startTimerGame();
+            makeWordCard(words, CONSTS.START_NUMBER_CARD, wordsTranslate);
+        });
+    }
 }
 
-function showStopwatch(group: string, page: string): void {
+function showStopwatch(group?: string, page?: string): void {
     const stopwatchСontainer = document.querySelector('.stopwatch-container') as HTMLElement;
     const stopwatch = document.querySelector('.stopwatch') as HTMLElement;
 

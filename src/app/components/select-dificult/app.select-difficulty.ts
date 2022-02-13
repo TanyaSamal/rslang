@@ -63,6 +63,8 @@ class AppSelectDifficulty extends Component {
         const welcomeContainer = document.querySelector('.welcome-container') as HTMLElement;
 
         if (localStorage[CONSTS.SPRINT_STATE]) {
+          localStorage.setItem(CONSTS.SCORE, '0');
+          localStorage.removeItem(CONSTS.AUDIO_MUTE);
           UTILS.hideContainer(welcomeContainer);
         } else {
           // const group: string = UTILS.getGroup();
@@ -73,10 +75,8 @@ class AppSelectDifficulty extends Component {
 
           localStorage.setItem(CONSTS.BONUS_STAR, String(CONSTS.BONUS_STAR_MEDAL.minStar));
           localStorage.setItem(CONSTS.BONUS_MEDAL, String(CONSTS.BONUS_STAR_MEDAL.minMedal));
-
           localStorage.setItem(CONSTS.SCORE, '0');
           localStorage.removeItem(CONSTS.AUDIO_MUTE);
-
           UTILS.hideContainer(welcomeContainer);
         }
       }

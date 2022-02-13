@@ -20,10 +20,13 @@ class SprintComponent extends Component {
       const gameAgain = event.target.closest('.game-again') as HTMLElement;
 
       if (buttonStartSprint) {
-        const group: string = UTILS.getGroup();
-        const page = String(UTILS.randomNumber(CONSTS.MIN_PAGE, CONSTS.MAX_PAGE));
-
-        UTILS.showStopwatch(group, page);
+        if (!localStorage[CONSTS.SPRINT_STATE]) {
+          const group: string = UTILS.getGroup();
+          const page = String(UTILS.randomNumber(CONSTS.MIN_PAGE, CONSTS.MAX_PAGE));
+          UTILS.showStopwatch(group, page);
+        } else {
+          UTILS.showStopwatch();
+        }
       }
 
       if (volume) {
@@ -118,6 +121,12 @@ class SprintComponent extends Component {
       }
     }
   }
+
+  afterInit() {
+    const container = document.querySelector('.sprint-page-container');
+    container.addEventListener('click', this.getEventsClick.bind(this));
+    document.addEventListener('keydown', this.getEventsKeyDown.bind(this));
+  }
 }
 
 export const sprintComponent = new SprintComponent({
@@ -129,6 +138,3 @@ export const sprintComponent = new SprintComponent({
   ],
   template: Sprint,
 });
-
-document.addEventListener('click', sprintComponent.getEventsClick);
-document.addEventListener('keydown', sprintComponent.getEventsKeyDown);
