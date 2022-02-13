@@ -31,6 +31,7 @@ const GAME_AUDIOCALL_STATISTIC = 'game_audiocall_statistic';
 const WORD_ENG = 'word_eng';
 const TIMER_ID_SPRINT = 'timer_id_sprint';
 const TIMER_ID_START_GAME = 'timer_id_start_game';
+const SPRINT_STATISTIC = 'sprintStatistic';
 
 const NAME_COUNT_WORDS: string[] = ['слово', 'слова', 'слов'];
 const NAME_COUNT_POINTS: string[] = ['балл', 'балла', 'баллов'];
@@ -103,5 +104,6 @@ export default {
     COLOR_DIAGRAMM,
     CITATION,
     NAME_COUNT_WORDS,
-    NAME_COUNT_POINTS
+    NAME_COUNT_POINTS,
+    SPRINT_STATISTIC
 };

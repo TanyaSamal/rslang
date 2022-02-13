@@ -1,6 +1,6 @@
 import Controller from "../../../spa/tools/controller";
 import { IWord } from "../../../spa/tools/controllerTypes";
-import { IGameState } from  "../../componentTypes";
+import { IGameState, IGameStatistic } from  "../../componentTypes";
 import CONSTS from "./sprintConsts";
 import { Bonus, IGameSprintStatistic } from "./sprintTypes";
 import { appResultGame } from '../../components/result-game/app.result-game';
@@ -58,6 +58,7 @@ function startTimerGame(): void {
         if (currentTimer < 0) {
             clearInterval(timerId);
             getResultGame();
+            saveGameStatistic();
         } else {
             timerId = setTimeout(tick, 1000);
             localStorage.setItem(CONSTS.TIMER_ID_SPRINT, String(timerId));
@@ -319,6 +320,33 @@ function countBonus(): Bonus {
         star: countBonusStar,
         medal: countBonusMedal
     };
+}
+
+function saveGameStatistic(): void {
+    const resultGameStatistic: IGameSprintStatistic = JSON.parse(localStorage[CONSTS.GAME_SPRINT_STATISTIC]);
+    let longest: number = resultGameStatistic.rightAnswers + resultGameStatistic.falseAnswers;
+    let rightAnswers: number = resultGameStatistic.rightAnswers;
+    let totalAnswers: number = resultGameStatistic.rightAnswers + resultGameStatistic.falseAnswers;
+    let newWords: number = resultGameStatistic.rightAnswers;
+    
+    if (localStorage[CONSTS.SPRINT_STATISTIC]) {
+        const statistic: IGameStatistic = JSON.parse(localStorage[CONSTS.SPRINT_STATISTIC]);
+        
+        if (statistic.date === new Date().toLocaleDateString()) {
+            longest = (longest > statistic.longest) ? longest : statistic.longest;
+            rightAnswers += statistic.rightAnswers;
+            totalAnswers += statistic.totalAnswers;
+            newWords += statistic.rightAnswers;
+        }
+    }
+
+    localStorage.setItem(CONSTS.SPRINT_STATISTIC, JSON.stringify({
+        date: new Date().toLocaleDateString(), 
+        longest,
+        rightAnswers,
+        totalAnswers,
+        newWords
+    }));
 }
 
 function checkAnswer(): void {
