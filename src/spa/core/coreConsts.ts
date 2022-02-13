@@ -14,3 +14,4 @@ export const GAME_AUDIOCALL_OPTIONS: GAME = {
 };
 
 export const SPRINT_STATE = 'sprintState';
+export const AUDIOCALL_STATE = 'audiocallState';
