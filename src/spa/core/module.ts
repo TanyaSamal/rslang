@@ -54,6 +54,8 @@ export default class Module implements IModule {
     const timerIdStartGame: number = localStorage[CONSTS.TIMER_ID_START_GAME];
     clearInterval(timerIdSprintGame);
     clearInterval(timerIdStartGame);
+
+    CONSTS.SOUND_TIME.pause();
   }
 
   private initRoutes(): void  {
