@@ -5,15 +5,15 @@ function rightDeclensionWord(value: number): number {
   let result: number = value % 100;
 
   if (result > 19) {
-      result %= 10;
+    result %= 10;
   }
 
   switch (result) {
-      case 1: return 0;
-      case 2: return 1;
-      case 3: return 1;
-      case 4: return 1;
-      default: return 2;
+    case 1: return 0;
+    case 2: return 1;
+    case 3: return 1;
+    case 4: return 1;
+    default: return 2;
   }
 }
 
