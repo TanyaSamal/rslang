@@ -59,6 +59,15 @@ export const showAnswerInfo = () => {
   }, 500);
 }
 
+export const changeAnswerState = () => {
+  document.querySelector('.forward-btn').textContent = 'Дальше';
+  const answerBtns = document.querySelectorAll('.answer-btn');
+  answerBtns.forEach((btn: HTMLButtonElement) => {
+    btn.disabled = true;
+  });
+  showAnswerInfo();
+}
+
 export const addStars = (points: number) => {
   const stars = <HTMLDivElement>document.querySelector('.add-stars');
   const starsCount = <HTMLDivElement>document.querySelector('.stars-count');

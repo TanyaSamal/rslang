@@ -51,7 +51,11 @@
 
 .chart-container {
   position: relative;
-  height: 400px;
+  height: 800px;
   width: 80%;
   margin: 20px auto;
+
+  @media (max-width: 1440px) {
+    height: 400px;
+  }
 }

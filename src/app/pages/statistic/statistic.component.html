@@ -1,6 +1,75 @@
 <app-header></app-header>
 <main class="statistic-page container">
-  <app-game-statistic></app-game-statistic>
+  <div class="word-statistic__container">
+    <h2>Статистика за день</h2>
+    <div class="words-statistics">
+      <div class="new-words words-statistic">
+        <p>0</p>
+        <p>Новых слов</p>
+      </div>
+      <div class="learned-words words-statistic">
+        <p>0</p>
+        <p>Изученных слов</p>
+      </div>
+      <div class="percent-words words-statistic">
+        <p>0%</p>
+        <p>Правильных ответов</p>
+      </div>
+    </div>
+  </div>
+  <div class="games-statistic__container">
+    <h2>Статистика по играм</h2>
+    <div class="games-statistic">
+      <div class="audiocall-statistic">
+        <div class="game-statistic-card">
+          <h3>Аудиовызов</h3>
+          <p>
+            <svg class="MuiSvgIcon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M16.59 7.58L10 14.17l-3.59-3.58L5 12l5 5 8-8zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"></path>
+            </svg>
+            Новых слов: &nbsp;<span class="learnt-words">0</span>.
+          </p>
+          <p>
+            <svg class="MuiSvgIcon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"></path>
+            </svg>
+            Правильных ответов: &nbsp;<span class="right-answers">0</span>%.
+          </p>
+          <p>
+            <svg class="MuiSvgIcon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M18 7l-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41L11.66 19l12-12-1.42-1.41zM.41 13.41L6 19l1.41-1.41L1.83 12 .41 13.41z"></path>
+            </svg>
+            Самая длинная серия правильных ответов: &nbsp;<span class="long-series">0</span>.
+          </p>
+          <div class="color"></div>
+        </div>
+      </div>
+      <div class="sprint-statistic">
+        <div class="game-statistic-card">
+          <h3>Спринт</h3>
+          <p>
+            <svg class="MuiSvgIcon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M16.59 7.58L10 14.17l-3.59-3.58L5 12l5 5 8-8zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"></path>
+            </svg>
+            Новых слов: &nbsp;<span class="learnt-words">0</span>.
+          </p>
+          <p>
+            <svg class="MuiSvgIcon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"></path>
+            </svg>
+            Правильных ответов: &nbsp;<span class="right-answers">0</span>%.
+          </p>
+          <p>
+            <svg class="MuiSvgIcon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M18 7l-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41L11.66 19l12-12-1.42-1.41zM.41 13.41L6 19l1.41-1.41L1.83 12 .41 13.41z"></path>
+            </svg>
+            Самая длинная серия правильных ответов: &nbsp;<span class="long-series">0</span>.
+          </p>
+          <div class="color"></div>
+        </div>
+      </div>
+    </div>
+  </div>
   <app-long-statistic></app-long-statistic>
 </main>
 <app-footer></app-footer>

@@ -202,12 +202,7 @@ class AudiocallComponent extends Component {
       this.isAnswered = true;
       this.answers[this.currentQuestion] = -1;
       utils.showAnswer(INCORRECT, this.currentQuestion + 1);
-      utils.showAnswerInfo();
-      document.querySelector('.forward-btn').textContent = 'Дальше';
-      const answerBtns = document.querySelectorAll('.answer-btn');
-      answerBtns.forEach((btn: HTMLButtonElement) => {
-        btn.disabled = true;
-      });
+      utils.changeAnswerState();
     }
   }
 
@@ -227,12 +222,7 @@ class AudiocallComponent extends Component {
       target.classList.add(correctness);
       if (localStorage.getItem('userInfo'))
         this.sendAnswer(this.gameWords[this.currentQuestion].id, correctness);
-      document.querySelector('.forward-btn').textContent = 'Дальше';
-      const answerBtns = document.querySelectorAll('.answer-btn');
-      answerBtns.forEach((btn: HTMLButtonElement) => {
-        btn.disabled = true;
-      });
-      utils.showAnswerInfo();
+      utils.changeAnswerState();
     }
   }
 
