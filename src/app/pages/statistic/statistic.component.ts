@@ -16,11 +16,14 @@ class StatisticComponent extends Component {
     const percentWordsEl = <HTMLParagraphElement>document.querySelector('.percent-words p:first-child');
     const audiocallStatistic: IGameStatistic = JSON.parse(localStorage.getItem('audiocallStatistic'));
     const sprintStatistic: IGameStatistic = JSON.parse(localStorage.getItem('sprintStatistic'));
-    if (audiocallStatistic && sprintStatistic) {
+    if (audiocallStatistic && sprintStatistic 
+      && audiocallStatistic.date === new Date().toLocaleDateString()
+      && sprintStatistic.date === new Date().toLocaleDateString()) {
       percentWordsEl.textContent = `${Math.round((audiocallStatistic.rightAnswers + sprintStatistic.rightAnswers) /
       (audiocallStatistic.totalAnswers + sprintStatistic.totalAnswers) * 100)}%`;
       newWordsEl.textContent = `${audiocallStatistic.newWords + sprintStatistic.newWords}`
-    } else if (audiocallStatistic || sprintStatistic){
+    } else if ((audiocallStatistic && audiocallStatistic.date === new Date().toLocaleDateString())
+      || (sprintStatistic && sprintStatistic.date === new Date().toLocaleDateString())){
       percentWordsEl.textContent = (audiocallStatistic) ?
         (document.querySelectorAll('.games-statistic .right-answers'))[0].textContent :
         (document.querySelectorAll('.games-statistic .right-answers'))[1].textContent;
@@ -39,12 +42,12 @@ class StatisticComponent extends Component {
     const learntEl = document.querySelectorAll('.games-statistic .learnt-words');
     const rightEl = document.querySelectorAll('.games-statistic .right-answers');
     const seriesEl = document.querySelectorAll('.games-statistic .long-series');
-    if (audiocallStatistic) {
+    if (audiocallStatistic && audiocallStatistic.date === new Date().toLocaleDateString()) {
       learntEl[0].textContent = `${audiocallStatistic.newWords}`;
       rightEl[0].textContent = `${Math.round(audiocallStatistic.rightAnswers / audiocallStatistic.totalAnswers * 100)}`;
       seriesEl[0].textContent = `${audiocallStatistic.longest}`;
     }
-    if (sprintStatistic) {
+    if (sprintStatistic && sprintStatistic.date === new Date().toLocaleDateString()) {
       learntEl[1].textContent = `${sprintStatistic.newWords}`;
       rightEl[1].textContent = `${Math.round(sprintStatistic.rightAnswers/ sprintStatistic.totalAnswers * 100)}`;
       seriesEl[1].textContent = `${sprintStatistic.longest}`;
