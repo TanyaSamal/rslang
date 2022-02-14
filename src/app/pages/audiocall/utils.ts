@@ -78,6 +78,15 @@ export const addStars = (points: number) => {
   }, 0);
 }
 
+function updatePointsHeader(): void {
+  const gamePoints = document.querySelector('.game-points') as HTMLElement;
+  const audiocallResult: IGamePoints = JSON.parse(localStorage.getItem('audiocallPoints'));
+  const sprintResult: IGamePoints = JSON.parse(localStorage.getItem('sprintPoints'));
+
+  const newPoints: number = Number(audiocallResult.points) + Number(sprintResult.points);
+  gamePoints.textContent = String(newPoints);
+}
+
 export const savePoints = () => {
   let points = Number((<HTMLDivElement>document.querySelector('.stars-count')).textContent);
   const userInfo: IAuth = JSON.parse(localStorage.getItem('userInfo'));
@@ -95,7 +104,9 @@ export const savePoints = () => {
     points: points.toString(),
     date: today
   }));
-  document.querySelector('.game-points').textContent = `${points}`;
+
+  updatePointsHeader();
+  //document.querySelector('.game-points').textContent = `${points}`;
 }
 
 export const makeStatistic = (currentStatistic: IStatistics): IStatistics => {
