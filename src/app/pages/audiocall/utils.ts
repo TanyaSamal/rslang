@@ -90,12 +90,14 @@ export const savePoints = () => {
       localStorage.removeItem('audiocallPoints');
     }
   }
-  localStorage.setItem('audiocallPoints', JSON.stringify({
-    userId: userInfo.userId,
-    points: points.toString(),
-    date: today
-  }));
-  document.querySelector('.game-points').textContent = `${points}`;
+  if (userInfo) {
+    localStorage.setItem('audiocallPoints', JSON.stringify({
+      userId: userInfo.userId,
+      points: points.toString(),
+      date: today
+    }));
+    document.querySelector('.game-points').textContent = `${points}`;
+  }
 }
 
 export const makeStatistic = (currentStatistic: IStatistics): IStatistics => {
@@ -113,12 +115,8 @@ export const makeStatistic = (currentStatistic: IStatistics): IStatistics => {
       currentStat[currentStat.length - 1].newWords += 1;
       currentStat[currentStat.length - 1].totalWords += 1;
     } else {
-      let learnt = 0;
-      currentStat.forEach(el => {
-        learnt += el.totalWords
-      });
-      statistic.totalWords = learnt + 1;
-      currentStatistic.learnedWords = learnt + 1;
+      statistic.totalWords = currentStat[currentStat.length - 1].totalWords + 1;
+      currentStatistic.learnedWords = currentStat[currentStat.length - 1].totalWords + 1;
       currentStat.push(statistic);
     }
     currentStatistic.optional.stat = JSON.stringify(currentStat);

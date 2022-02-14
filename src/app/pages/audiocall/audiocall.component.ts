@@ -212,22 +212,28 @@ class AudiocallComponent extends Component {
   }
 
   checkWord(target: HTMLButtonElement) {
-    this.isAnswered = true;
-    const answerWord = target.textContent.slice(4);
-    let correctness = INCORRECT;
-    if (answerWord === this.gameWords[this.currentQuestion].wordTranslate) {
-      correctness = CORRECT;
-      this.answers[this.currentQuestion] = 1;
-      utils.addStars(+this.level + 1);
-    } else {
-      this.answers[this.currentQuestion] = -1;
+    if (target.tagName === 'BUTTON') {
+      this.isAnswered = true;
+      const answerWord = target.textContent.slice(4);
+      let correctness = INCORRECT;
+      if (answerWord === this.gameWords[this.currentQuestion].wordTranslate) {
+        correctness = CORRECT;
+        this.answers[this.currentQuestion] = 1;
+        utils.addStars(+this.level + 1);
+      } else {
+        this.answers[this.currentQuestion] = -1;
+      }
+      utils.showAnswer(correctness, this.currentQuestion + 1);
+      target.classList.add(correctness);
+      if (localStorage.getItem('userInfo'))
+        this.sendAnswer(this.gameWords[this.currentQuestion].id, correctness);
+      document.querySelector('.forward-btn').textContent = 'Дальше';
+      const answerBtns = document.querySelectorAll('.answer-btn');
+      answerBtns.forEach((btn: HTMLButtonElement) => {
+        btn.disabled = true;
+      });
+      utils.showAnswerInfo();
     }
-    utils.showAnswer(correctness, this.currentQuestion + 1);
-    target.classList.add(correctness);
-    if (localStorage.getItem('userInfo'))
-      this.sendAnswer(this.gameWords[this.currentQuestion].id, correctness);
-    utils.showAnswerInfo();
-    document.querySelector('.forward-btn').textContent = 'Дальше';
   }
 
   addListeners() {

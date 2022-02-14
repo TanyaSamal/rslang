@@ -129,11 +129,13 @@
         }
       }
 
-      .correct {
+      .correct,
+      .correct:disabled {
         background-color: rgb(92, 197, 82);
       }
 
-      .incorrect {
+      .incorrect,
+      .incorrect:disabled {
         background-color: rgb(236, 78, 78);
       }
     }
