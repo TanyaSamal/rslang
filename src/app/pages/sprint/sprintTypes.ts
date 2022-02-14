@@ -9,6 +9,8 @@ export type WordAnswer = {
     audioURL: string;
 }
 
+export type WordStorage = WordAnswer[];
+
 export interface IGameStatistic {
     longest: number,
     rightAnswers: number,

@@ -6,15 +6,15 @@ function rightDeclensionWord(value: number): number {
   let result: number = value % 100;
 
   if (result > 19) {
-      result %= 10;
+    result %= 10;
   }
 
   switch (result) {
-      case 1: return 0;
-      case 2: return 1;
-      case 3: return 1;
-      case 4: return 1;
-      default: return 2;
+    case 1: return 0;
+    case 2: return 1;
+    case 3: return 1;
+    case 4: return 1;
+    default: return 2;
   }
 }
 
@@ -36,17 +36,18 @@ export function makeDiagram(): void {
   const insideCircle2 = document.querySelector('.circle-2') as HTMLElement;
   const percentResult = document.querySelector('.percent-result') as HTMLElement;
 
-  let bestScore: number = null;
-  const currentScore: number = resultGameStatistic.score;
-  const currentNumberWords: number = resultGameStatistic.rightAnswers + resultGameStatistic.falseAnswers;
+  const maxNumberWords: number = resultGameStatistic.rightAnswers + resultGameStatistic.falseAnswers;
+  const bestScore: number = 100;
+  const currentScore: number = (maxNumberWords === 0) ? 0 : Math.round((resultGameStatistic.rightAnswers * 100) / maxNumberWords);
   let sector = 0;
   let timerId: number = null;
 
-  const wordDeclensionTrue: string = CONSTS.NAME_COUNT_WORDS[rightDeclensionWord(currentNumberWords)];
-  const pointDeclensionTrue: string = CONSTS.NAME_COUNT_POINTS[rightDeclensionWord(currentScore)];
+  const wordDeclensionTrue: string = CONSTS.NAME_COUNT_WORDS[rightDeclensionWord(maxNumberWords)];
+  const pointDeclensionTrue: string = CONSTS.NAME_COUNT_POINTS[rightDeclensionWord(resultGameStatistic.score)];
 
   function animateDiagramResult(diagrame: HTMLElement, points: number, color: string): void {
-    countWords.innerHTML = `Изучено: ${currentNumberWords} ${wordDeclensionTrue}`;
+    currentScoreSpan.innerHTML = `Счёт: ${resultGameStatistic.score} ${pointDeclensionTrue}`;
+    countWords.innerHTML = `Изучено: ${maxNumberWords} ${wordDeclensionTrue}`;
     diagrame.style.backgroundColor = `${color}`;
     diagrame.style.background = `conic-gradient(${color} 100%, transparent 0)`;
   }
@@ -60,22 +61,21 @@ export function makeDiagram(): void {
       }
   
       if (bestScore === currentScore && localStorage[CONSTS.BEST_SCORE]) {
-        citation.innerHTML = CONSTS.CITATION.one;
+        citation.innerHTML = CONSTS.CITATION.three;
       }
   
       if (bestScore > currentScore) {
         citation.innerHTML = CONSTS.CITATION.two;
       }
   
-      if (bestScore < currentScore) {
-        citation.innerHTML = CONSTS.CITATION.three;
+      if (currentScore === 0) {
+        citation.innerHTML = CONSTS.CITATION.one;
       }
     }
 
     function tick(): void {
       const percent: number = Math.round((sector * 100) / bestScore);
       percentResult.innerHTML = `${percent}%`;
-      currentScoreSpan.innerHTML = `Счёт: ${Math.round(sector)} ${pointDeclensionTrue}`;
       const shift1 = (sector * diff1) / points;
       const shift2 = (sector * diff2) / points;
 
@@ -100,14 +100,12 @@ export function makeDiagram(): void {
   }
   
   if (!localStorage[CONSTS.BEST_SCORE]) {
-    bestScore = currentScore;
     const newShift1 = (currentScore * 100) / bestScore;
     const newShift2 = (currentScore * 360) / bestScore;
 
     animateDiagramResult(diagramResult, bestScore, CONSTS.COLOR_DIAGRAMM.old);
     animateNewDiagramResult(newDiagramResult, currentScore, CONSTS.COLOR_DIAGRAMM.new, newShift1, newShift2);
   } else {
-    bestScore = Number(localStorage[CONSTS.BEST_SCORE]);
     const newShift1 = (currentScore <= bestScore) ? (currentScore * 100) / bestScore : 100;
     const newShift2 = (currentScore <= bestScore) ? (currentScore * 360) / bestScore : 100;
 
