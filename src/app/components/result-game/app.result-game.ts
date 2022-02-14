@@ -43,11 +43,14 @@ class AppResultGame extends Component {
   makeResult(): void {
     makeDiagram();
   }
+
+  afterInit() {
+    const container = document.querySelector('.result-game-container');
+    container.addEventListener('click', this.getEventsClick.bind(this));
+  }
 }
 
 export const appResultGame = new AppResultGame({
   selector: 'app-result-game',
   template: ResultGame,
 });
-
-document.addEventListener('click', appResultGame.getEventsClick);

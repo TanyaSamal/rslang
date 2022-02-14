@@ -1,7 +1,8 @@
 import Controller from "../../../spa/tools/controller";
 import { IWord } from "../../../spa/tools/controllerTypes";
+import { IGameState, IGameStatistic } from  "../../componentTypes";
 import CONSTS from "./sprintConsts";
-import { Bonus, IGameSprintStatistic } from "./sprintTypes";
+import { Bonus, IGameSprintStatistic, WordAnswer, WordStorage } from "./sprintTypes";
 import { appResultGame } from '../../components/result-game/app.result-game';
 
 function getGroup(): string {
@@ -19,10 +20,6 @@ function hideContainer(container: HTMLElement): void {
     container.classList.add('hide');
 }
 
-function hideVisibilityContainer(container: HTMLElement): void {
-    container.classList.add('hide-visibility');
-}
-
 function showContainer(container: HTMLElement): void {
     container.classList.add('show');
 }
@@ -37,6 +34,7 @@ function getResultGame(): void {
     setTimeout(() => {
         hideContainer(gameContainer);
         resultContainer.classList.remove('hide');
+        CONSTS.SOUND_END.play();
         appResultGame.makeResult();
     }, 600);
 }
@@ -57,11 +55,36 @@ function startTimerGame(): void {
         if (currentTimer < 0) {
             clearInterval(timerId);
             getResultGame();
+            saveGameStatistic();
+            CONSTS.SOUND_TIME.pause();
         } else {
             timerId = setTimeout(tick, 1000);
             localStorage.setItem(CONSTS.TIMER_ID_SPRINT, String(timerId));
         }
     }, 1000);
+}
+
+function saveWordLocalStorage(word: string, translate: string, url: string): void {
+    const wordStorage: WordStorage = JSON.parse(localStorage[CONSTS.WORD_STORAGE]);
+    const newStorage: WordStorage = wordStorage.slice();
+
+    if (wordStorage.length === 0) {
+        newStorage.push({
+            eng: word,
+            rus: translate,
+            audioURL: url
+        });
+    } else {
+        if (wordStorage.every(store => word !== store.eng)) {
+            newStorage.push({
+                eng: word,
+                rus: translate,
+                audioURL: url
+            });
+        }
+    }
+
+    localStorage.setItem(CONSTS.WORD_STORAGE, JSON.stringify(newStorage));
 }
 
 function makeWordCard(words: IWord[], index: number, translates: string[]): void {
@@ -71,10 +94,13 @@ function makeWordCard(words: IWord[], index: number, translates: string[]): void
     wordText.innerHTML = words[index].word;
     localStorage.setItem(CONSTS.WORD_ENG, words[index].word);
 
+    const word: string = words[index].word;
     const trueTranslate: string = words[index].wordTranslate;
     const audioWord: string = words[index].audio;
     localStorage.setItem(CONSTS.TRUE_TRANSLATE, trueTranslate);
     localStorage.setItem(CONSTS.AUDIO_WORD, audioWord);
+
+    saveWordLocalStorage(word, trueTranslate, audioWord);
 
     const translatesCopy: string[] = translates.slice();
     translatesCopy.push(trueTranslate);
@@ -98,7 +124,9 @@ function fillArrayWordTranslate(words: IWord[]): string[] {
     return wordsTranslate;
 }
 
-function startGameSprint(group: string, page: string): void {
+function startGameSprint(group?: string, page?: string): void {
+    CONSTS.SOUND_TIME.play();
+
     const resultGameStatistic: IGameSprintStatistic = {
         score: 0,
         rightAnswers: 0,
@@ -109,15 +137,19 @@ function startGameSprint(group: string, page: string): void {
 
     localStorage.setItem(CONSTS.GAME_SPRINT_STATISTIC, JSON.stringify(resultGameStatistic));
 
+    if (!localStorage[CONSTS.WORD_STORAGE]) {
+        localStorage.setItem(CONSTS.WORD_STORAGE, JSON.stringify([]));
+    }
+    
     const gameContainer = document.querySelector('.game-container') as HTMLElement;
     showContainer(gameContainer);
 
     const rightNamePoints = document.querySelector('.right-name-points') as HTMLElement;
     rightNamePoints.innerHTML = 'балл';
 
-    const wordsPromise: Promise<IWord[]> = new Controller().getWords(group, page);
-
-    wordsPromise.then((words: IWord[]) => {
+    if (localStorage[CONSTS.SPRINT_STATE]) {
+        const gameState: IGameState = JSON.parse(localStorage[CONSTS.SPRINT_STATE]);
+        const words: IWord[] = gameState.textbookWords;
         const wordsTranslate: string[] = fillArrayWordTranslate(words);
 
         localStorage.setItem(CONSTS.WORDS, JSON.stringify(words));
@@ -125,16 +157,26 @@ function startGameSprint(group: string, page: string): void {
 
         startTimerGame();
         makeWordCard(words, CONSTS.START_NUMBER_CARD, wordsTranslate);
-    });
+    } else {
+        const wordsPromise: Promise<IWord[]> = new Controller().getWords(group, page);
+
+        wordsPromise.then((words: IWord[]) => {
+            const wordsTranslate: string[] = fillArrayWordTranslate(words);
+
+            localStorage.setItem(CONSTS.WORDS, JSON.stringify(words));
+            localStorage.setItem(CONSTS.CURRENT_CARD, String(CONSTS.START_NUMBER_CARD));
+
+            startTimerGame();
+            makeWordCard(words, CONSTS.START_NUMBER_CARD, wordsTranslate);
+        });
+    }
 }
 
-function showStopwatch(group: string, page: string): void {
+function showStopwatch(group?: string, page?: string): void {
     const stopwatchСontainer = document.querySelector('.stopwatch-container') as HTMLElement;
     const stopwatch = document.querySelector('.stopwatch') as HTMLElement;
-    const headerContainer = document.querySelector('header') as HTMLElement;
-    
+
     showContainer(stopwatchСontainer);
-    hideVisibilityContainer(headerContainer);
 
     const count = document.createElement('span') as HTMLElement;
     stopwatch.append(count);
@@ -152,6 +194,7 @@ function showStopwatch(group: string, page: string): void {
             startGameSprint(group, page);
         } else {
             timerId = setTimeout(tick, 1000);
+            localStorage.setItem(CONSTS.TIMER_ID_START_GAME, String(timerId));
         }
     }, 1000);
 }
@@ -309,10 +352,38 @@ function countBonus(): Bonus {
     };
 }
 
+function saveGameStatistic(): void {
+    const resultGameStatistic: IGameSprintStatistic = JSON.parse(localStorage[CONSTS.GAME_SPRINT_STATISTIC]);
+    let longest: number = resultGameStatistic.rightAnswers + resultGameStatistic.falseAnswers;
+    let rightAnswers: number = resultGameStatistic.rightAnswers;
+    let totalAnswers: number = resultGameStatistic.rightAnswers + resultGameStatistic.falseAnswers;
+    const wordStorage: WordStorage = JSON.parse(localStorage[CONSTS.WORD_STORAGE]);
+    const newWords: number = wordStorage.length;
+    
+
+    if (localStorage[CONSTS.SPRINT_STATISTIC]) {
+        const statistic: IGameStatistic = JSON.parse(localStorage[CONSTS.SPRINT_STATISTIC]);
+        
+        if (statistic.date === new Date().toLocaleDateString()) {
+            longest = (longest > statistic.longest) ? longest : statistic.longest;
+            rightAnswers += statistic.rightAnswers;
+            totalAnswers += statistic.totalAnswers;
+        }
+    }
+
+    localStorage.setItem(CONSTS.SPRINT_STATISTIC, JSON.stringify({
+        date: new Date().toLocaleDateString(), 
+        longest,
+        rightAnswers,
+        totalAnswers,
+        newWords
+    }));
+}
+
 function checkAnswer(): void {
     const resultGameStatistic: IGameSprintStatistic = JSON.parse(localStorage[CONSTS.GAME_SPRINT_STATISTIC]);
     const wordEng: string = localStorage[CONSTS.WORD_ENG];
-    const wordRus: string = localStorage[CONSTS.CURRENT_TRANSLATE];
+    const wordRus: string = localStorage[CONSTS.TRUE_TRANSLATE];
     const compareTranslate: boolean = localStorage[CONSTS.TRUE_TRANSLATE] === localStorage[CONSTS.CURRENT_TRANSLATE];
     const stateAnswer: boolean = localStorage[CONSTS.ANSWER] === 'true';
     const currentCard = Number(localStorage[CONSTS.CURRENT_CARD]);
@@ -324,6 +395,7 @@ function checkAnswer(): void {
     }
     
     if ((compareTranslate && stateAnswer) || (!compareTranslate && !stateAnswer)) {
+        CONSTS.SOUND_RIGHT_ANSWER.play();
         animateContainer(CONSTS.COLOR_SHADOW.green);
         
         const rightAnswers = Number(resultGameStatistic.rightAnswers);
@@ -346,6 +418,7 @@ function checkAnswer(): void {
     }
 
     if ((compareTranslate && !stateAnswer) || (!compareTranslate && stateAnswer)) {
+        CONSTS.SOUND_FALSE_ANSWER.play();
         animateContainer(CONSTS.COLOR_SHADOW.red);
 
         const falseAnswers = Number(resultGameStatistic.falseAnswers);
@@ -371,9 +444,7 @@ function checkAnswer(): void {
 function playAudioWord(): void {
     const audioWordURL = `${CONSTS.BASE_URL}${localStorage[CONSTS.AUDIO_WORD]}`;
     const isMute = localStorage[CONSTS.AUDIO_MUTE];
-    
-    const playAudio = document.createElement('audio') as HTMLAudioElement;
-    playAudio.setAttribute('src', audioWordURL);
+    const playAudio: HTMLAudioElement = new Audio(audioWordURL);
 
     if (!isMute) {
         playAudio.play();
@@ -400,4 +471,5 @@ export default {
     closeGame,
     playAudioWord,
     rightDeclensionWord,
+    hideContainer,
 };

@@ -63,25 +63,14 @@ class AppSelectDifficulty extends Component {
         const welcomeContainer = document.querySelector('.welcome-container') as HTMLElement;
 
         if (localStorage[CONSTS.SPRINT_STATE]) {
-          UTILS.hideContainer(welcomeContainer);
-        } else {
-<<<<<<< HEAD
-          const group: string = UTILS.getGroup();
-          const page = String(UTILS.randomNumber(CONSTS.MIN_PAGE, CONSTS.MAX_PAGE));
-=======
-          // const group: string = UTILS.getGroup();
-          // const page = String(UTILS.randomNumber(CONSTS.MIN_PAGE, CONSTS.MAX_PAGE));
->>>>>>> 7-audiocall
-
-          // localStorage.setItem(CONSTS.GROUP, group);
-          // localStorage.setItem(CONSTS.PAGE, page);
-
-          localStorage.setItem(CONSTS.BONUS_STAR, String(CONSTS.BONUS_STAR_MEDAL.minStar));
-          localStorage.setItem(CONSTS.BONUS_MEDAL, String(CONSTS.BONUS_STAR_MEDAL.minMedal));
-
           localStorage.setItem(CONSTS.SCORE, '0');
           localStorage.removeItem(CONSTS.AUDIO_MUTE);
-
+          UTILS.hideContainer(welcomeContainer);
+        } else {
+          localStorage.setItem(CONSTS.BONUS_STAR, String(CONSTS.BONUS_STAR_MEDAL.minStar));
+          localStorage.setItem(CONSTS.BONUS_MEDAL, String(CONSTS.BONUS_STAR_MEDAL.minMedal));
+          localStorage.setItem(CONSTS.SCORE, '0');
+          localStorage.removeItem(CONSTS.AUDIO_MUTE);
           UTILS.hideContainer(welcomeContainer);
         }
       }

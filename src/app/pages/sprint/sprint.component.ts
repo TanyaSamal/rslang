@@ -1,4 +1,4 @@
-import { Component } from '../../../spa';
+import { Component, router } from '../../../spa';
 import Sprint from './sprint.component.html';
 import './sprint.component.scss';
 import { appHeader } from '../../components/header/app.header';
@@ -20,23 +20,31 @@ class SprintComponent extends Component {
       const gameAgain = event.target.closest('.game-again') as HTMLElement;
 
       if (buttonStartSprint) {
-        const group: string = UTILS.getGroup();
-        const page = String(UTILS.randomNumber(CONSTS.MIN_PAGE, CONSTS.MAX_PAGE));
-
-        UTILS.showStopwatch(group, page);
+        CONSTS.SOUND_CLICK.play();
+        if (!localStorage[CONSTS.SPRINT_STATE]) {
+          const group: string = UTILS.getGroup();
+          const page = String(UTILS.randomNumber(CONSTS.MIN_PAGE, CONSTS.MAX_PAGE));
+          UTILS.showStopwatch(group, page);
+        } else {
+          UTILS.showStopwatch();
+        }
       }
 
       if (volume) {
+        CONSTS.SOUND_CLICK.play();
         volume.classList.toggle('volume-mute');
         
         if (volume.classList.contains('volume-mute')) {
           localStorage.setItem(CONSTS.AUDIO_MUTE, 'true');
+          CONSTS.SOUND_TIME.pause();
         } else {
           localStorage.removeItem(CONSTS.AUDIO_MUTE);
+          CONSTS.SOUND_TIME.play();
         }
       }
 
       if (close) {
+        CONSTS.SOUND_CLICK.play();
         UTILS.closeGame();
       }
 
@@ -77,7 +85,12 @@ class SprintComponent extends Component {
       }
 
       if (gameAgain) {
-        // appSelectDifficulty.render('app-select-difficulty');
+        CONSTS.SOUND_CLICK.play();
+        const resultGameContainer = document.querySelector('.result-game-container') as HTMLElement;
+        UTILS.hideContainer(resultGameContainer);
+        
+        router.navigate('#');
+        router.navigate('sprint');
       }
     }
   }
@@ -115,6 +128,12 @@ class SprintComponent extends Component {
       }
     }
   }
+
+  afterInit() {
+    const container = document.querySelector('.sprint-page-container');
+    container.addEventListener('click', this.getEventsClick.bind(this));
+    document.addEventListener('keydown', this.getEventsKeyDown.bind(this));
+  }
 }
 
 export const sprintComponent = new SprintComponent({
@@ -126,6 +145,3 @@ export const sprintComponent = new SprintComponent({
   ],
   template: Sprint,
 });
-
-document.addEventListener('click', sprintComponent.getEventsClick);
-document.addEventListener('keydown', sprintComponent.getEventsKeyDown);
