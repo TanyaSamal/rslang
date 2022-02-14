@@ -63,6 +63,10 @@ export interface IUserWordOptions {
       right: number;
       wrong: number;
     };
+    [key: string]: {
+      right: number;
+      wrong: number;
+    };
   }
 }
 
