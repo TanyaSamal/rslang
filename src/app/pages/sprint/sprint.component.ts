@@ -132,7 +132,7 @@ class SprintComponent extends Component {
   afterInit() {
     const container = document.querySelector('.sprint-page-container');
     container.addEventListener('click', this.getEventsClick.bind(this));
-    document.addEventListener('keydown', this.getEventsKeyDown.bind(this));
+    document.addEventListener('keyup', this.getEventsKeyDown.bind(this));
   }
 }
 

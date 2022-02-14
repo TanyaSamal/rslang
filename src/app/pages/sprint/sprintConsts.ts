@@ -33,6 +33,7 @@ const TIMER_ID_SPRINT = 'timer_id_sprint';
 const TIMER_ID_START_GAME = 'timer_id_start_game';
 const SPRINT_STATISTIC = 'sprintStatistic';
 const WORD_STORAGE = 'word_storage';
+const SPRINT_POINTS = 'sprintPoints';
 
 const NAME_COUNT_WORDS: string[] = ['слово', 'слова', 'слов'];
 const NAME_COUNT_POINTS: string[] = ['балл', 'балла', 'баллов'];
@@ -75,6 +76,7 @@ enum URL_SOUND {
 }
 
 const SOUND_TIME = new Audio(URL_SOUND.time);
+SOUND_TIME.setAttribute('loop', 'loop');
 const SOUND_CLICK = new Audio(URL_SOUND.click);
 const SOUND_END = new Audio(URL_SOUND.end);
 const SOUND_FALSE_ANSWER = new Audio(URL_SOUND.falseAnswer);
@@ -126,5 +128,6 @@ export default {
     SOUND_END,
     SOUND_FALSE_ANSWER,
     SOUND_RIGHT_ANSWER,
-    WORD_STORAGE
+    WORD_STORAGE,
+    SPRINT_POINTS
 };

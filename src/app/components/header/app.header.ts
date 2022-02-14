@@ -27,14 +27,32 @@ class AppHeader extends Component {
     loginBtn.style.display = (this.isLoggedIn) ? 'none' : 'block';
     logoutBtn.style.display = (this.isLoggedIn) ? 'flex' : 'none';
     const userName = localStorage.getItem('userName');
+
     if (userName) {
       (<HTMLDivElement>document.querySelector('.user-name')).textContent = userName;
-      if (localStorage.getItem('audiocallPoints')) {
-        const localResults: IGamePoints = JSON.parse(localStorage.getItem('audiocallPoints'));
-        if (localResults.date === new Date().toLocaleDateString() &&
-          localResults.userId === JSON.parse(localStorage.getItem('userInfo')).userId) {
-          document.querySelector('.game-points').textContent = localResults.points;
-        }
+    }
+
+    if (localStorage.getItem('audiocallPoints')) {
+      const localResults: IGamePoints = JSON.parse(localStorage.getItem('audiocallPoints'));
+      if (localResults.date === new Date().toLocaleDateString() &&
+        localResults.userId === JSON.parse(localStorage.getItem('userInfo')).userId) {
+
+        const gamePoints = document.querySelector('.game-points') as HTMLElement;
+        const currentPoints: number = Number(gamePoints.textContent);
+        const newPoints: number = currentPoints + Number(localResults.points);
+        gamePoints.textContent = String(newPoints);
+      }
+    }
+
+    if (localStorage.getItem('sprintPoints')) {
+      const localResults: IGamePoints = JSON.parse(localStorage.getItem('sprintPoints'));
+      if (localResults.date === new Date().toLocaleDateString() &&
+        localResults.userId === JSON.parse(localStorage.getItem('userInfo')).userId) {
+          
+        const gamePoints = document.querySelector('.game-points') as HTMLElement;
+        const currentPoints: number = Number(gamePoints.textContent);
+        const newPoints: number = currentPoints + Number(localResults.points);
+        gamePoints.textContent = String(newPoints);
       }
     }
   }

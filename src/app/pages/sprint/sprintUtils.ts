@@ -1,6 +1,6 @@
 import Controller from "../../../spa/tools/controller";
-import { IWord } from "../../../spa/tools/controllerTypes";
-import { IGameState, IGameStatistic } from  "../../componentTypes";
+import { IWord, IAuth } from "../../../spa/tools/controllerTypes";
+import { IGameState, IGameStatistic, IGamePoints } from  "../../componentTypes";
 import CONSTS from "./sprintConsts";
 import { Bonus, IGameSprintStatistic, WordAnswer, WordStorage } from "./sprintTypes";
 import { appResultGame } from '../../components/result-game/app.result-game';
@@ -39,6 +39,48 @@ function getResultGame(): void {
     }, 600);
 }
 
+function updatePointsHeader(): void {
+    const gamePoints = document.querySelector('.game-points') as HTMLElement;
+    const audiocallResult: IGamePoints = JSON.parse(localStorage.getItem('audiocallPoints'));
+    const sprintResult: IGamePoints = JSON.parse(localStorage.getItem('sprintPoints'));
+
+    const newPoints: number = Number(audiocallResult.points) + Number(sprintResult.points);
+    gamePoints.textContent = String(newPoints);
+}
+
+function saveSprintPoints(): void {
+    const resultGameStatistic: IGameSprintStatistic = JSON.parse(localStorage[CONSTS.GAME_SPRINT_STATISTIC]);
+    const userInfo: IAuth = JSON.parse(localStorage['userInfo']);
+
+    if (userInfo) {
+        if (localStorage[CONSTS.SPRINT_POINTS]) {
+            const localResults: IGamePoints = JSON.parse(localStorage.getItem('sprintPoints'));
+            
+            if (localResults.date === new Date().toLocaleDateString() &&
+                localResults.userId === JSON.parse(localStorage.getItem('userInfo')).userId) {
+                const newPoints: number = Number(localResults.points) + resultGameStatistic.score;
+                const sprintPoints: IGamePoints = {
+                    userId: userInfo.userId,
+                    points: String(newPoints),
+                    date: new Date().toLocaleDateString(),
+                };
+
+                localStorage.setItem(CONSTS.SPRINT_POINTS, JSON.stringify(sprintPoints));
+            }
+        } else {
+            const sprintPoints: IGamePoints = {
+                userId: userInfo.userId,
+                points: String(resultGameStatistic.score),
+                date: new Date().toLocaleDateString(),
+            };
+
+            localStorage.setItem(CONSTS.SPRINT_POINTS, JSON.stringify(sprintPoints));
+        }
+
+        updatePointsHeader();
+    }
+}
+
 function startTimerGame(): void {
     const gameTimer = document.querySelector('.game-timer') as HTMLElement;
     const count = document.createElement('span') as HTMLElement;
@@ -56,6 +98,7 @@ function startTimerGame(): void {
             clearInterval(timerId);
             getResultGame();
             saveGameStatistic();
+            saveSprintPoints();
             CONSTS.SOUND_TIME.pause();
         } else {
             timerId = setTimeout(tick, 1000);
