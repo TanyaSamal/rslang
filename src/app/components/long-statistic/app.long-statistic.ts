@@ -42,8 +42,8 @@ class AppLongStatistic extends Component {
       const statistic: IStatOptions[] = JSON.parse(statisticInfo.optional.stat);
       statistic.forEach((el) => {
         this.labels.push(el.date);
-        this.chartLineData.push(el.newWords);
-        this.chartBarData.push(el.totalWords);
+        this.chartBarData.push(el.newWords);
+        this.chartLineData.push(el.totalWords);
       });
     } else {
       this.labels.push(new Date().toLocaleDateString());

@@ -4,6 +4,7 @@ import './statistic.component.scss';
 import { appHeader } from '../../components/header/app.header';
 import { appFooter } from '../../components/footer/app.footer';
 import { appLongStatistic } from '../../components/long-statistic/app.long-statistic';
+import { appGameStatistic } from '../../components/game-statistic/app.game-statistic';
 
 class StatisticComponent extends Component {
 
@@ -19,7 +20,8 @@ export const statisticComponent = new StatisticComponent({
   components: [
     appHeader,
     appFooter,
-    appLongStatistic
+    appLongStatistic,
+    appGameStatistic
   ],
   template: Statistic,
 });
