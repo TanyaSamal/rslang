@@ -4,7 +4,7 @@ import * as utils from './utils';
 import './audiocall.component.scss';
 import AudioQuestion from '../../components/audio-question/app.audio-question.html';
 import { appHeader } from '../../components/header/app.header';
-import { IAuth, IStatistics, IWord, WordStatus } from '../../../spa/tools/controllerTypes';
+import { IAuth, IWord, WordStatus } from '../../../spa/tools/controllerTypes';
 import { AppAudioQuestion } from '../../components/audio-question/app.audio-question';
 import { ComponentEvent, ICallQuestion } from '../../../spa/core/coreTypes';
 import { IGameState, IGameStatistic, Mode } from '../../componentTypes';

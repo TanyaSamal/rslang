@@ -65,7 +65,7 @@ export default class Controller {
       localStorage.removeItem('userInfo');
       router.navigate('auth');
       (<HTMLAnchorElement>document.querySelector('.auth-btn')).style.display = 'block';
-      (<HTMLAnchorElement>document.querySelector('.user-info')).style.display = 'none';
+      (<HTMLDivElement>document.querySelector('.user-info')).style.display = 'none';
       return null;
     }
     const content: Promise<IAuth> = await rawResponse.json();

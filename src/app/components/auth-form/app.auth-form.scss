@@ -25,7 +25,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: calc(100vh - 300px);
+  min-height: calc(100vh - 222px);
   margin-top: 50px;
 
   img {
@@ -41,6 +41,7 @@
     background-color: #E5E5E5;
     padding: 30px 60px;
     margin: 0 0 50px 100px;
+    text-align: center;
     @include border-with-shadow;
 
     @media (max-width: 1440px) {
