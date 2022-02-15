@@ -124,7 +124,8 @@ class AppAuthForm extends Component {
 
   showLoader() {
     const form = <HTMLFormElement>document.querySelector('.registration-form');
-    (<HTMLDivElement>form.firstElementChild).style.display = 'none';
+    const formContent = <HTMLDivElement>document.querySelector('.form-content');
+    formContent.style.display = 'none';
     form.style.height = '345px';
     form.insertAdjacentHTML('afterbegin', `<app-loader></app-loader>`);
     const appLoader = new AppLoader({
@@ -138,7 +139,7 @@ class AppAuthForm extends Component {
   showForm() {
     (<HTMLFormElement>document.querySelector('.registration-form')).style.height = 'auto';
     (<HTMLDivElement>document.querySelector('.lds-ellipsis')).style.display = 'none';
-    const form = <HTMLFormElement>document.querySelector('.form-content');
+    const form = <HTMLDivElement>document.querySelector('.form-content');
     form.style.display = 'block';
   }
 

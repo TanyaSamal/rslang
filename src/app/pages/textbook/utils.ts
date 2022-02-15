@@ -1,4 +1,6 @@
 import { IUserWordInfo } from "../../../spa/tools/controllerTypes";
+import { AppLoader } from "../../components/loader/app.loader";
+import Loader from "../../components/loader/app.loader.html";
 
 export const checkPageProgress = (): void => {
   const statuses = document.querySelectorAll('.status-info');
@@ -170,4 +172,39 @@ export const drawGameData = (userData: IUserWordInfo) => {
   audiocall.lastElementChild.firstElementChild.textContent = `${userData.optional.gameProgress.audiocall.wrong}`;
   sprint.firstElementChild.firstElementChild.textContent = `${userData.optional.gameProgress.sprint.right}`;
   sprint.lastElementChild.firstElementChild.textContent = `${userData.optional.gameProgress.sprint.wrong}`;
+}
+
+function addLoader() {
+  const loaderContainer = <HTMLDivElement>document.querySelector('.loader');
+  loaderContainer.insertAdjacentHTML('afterbegin', `<app-loader></app-loader>`);
+  const appLoader = new AppLoader({
+    selector: 'app-loader',
+    template: Loader,
+  });
+  loaderContainer.firstElementChild.innerHTML = appLoader.template;
+  appLoader.render('app-loader');
+}
+
+export const showLoader = () => {
+  const wordsContent = <HTMLDivElement>document.querySelector('.words-meaning');
+  wordsContent.style.display = 'none';
+  addLoader();
+}
+
+export const hideLoader = () => {
+  document.querySelector('.loader').innerHTML = '';
+  const wordsContent = <HTMLDivElement>document.querySelector('.words-meaning');
+  wordsContent.style.display = 'flex';
+}
+
+export const showDictionaryLoader = () => {
+  const dictionaryContent = <HTMLDivElement>document.querySelector('.dictionary-words__content');
+  dictionaryContent.style.display = 'none';
+  addLoader();
+}
+
+export const hideDictionaryLoader = () => {
+  document.querySelector('.loader').innerHTML = '';
+  const dictionaryContent = <HTMLDivElement>document.querySelector('.dictionary-words__content');
+  dictionaryContent.style.display = 'flex';
 }

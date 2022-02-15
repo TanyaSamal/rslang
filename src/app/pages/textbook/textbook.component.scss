@@ -51,6 +51,14 @@
   .dictionary-states .user-words .word__color {
     background-color: $color;
   }
+
+  .dictionary-pagination .pagination-dict__list .current-dict__page {
+    background-color: $color;
+
+    &:hover {
+      background-color: darken($color, 20%);
+    }
+  }
 }
 
 @mixin bg-image($url) {
@@ -277,6 +285,14 @@
 
   .active-card {
     background-color: #8bd884;
+  }
+
+  .loader {
+    text-align: center;
+
+    .lds-ellipsis div {
+      background-color: #FE8366;
+    }
   }
 
   .words-content {

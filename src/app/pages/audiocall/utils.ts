@@ -1,5 +1,7 @@
 import { Controller } from "../../../spa";
 import { IAuth, IStatistics, IStatOptions, IUserWord, WordStatus } from "../../../spa/tools/controllerTypes";
+import { AppLoader } from "../../components/loader/app.loader";
+import Loader from "../../components/loader/app.loader.html";
 import { IGamePoints } from "../../componentTypes";
 
 export const getRandomNumber = (max: number): number => Math.floor(Math.random() * max);
@@ -207,4 +209,23 @@ export const sendAnswer = async (wordId: string, correctness: string, level: str
     await controller.createUserWord(userInfo.userId, wordId, userWord, userInfo.token);
   }
   return isNew;
+}
+
+export const showLoader = () => {
+  const gameContainer = <HTMLDivElement>document.querySelector('.audiocall-container');
+  const game = <HTMLDivElement>document.querySelector('.game-audiocall');
+  game.style.display = 'none';
+  gameContainer.insertAdjacentHTML('afterbegin', `<app-loader></app-loader>`);
+  const appLoader = new AppLoader({
+    selector: 'app-loader',
+    template: Loader,
+  });
+  gameContainer.firstElementChild.innerHTML = appLoader.template;
+  appLoader.render('app-loader');
+}
+
+export const hideLoader = () => {
+  (<HTMLDivElement>document.querySelector('.lds-ellipsis')).style.display = 'none';
+  const game = <HTMLDivElement>document.querySelector('.game-audiocall');
+  game.style.display = 'block';
 }

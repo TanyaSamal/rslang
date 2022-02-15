@@ -337,10 +337,12 @@ class AudiocallComponent extends Component {
     const startGame = async () => {
       this.currentQuestion = 0;
       this.showGame();
+      utils.showLoader();
       await this.getRoundWords();
       this.drawQuestion(this.currentQuestion);
       this.drawProgress();
       this.addWindowListeners();
+      utils.hideLoader();
     }
 
     const startBtn = document.querySelector('.start-sprint');
