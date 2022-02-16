@@ -1,32 +1,35 @@
 import { IUserWordInfo } from "../../../spa/tools/controllerTypes";
 import { AppLoader } from "../../components/loader/app.loader";
 import Loader from "../../components/loader/app.loader.html";
+import { Mode } from "../../componentTypes";
 
-export const checkPageProgress = (): void => {
-  const statuses = document.querySelectorAll('.status-info');
-  let activeCount = 0;
-  statuses.forEach((status: HTMLDivElement) => {
-    if (status.textContent !== '')
-      activeCount += 1;
-  });
-  const pageStatusInfo = <HTMLDivElement>document.querySelector('.page-status__info');
-  const wordsMeaning = <HTMLDivElement>document.querySelector('.words-meaning');
-  const gameLinks = document.querySelectorAll('.link-container');
-  const currPage = <HTMLButtonElement>document.querySelector('.current-page');
-  if (activeCount === 20) {
-    pageStatusInfo.style.display = 'block';
-    wordsMeaning.classList.add('done');
-    gameLinks.forEach((link: HTMLDivElement) => {
-      link.classList.add('disabled');
+export const checkPageProgress = (mode: string): void => {
+  if (mode === Mode.TEXTBOOK) {
+    const statuses = document.querySelectorAll('.status-info');
+    let activeCount = 0;
+    statuses.forEach((status: HTMLDivElement) => {
+      if (status.textContent !== '')
+        activeCount += 1;
     });
-    currPage.classList.add('learnt-page');
-  } else {
-    pageStatusInfo.style.display = 'none';
-    wordsMeaning.classList.remove('done');
-    gameLinks.forEach((link: HTMLDivElement) => {
-      link.classList.remove('disabled');
-    });
-    currPage.classList.remove('learnt-page');
+    const pageStatusInfo = <HTMLDivElement>document.querySelector('.page-status__info');
+    const wordsMeaning = <HTMLDivElement>document.querySelector('.words-meaning');
+    const gameLinks = document.querySelectorAll('.link-container');
+    const currPage = <HTMLButtonElement>document.querySelector('.current-page');
+    if (activeCount === 20) {
+      pageStatusInfo.style.display = 'block';
+      wordsMeaning.classList.add('done');
+      gameLinks.forEach((link: HTMLDivElement) => {
+        link.classList.add('disabled');
+      });
+      currPage.classList.add('learnt-page');
+    } else {
+      pageStatusInfo.style.display = 'none';
+      wordsMeaning.classList.remove('done');
+      gameLinks.forEach((link: HTMLDivElement) => {
+        link.classList.remove('disabled');
+      });
+      currPage.classList.remove('learnt-page');
+    }
   }
 }
 
@@ -106,11 +109,13 @@ export const switchMode = (mode: string): void => {
     else headersTitles[1].classList.remove('active-textbook');
 }
 
-export const changeUserWordsCount = (difficultCount: number, learntCount: number): void => {
+export const changeUserWordsCount = (difficultCount: number, learntCount: number, newCount: number): void => {
   const difficult = document.querySelector('.difficult-words .word__count span');
   difficult.textContent = String(difficultCount);
   const learnt = document.querySelector('.learnt-words .word__count span');
   learnt.textContent = String(learntCount);
+  const newWords = document.querySelector('.new-words .word__count span');
+  newWords.textContent = String(newCount);
 }
 
 const createPagination = (currentPage: number, maxPageCount: number): Array<number | string> => {  // source https://gist.github.com/kottenator/9d936eb3e4e3c3e02598

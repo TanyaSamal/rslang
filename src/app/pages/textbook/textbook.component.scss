@@ -52,11 +52,18 @@
     background-color: $color;
   }
 
-  .dictionary-pagination .pagination-dict__list .current-dict__page {
-    background-color: $color;
+  .dictionary-pagination .pagination-dict__list {
 
-    &:hover {
-      background-color: darken($color, 20%);
+    .pag-number:hover {
+      background-color: $color;
+    }
+
+    .current-dict__page {
+      background-color: $color;
+
+      &:hover {
+        background-color: darken($color, 20%);
+      }
     }
   }
 }
