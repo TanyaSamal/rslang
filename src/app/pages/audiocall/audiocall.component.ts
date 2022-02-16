@@ -41,7 +41,7 @@ class AudiocallComponent extends Component {
     const target = <HTMLDivElement>event.target;
     if (target.tagName === 'DIV') {
       utils.savePoints();
-      router.navigate('textbook');
+      router.navigate('');
     }
   }
 
