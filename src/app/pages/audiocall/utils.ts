@@ -212,20 +212,24 @@ export const sendAnswer = async (wordId: string, correctness: string, level: str
 }
 
 export const showLoader = () => {
-  const gameContainer = <HTMLDivElement>document.querySelector('.audiocall-container');
+  const loader = <HTMLDivElement>document.querySelector('.loader');
   const game = <HTMLDivElement>document.querySelector('.game-audiocall');
   game.style.display = 'none';
-  gameContainer.insertAdjacentHTML('afterbegin', `<app-loader></app-loader>`);
+  loader.insertAdjacentHTML('afterbegin', `<app-loader></app-loader>`);
   const appLoader = new AppLoader({
     selector: 'app-loader',
     template: Loader,
   });
-  gameContainer.firstElementChild.innerHTML = appLoader.template;
+  loader.innerHTML = appLoader.template;
   appLoader.render('app-loader');
 }
 
 export const hideLoader = () => {
-  (<HTMLDivElement>document.querySelector('.lds-ellipsis')).style.display = 'none';
+  document.querySelector('.loader').innerHTML = '';
   const game = <HTMLDivElement>document.querySelector('.game-audiocall');
   game.style.display = 'block';
+}
+
+export const showErrorMessage = () => {
+  document.querySelector('.question-container').textContent = 'Слов для игры недостаточно. Выберите другую страницу';
 }

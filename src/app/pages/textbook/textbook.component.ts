@@ -600,6 +600,7 @@ class TextbookComponent extends Component {
 
   async afterInit() {
     utils.showLoader();
+    await this.initLevelWords();
     if (localStorage.getItem('currentPage')) {
       const storageData: IPageState = JSON.parse(localStorage.getItem('currentPage'));
       this.currentMode = storageData.mode;
@@ -615,8 +616,6 @@ class TextbookComponent extends Component {
       }
       this.changeLevelView();
       utils.changeColorTheme(this.currentLevel);
-    } else {
-      await this.initLevelWords();
     }
     utils.checkPageProgress(this.currentMode);
     this.addWordsListeners();

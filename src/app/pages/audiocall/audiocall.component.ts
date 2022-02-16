@@ -280,6 +280,7 @@ class AudiocallComponent extends Component {
   makeQuestionData(idx: number): ICallQuestion {
     let answers: Array<number> = this.generateAnswers(idx);
     answers = utils.shuffleArray(answers);
+    
     return {
       answerWord: this.gameWords[idx].word,
       answerTranslate: this.gameWords[idx].wordTranslate,
@@ -339,10 +340,15 @@ class AudiocallComponent extends Component {
       this.showGame();
       utils.showLoader();
       await this.getRoundWords();
-      this.drawQuestion(this.currentQuestion);
-      this.drawProgress();
-      this.addWindowListeners();
-      utils.hideLoader();
+      if (this.gameWords.length < ANSWERS_COUNT) {
+        utils.hideLoader();
+        utils.showErrorMessage();
+      } else {
+        this.drawQuestion(this.currentQuestion);
+        this.drawProgress();
+        this.addWindowListeners();
+        utils.hideLoader();
+      }
     }
 
     const startBtn = document.querySelector('.start-sprint');
