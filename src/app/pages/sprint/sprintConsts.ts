@@ -34,6 +34,7 @@ const TIMER_ID_START_GAME = 'timer_id_start_game';
 const SPRINT_STATISTIC = 'sprintStatistic';
 const WORD_STORAGE = 'word_storage';
 const SPRINT_POINTS = 'sprintPoints';
+const SPRINT_WORD_ID = 'sprint_word_id';
 
 const NAME_COUNT_WORDS: string[] = ['слово', 'слова', 'слов'];
 const NAME_COUNT_POINTS: string[] = ['балл', 'балла', 'баллов'];
@@ -129,5 +130,6 @@ export default {
     SOUND_FALSE_ANSWER,
     SOUND_RIGHT_ANSWER,
     WORD_STORAGE,
-    SPRINT_POINTS
+    SPRINT_POINTS,
+    SPRINT_WORD_ID
 };

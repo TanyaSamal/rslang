@@ -131,63 +131,6 @@ class AudiocallComponent extends Component {
     this.saveResultsForResultWindow();
   }
 
-  async sendStatistic(userId: string, token: string) {
-    const currentStatistic: IStatistics = await this.controller.getStatistics(userId, token);
-    const newStatistic = utils.makeStatistic(currentStatistic);
-    await this.controller.setStatistics(userId, token, newStatistic);
-  }
-
-  async sendAnswer(wordId: string, correctness: string) {
-    const userInfo: IAuth = JSON.parse(localStorage.getItem('userInfo'));
-    const userWordInfo = await this.controller.getUserWordById(userInfo.userId, userInfo.token, wordId);
-    if (userWordInfo) {
-      delete userWordInfo.id;
-      delete userWordInfo.wordId;
-      if (userWordInfo.optional.gameProgress.audiocall.right === 0 &&
-        userWordInfo.optional.gameProgress.audiocall.wrong === 0)
-        this.newWords += 1;
-      if (correctness === CORRECT) {
-        userWordInfo.optional.gameProgress.audiocall.right  += 1; 
-      } else {
-        userWordInfo.optional.gameProgress.audiocall.wrong  += 1;
-        if (userWordInfo.optional.status === WordStatus.learnt)
-          userWordInfo.optional.status = WordStatus.inProgress;
-      }
-      if (userWordInfo.optional.gameProgress.audiocall.right === 3 && Number(this.level) < 3) {
-        userWordInfo.optional.status = WordStatus.learnt;
-        this.sendStatistic(userInfo.userId, userInfo.token);
-      } else if (userWordInfo.optional.gameProgress.audiocall.right === 5 && Number(this.level) >= 3) {
-        userWordInfo.optional.status = WordStatus.learnt;
-        this.sendStatistic(userInfo.userId, userInfo.token);
-      } else if (userWordInfo.optional.status !== WordStatus.learnt) {
-        userWordInfo.optional.status = WordStatus.inProgress;
-        // delete from statistic?
-      }
-      userWordInfo.optional.updatedDate = new Date().toLocaleDateString();
-      await this.controller.updateUserWord(userInfo.userId, userInfo.token, wordId, userWordInfo);
-    } else {
-      this.newWords += 1;
-      const userWord = {
-        difficulty: String(this.level),
-        optional: {
-          updatedDate: new Date().toLocaleDateString(),
-          status: WordStatus.inProgress,
-          gameProgress: {
-            sprint: {
-              right: 0,
-              wrong: 0,
-            },
-            audiocall: {
-              right: (correctness === CORRECT) ? 1 : 0,
-              wrong: (correctness === INCORRECT) ? 1 : 0,
-            },
-          }
-        }
-      };
-      await this.controller.createUserWord(userInfo.userId, wordId, userWord, userInfo.token);
-    }
-  }
-
   nextQuestion() {
     if (this.isAnswered) {
       this.currentQuestion += 1;
@@ -202,38 +145,36 @@ class AudiocallComponent extends Component {
       this.isAnswered = true;
       this.answers[this.currentQuestion] = -1;
       utils.showAnswer(INCORRECT, this.currentQuestion + 1);
-      utils.showAnswerInfo();
-      document.querySelector('.forward-btn').textContent = 'Дальше';
-      const answerBtns = document.querySelectorAll('.answer-btn');
-      answerBtns.forEach((btn: HTMLButtonElement) => {
-        btn.disabled = true;
-      });
+      utils.changeAnswerState();
     }
   }
 
-  checkWord(target: HTMLButtonElement) {
-    this.isAnswered = true;
-    const answerWord = target.textContent.slice(4);
-    let correctness = INCORRECT;
-    if (answerWord === this.gameWords[this.currentQuestion].wordTranslate) {
-      correctness = CORRECT;
-      this.answers[this.currentQuestion] = 1;
-      utils.addStars(+this.level + 1);
-    } else {
-      this.answers[this.currentQuestion] = -1;
+  async checkWord(target: HTMLButtonElement) {
+    if (target.tagName === 'BUTTON') {
+      this.isAnswered = true;
+      const answerWord = target.textContent.slice(4);
+      let correctness = INCORRECT;
+      if (answerWord === this.gameWords[this.currentQuestion].wordTranslate) {
+        correctness = CORRECT;
+        this.answers[this.currentQuestion] = 1;
+        utils.addStars(+this.level + 1);
+      } else {
+        this.answers[this.currentQuestion] = -1;
+      }
+      utils.showAnswer(correctness, this.currentQuestion + 1);
+      target.classList.add(correctness);
+      if (localStorage.getItem('userInfo')) {
+        const isNew = await utils.sendAnswer(this.gameWords[this.currentQuestion].id, correctness, this.level, 'audiocall');
+        if (isNew) this.newWords += 1;
+      }
+      utils.changeAnswerState();
     }
-    utils.showAnswer(correctness, this.currentQuestion + 1);
-    target.classList.add(correctness);
-    if (localStorage.getItem('userInfo'))
-      this.sendAnswer(this.gameWords[this.currentQuestion].id, correctness);
-    utils.showAnswerInfo();
-    document.querySelector('.forward-btn').textContent = 'Дальше';
   }
 
   addListeners() {
-    const checkAnswer = (event: MouseEvent) => {
+    const checkAnswer = async (event: MouseEvent) => {
       const target = <HTMLButtonElement>event.target;
-      this.checkWord(target);
+      await this.checkWord(target);
     }
 
     const answerBtns = document.querySelector('.answers');

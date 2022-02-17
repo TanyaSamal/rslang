@@ -3,7 +3,8 @@ import { IWord, IAuth } from "../../../spa/tools/controllerTypes";
 import { IGameState, IGameStatistic, IGamePoints } from  "../../componentTypes";
 import CONSTS from "./sprintConsts";
 import { Bonus, IGameSprintStatistic, WordAnswer, WordStorage } from "./sprintTypes";
-import { appResultGame } from '../../components/result-game/app.result-game';
+import { appResultGame } from "../../components/result-game/app.result-game";
+import { sendAnswer } from "../../pages/audiocall/utils";
 
 function getGroup(): string {
     const level = document.querySelector('.click-level') as HTMLElement;
@@ -44,39 +45,37 @@ function updatePointsHeader(): void {
     const audiocallResult: IGamePoints = JSON.parse(localStorage.getItem('audiocallPoints'));
     const sprintResult: IGamePoints = JSON.parse(localStorage.getItem('sprintPoints'));
 
-    const newPoints: number = Number(audiocallResult.points) + Number(sprintResult.points);
-    gamePoints.textContent = String(newPoints);
+    const sumPoints: number = Number(audiocallResult.points) + Number(sprintResult.points);
+    gamePoints.textContent = String(sumPoints);
 }
 
 function saveSprintPoints(): void {
     const resultGameStatistic: IGameSprintStatistic = JSON.parse(localStorage[CONSTS.GAME_SPRINT_STATISTIC]);
     const userInfo: IAuth = JSON.parse(localStorage['userInfo']);
 
-    if (userInfo) {
-        if (localStorage[CONSTS.SPRINT_POINTS]) {
-            const localResults: IGamePoints = JSON.parse(localStorage.getItem('sprintPoints'));
-            
-            if (localResults.date === new Date().toLocaleDateString() &&
-                localResults.userId === JSON.parse(localStorage.getItem('userInfo')).userId) {
-                const newPoints: number = Number(localResults.points) + resultGameStatistic.score;
-                const sprintPoints: IGamePoints = {
-                    userId: userInfo.userId,
-                    points: String(newPoints),
-                    date: new Date().toLocaleDateString(),
-                };
-
-                localStorage.setItem(CONSTS.SPRINT_POINTS, JSON.stringify(sprintPoints));
-            }
+    if (localStorage['sprintPoints']) {
+        const localResults: IGamePoints = JSON.parse(localStorage.getItem('sprintPoints'));
+        
+        if (localResults.date === new Date().toLocaleDateString()) {
+            const newPoints: number = Number(localResults.points) + resultGameStatistic.score;
+            const sprintPoints: IGamePoints = {
+                userId: userInfo.userId,
+                points: String(newPoints),
+                date: new Date().toLocaleDateString(),
+            };
+            localStorage.setItem('sprintPoints', JSON.stringify(sprintPoints));
         } else {
+            localStorage.removeItem('sprintPoints');
             const sprintPoints: IGamePoints = {
                 userId: userInfo.userId,
                 points: String(resultGameStatistic.score),
                 date: new Date().toLocaleDateString(),
             };
-
-            localStorage.setItem(CONSTS.SPRINT_POINTS, JSON.stringify(sprintPoints));
+            localStorage.setItem('sprintPoints', JSON.stringify(sprintPoints));
         }
+    }
 
+    if (userInfo) {
         updatePointsHeader();
     }
 }
@@ -136,6 +135,7 @@ function makeWordCard(words: IWord[], index: number, translates: string[]): void
     
     wordText.innerHTML = words[index].word;
     localStorage.setItem(CONSTS.WORD_ENG, words[index].word);
+    localStorage.setItem(CONSTS.SPRINT_WORD_ID, words[index].id);
 
     const word: string = words[index].word;
     const trueTranslate: string = words[index].wordTranslate;
@@ -423,6 +423,14 @@ function saveGameStatistic(): void {
     }));
 }
 
+async function sendAnswerToServer(wordId: string, correctness: string, level: string) {
+    if (localStorage.getItem('userInfo')) {
+        const isNew = await sendAnswer(wordId, correctness, level, 'sprint');
+        
+        if (isNew) this.newWords += 1;
+    }
+}
+
 function checkAnswer(): void {
     const resultGameStatistic: IGameSprintStatistic = JSON.parse(localStorage[CONSTS.GAME_SPRINT_STATISTIC]);
     const wordEng: string = localStorage[CONSTS.WORD_ENG];
@@ -432,6 +440,8 @@ function checkAnswer(): void {
     const currentCard = Number(localStorage[CONSTS.CURRENT_CARD]);
     const words: IWord[] = JSON.parse(localStorage[CONSTS.WORDS]);
     const { minStar, minMedal } = CONSTS.BONUS_STAR_MEDAL;
+    const wordId: string = localStorage[CONSTS.SPRINT_WORD_ID];
+    const level: string = localStorage[CONSTS.GROUP];
 
     if (currentCard === words.length - 1) {
         return;
@@ -455,6 +465,11 @@ function checkAnswer(): void {
         localStorage.setItem(CONSTS.BONUS_STAR, String(star));
         localStorage.setItem(CONSTS.BONUS_MEDAL, String(medal));
 
+        // if (localStorage.getItem('userInfo')) {  // если залогинен
+        //     const isNew = await sendAnswer(this.gameWords[this.currentQuestion].id, correctness, this.level, 'sprint');
+        //     if (isNew) this.newWords += 1;
+        // }
+        sendAnswerToServer(wordId, 'correct', level);
         getBonus(star, medal);
         getPoints(medal);
         getScore();
@@ -479,6 +494,7 @@ function checkAnswer(): void {
         localStorage.setItem(CONSTS.BONUS_STAR, String(star));
         localStorage.setItem(CONSTS.BONUS_MEDAL, String(medal));
 
+        sendAnswerToServer(wordId, 'incorrect', level);
         deleteBonus();
         getPoints(medal);
     }

@@ -1,4 +1,5 @@
-import { IAuth, IStatistics, IStatOptions } from "../../../spa/tools/controllerTypes";
+import { Controller } from "../../../spa";
+import { IAuth, IStatistics, IStatOptions, IUserWord, WordStatus } from "../../../spa/tools/controllerTypes";
 import { IGamePoints } from "../../componentTypes";
 
 export const getRandomNumber = (max: number): number => Math.floor(Math.random() * max);
@@ -59,6 +60,15 @@ export const showAnswerInfo = () => {
   }, 500);
 }
 
+export const changeAnswerState = () => {
+  document.querySelector('.forward-btn').textContent = 'Дальше';
+  const answerBtns = document.querySelectorAll('.answer-btn');
+  answerBtns.forEach((btn: HTMLButtonElement) => {
+    btn.disabled = true;
+  });
+  showAnswerInfo();
+}
+
 export const addStars = (points: number) => {
   const stars = <HTMLDivElement>document.querySelector('.add-stars');
   const starsCount = <HTMLDivElement>document.querySelector('.stars-count');
@@ -78,15 +88,6 @@ export const addStars = (points: number) => {
   }, 0);
 }
 
-function updatePointsHeader(): void {
-  const gamePoints = document.querySelector('.game-points') as HTMLElement;
-  const audiocallResult: IGamePoints = JSON.parse(localStorage.getItem('audiocallPoints'));
-  const sprintResult: IGamePoints = JSON.parse(localStorage.getItem('sprintPoints'));
-
-  const newPoints: number = Number(audiocallResult.points) + Number(sprintResult.points);
-  gamePoints.textContent = String(newPoints);
-}
-
 export const savePoints = () => {
   let points = Number((<HTMLDivElement>document.querySelector('.stars-count')).textContent);
   const userInfo: IAuth = JSON.parse(localStorage.getItem('userInfo'));
@@ -104,9 +105,7 @@ export const savePoints = () => {
     points: points.toString(),
     date: today
   }));
-
-  updatePointsHeader();
-  //document.querySelector('.game-points').textContent = `${points}`;
+  document.querySelector('.game-points').textContent = `${points}`;
 }
 
 export const makeStatistic = (currentStatistic: IStatistics): IStatistics => {
@@ -124,12 +123,8 @@ export const makeStatistic = (currentStatistic: IStatistics): IStatistics => {
       currentStat[currentStat.length - 1].newWords += 1;
       currentStat[currentStat.length - 1].totalWords += 1;
     } else {
-      let learnt = 0;
-      currentStat.forEach(el => {
-        learnt += el.totalWords
-      });
-      statistic.totalWords = learnt + 1;
-      currentStatistic.learnedWords = learnt + 1;
+      statistic.totalWords = currentStat[currentStat.length - 1].totalWords + 1;
+      currentStatistic.learnedWords = currentStat[currentStat.length - 1].totalWords + 1;
       currentStat.push(statistic);
     }
     currentStatistic.optional.stat = JSON.stringify(currentStat);
@@ -143,4 +138,71 @@ export const makeStatistic = (currentStatistic: IStatistics): IStatistics => {
     }
   }
   return currentStatistic;
+}
+
+export const sendStatistic = async (userId: string, token: string) => {
+  const controller = new Controller();
+  const currentStatistic: IStatistics = await controller.getStatistics(userId, token);
+  const newStatistic = makeStatistic(currentStatistic);
+  await controller.setStatistics(userId, token, newStatistic);
+}
+
+export const sendAnswer = async (wordId: string, correctness: string, level: string, game: string): Promise<boolean> => {
+  const CORRECT = 'correct';
+  const INCORRECT = 'incorrect';
+  const controller = new Controller();
+  let isNew = false;
+  const userInfo: IAuth = JSON.parse(localStorage.getItem('userInfo'));
+
+  const userWordInfo = await controller.getUserWordById(userInfo.userId, userInfo.token, wordId);
+  if (userWordInfo) {
+    delete userWordInfo.id;
+    delete userWordInfo.wordId;
+    if (userWordInfo.optional.gameProgress[game].right === 0 &&
+      userWordInfo.optional.gameProgress[game].wrong === 0)
+      isNew = true;
+    if (correctness === CORRECT) {
+      userWordInfo.optional.gameProgress[game].right  += 1; 
+    } else {
+      userWordInfo.optional.gameProgress[game].wrong  += 1;
+      if (userWordInfo.optional.status === WordStatus.learnt)
+        userWordInfo.optional.status = WordStatus.inProgress;
+    }
+    if (userWordInfo.optional.gameProgress[game].right === 3 && Number(level) < 3) {
+      userWordInfo.optional.status = WordStatus.learnt;
+      sendStatistic(userInfo.userId, userInfo.token);
+    } else if (userWordInfo.optional.gameProgress[game].right === 5 && Number(level) >= 3) {
+      userWordInfo.optional.status = WordStatus.learnt;
+      sendStatistic(userInfo.userId, userInfo.token);
+    }
+    if (userWordInfo.optional.status !== WordStatus.learnt) {
+      userWordInfo.optional.status = WordStatus.inProgress;
+      // delete from statistic?
+    }
+    userWordInfo.optional.updatedDate = new Date().toLocaleDateString();
+    await controller.updateUserWord(userInfo.userId, userInfo.token, wordId, userWordInfo);
+  } else {
+    isNew = true;
+    const userWord: IUserWord = {
+      difficulty: String(level),
+      optional: {
+        updatedDate: new Date().toLocaleDateString(),
+        status: WordStatus.inProgress,
+        gameProgress: {
+          sprint: {
+            right: 0,
+            wrong: 0,
+          },
+          audiocall: {
+            right: 0,
+            wrong: 0,
+          },
+        }
+      }
+    };
+    userWord.optional.gameProgress[game].right = (correctness === CORRECT) ? 1 : 0;
+    userWord.optional.gameProgress[game].wrong = (correctness === INCORRECT) ? 1 : 0;
+    await controller.createUserWord(userInfo.userId, wordId, userWord, userInfo.token);
+  }
+  return isNew;
 }

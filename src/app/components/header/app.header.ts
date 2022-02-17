@@ -21,6 +21,15 @@ class AppHeader extends Component {
     listener: this.logout,
   }];
 
+  addGamePoints(game: string) {
+    const localResults: IGamePoints = JSON.parse(localStorage.getItem(game));
+    if (localResults.date === new Date().toLocaleDateString() &&
+      localResults.userId === JSON.parse(localStorage.getItem('userInfo')).userId) {
+        const currentPoints = Number(document.querySelector('.game-points').textContent);
+        document.querySelector('.game-points').textContent = `${+localResults.points + currentPoints}`;
+    }
+  }
+
   changeLoginStatus() {
     const loginBtn = <HTMLAnchorElement>document.querySelector('.auth-btn');
     const logoutBtn = <HTMLAnchorElement>document.querySelector('.user-info');
@@ -31,29 +40,14 @@ class AppHeader extends Component {
     if (userName) {
       (<HTMLDivElement>document.querySelector('.user-name')).textContent = userName;
     }
-
-    if (localStorage.getItem('audiocallPoints')) {
-      const localResults: IGamePoints = JSON.parse(localStorage.getItem('audiocallPoints'));
-      if (localResults.date === new Date().toLocaleDateString() &&
-        localResults.userId === JSON.parse(localStorage.getItem('userInfo')).userId) {
-
-        const gamePoints = document.querySelector('.game-points') as HTMLElement;
-        const currentPoints: number = Number(gamePoints.textContent);
-        const newPoints: number = currentPoints + Number(localResults.points);
-        gamePoints.textContent = String(newPoints);
+    if (localStorage.getItem('userInfo')) {
+      if (localStorage.getItem('audiocallPoints')) {
+        this.addGamePoints('audiocallPoints');
       }
-    }
-
-    if (localStorage.getItem('sprintPoints')) {
-      const localResults: IGamePoints = JSON.parse(localStorage.getItem('sprintPoints'));
-      if (localResults.date === new Date().toLocaleDateString() &&
-        localResults.userId === JSON.parse(localStorage.getItem('userInfo')).userId) {
-          
-        const gamePoints = document.querySelector('.game-points') as HTMLElement;
-        const currentPoints: number = Number(gamePoints.textContent);
-        const newPoints: number = currentPoints + Number(localResults.points);
-        gamePoints.textContent = String(newPoints);
+      if (localStorage.getItem('sprintPoints')) {
+        this.addGamePoints('sprintPoints');
       }
+      (<HTMLLIElement>document.querySelector('li.only-authorized')).style.display = 'inline';
     }
   }
 
@@ -86,6 +80,7 @@ class AppHeader extends Component {
     this.token = '';
     localStorage.removeItem('userInfo');
     localStorage.removeItem('currentPage');
+    localStorage.removeItem('userName');
     router.navigate('#');
     this.changeLoginStatus();
     this.showHomePageLoginForm();
