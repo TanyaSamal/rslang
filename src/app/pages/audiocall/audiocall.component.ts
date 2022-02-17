@@ -198,7 +198,10 @@ class AudiocallComponent extends Component {
       }
     }
 
+    const deleteData = () => localStorage.removeItem('audiocallState');
+
     window.addEventListener('keyup', ckeckKey);
+    window.addEventListener('beforeunload', deleteData);
   }
 
   drawProgress() {
@@ -256,7 +259,6 @@ class AudiocallComponent extends Component {
       } else {
         gameWords = gameState.textbookWords;
       }
-      localStorage.removeItem('audiocallState');
     } else {
       let page = JSON.parse(localStorage.getItem('page'));
       this.level = JSON.parse(localStorage.getItem('group'));
