@@ -1,3 +1,5 @@
+import { IWord } from "../../../spa/tools/controllerTypes"
+
 export type WordAnswer = {
   eng: string;
   rus: string;
@@ -10,4 +12,9 @@ export interface IGameAudiocallStatistic {
   falseAnswers: number,
   rightWords: WordAnswer[],
   falseWords: WordAnswer[],
+}
+
+export type WordsFromTextbook = {
+  level: string,
+  gameWords: IWord[]
 }

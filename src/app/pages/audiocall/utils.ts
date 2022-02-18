@@ -1,8 +1,9 @@
 import { Controller } from "../../../spa";
-import { IAuth, IStatistics, IStatOptions, IUserWord, WordStatus } from "../../../spa/tools/controllerTypes";
+import { IAuth, IStatistics, IStatOptions, IUserWord, IWord, WordStatus } from "../../../spa/tools/controllerTypes";
 import { AppLoader } from "../../components/loader/app.loader";
 import Loader from "../../components/loader/app.loader.html";
-import { IGamePoints } from "../../componentTypes";
+import { IGamePoints, IGameState, Mode } from "../../componentTypes";
+import { WordsFromTextbook } from "./audiocallTypes";
 
 export const getRandomNumber = (max: number): number => Math.floor(Math.random() * max);
 
@@ -232,4 +233,63 @@ export const hideLoader = () => {
 
 export const showErrorMessage = () => {
   document.querySelector('.question-container').textContent = 'Слов для игры недостаточно. Выберите другую страницу';
+}
+
+export const getWordsFromTextbook = async (): Promise<WordsFromTextbook> => {
+  let level = '0';
+  const controller = new Controller();
+  let gameWords: IWord[] = [];
+  if (localStorage.getItem('audiocallState')) {
+    const gameState: IGameState = JSON.parse(localStorage.getItem('audiocallState'));
+    level = String(gameState.level);
+    if (localStorage.getItem('userInfo')) {
+      const userInfo: IAuth = JSON.parse(localStorage.getItem('userInfo'));
+      if (gameState.mode === Mode.DICTIONARY) {
+        gameWords = gameState.dictionaryWords.slice(gameState.dictionaryPage * 20, gameState.dictionaryPage * 20 + 20);
+      }  else {
+        const userWords = await controller.getUserWords(userInfo.userId, userInfo.token);
+        const learntWords = userWords.filter((word) =>
+          word.difficulty === gameState.level && word.optional.status === WordStatus.learnt)
+          .map((word) => word.wordId);
+        gameWords = gameState.textbookWords.filter((word) => !learntWords.includes(word.id));
+        if (gameWords.length < 20) {
+          let page = gameState.textbookPage;
+          const promises = [];
+          while (page !== 0) {
+            page -= 1;
+            promises.push(controller.getWords(gameState.level, page.toString()));
+          }
+          const results = await Promise.all(promises);
+          page = results.length - 1;
+          while(gameWords.length < 20 && page >= 0) {
+            const filteredArr = results[page].filter((word) => !learntWords.includes(word.id));
+            gameWords = gameWords.concat(filteredArr);
+            page -= 1;
+          }
+          if (gameWords.length > 20) gameWords.length = 20;
+        }
+      }
+    } else {
+      gameWords = gameState.textbookWords;
+    }
+  } else {
+    let page = JSON.parse(localStorage.getItem('page'));
+    if (localStorage.getItem('group')) level = JSON.parse(localStorage.getItem('group'));
+    if (!page) page = '0';
+    gameWords = await controller.getWords(level, page);
+  }
+  return {
+    level,
+    gameWords
+  }
+}
+
+export const showModal = () => {
+  const modal = <HTMLDivElement>document.querySelector('.exit-modal');
+  modal.style.marginTop = '0';
+}
+
+export const hideModal = () => {
+  const modal = <HTMLDivElement>document.querySelector('.exit-modal');
+  modal.style.marginTop = '-100%';
 }

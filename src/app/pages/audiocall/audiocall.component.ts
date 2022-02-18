@@ -35,18 +35,46 @@ class AudiocallComponent extends Component {
     event: 'click',
     className: '.exit-game',
     listener: this.exitFromGame,
+  },
+  {
+    event: 'click',
+    className: '.exit-game__modal',
+    listener: this.closeGame,
+  },
+  {
+    event: 'click',
+    className: '.continue-game',
+    listener: this.continueGame,
   }];
 
-  exitFromGame(event: MouseEvent) {
+  continueGame(event: MouseEvent) {
     const target = <HTMLDivElement>event.target;
-    if (target.tagName === 'DIV') {
+    if (target.tagName === 'BUTTON') {
+      utils.hideModal();
+    }
+  }
+
+  closeGame(event: MouseEvent) {
+    const target = <HTMLDivElement>event.target;
+    if (target.tagName === 'BUTTON') {
       utils.savePoints();
       router.navigate('');
     }
   }
 
-  toggleFullScreen(event: MouseEvent) {
-    const target = <HTMLDivElement>event.target;
+  exitFromGame(event?: MouseEvent) {
+    let target = document.querySelector('.exit-game');
+    if (event)
+      target = <HTMLDivElement>event.target;
+    if (target.tagName === 'DIV') {
+      utils.showModal();
+    }
+  }
+
+  toggleFullScreen(event?: MouseEvent) {
+    let target = document.querySelector('.fullscreen-btn');
+    if (event)
+      target = <HTMLDivElement>event.target;
     if (target.tagName === 'DIV') {
       if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen();
@@ -190,11 +218,21 @@ class AudiocallComponent extends Component {
         const target = <HTMLButtonElement>document.querySelector(`.answer:nth-child(${event.key}) button`);
         this.checkWord(target);
       }
-      if (event.key === 'Enter') {
-        this.nextQuestion();
-      }
-      if (event.key === ' ') {
-        this.playQuestion();
+      switch (event.key) {
+        case 'Enter':
+          this.nextQuestion();
+          break;
+        case ' ':
+          this.playQuestion();
+          break;
+        case 'f':
+          this.toggleFullScreen();
+          break;
+        case 'Escape':
+          this.exitFromGame();
+          break;
+        default:
+          break;
       }
     }
 
@@ -222,50 +260,8 @@ class AudiocallComponent extends Component {
   }
 
   async getRoundWords() {
-    let gameWords: IWord[] = [];
-    if (localStorage.getItem('audiocallState')) {
-      const gameState: IGameState = JSON.parse(localStorage.getItem('audiocallState'));
-      this.level = String(gameState.level);
-      if (localStorage.getItem('userInfo')) {
-        const userInfo: IAuth = JSON.parse(localStorage.getItem('userInfo'));
-        // const resp = await this.controller.getAgregatedWords(userInfo.userId, userInfo.token, state.level,
-        //   '%7B%22userWord.difficulty%22%3A%220%22%7D');
-        //   gameWords = resp.paginatedResults;
-        if (gameState.mode === Mode.DICTIONARY) {
-          gameWords = gameState.dictionaryWords.slice(gameState.dictionaryPage * 20, gameState.dictionaryPage * 20 + 20);
-        }  else {
-          const userWords = await this.controller.getUserWords(userInfo.userId, userInfo.token);
-          const learntWords = userWords.filter((word) =>
-          word.difficulty === gameState.level && word.optional.status === WordStatus.learnt)
-          .map((word) => word.wordId);
-          gameWords = gameState.textbookWords.filter((word) => !learntWords.includes(word.id));
-          if (gameWords.length < 20) {
-            let page = gameState.textbookPage;
-            const promises = [];
-            while (page !== 0) {
-              page -= 1;
-              promises.push(this.controller.getWords(gameState.level, page.toString()));
-            }
-            const results = await Promise.all(promises);
-            page = results.length - 1;
-            while(gameWords.length < 20 && page >= 0) {
-              const filteredArr = results[page].filter((word) => !learntWords.includes(word.id));
-              gameWords = gameWords.concat(filteredArr);
-              page -= 1;
-            }
-            if (gameWords.length > 20) gameWords.length = 20;
-          }
-        }
-      } else {
-        gameWords = gameState.textbookWords;
-      }
-    } else {
-      let page = JSON.parse(localStorage.getItem('page'));
-      this.level = JSON.parse(localStorage.getItem('group'));
-      if (!page) page = '0';
-      if (!this.level) this.level = '0';
-      gameWords = await this.controller.getWords(this.level, page);
-    }
+    const { level, gameWords } = await utils.getWordsFromTextbook();
+    this.level = level;
     this.gameWords = utils.shuffleArray(gameWords);
     this.answers = Array(this.gameWords.length).fill(0);
   }

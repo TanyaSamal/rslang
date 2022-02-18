@@ -130,4 +130,30 @@
       }
     }
   }
+
+  .exit-modal {
+    display: flex;
+    position: absolute;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    margin-top: -100%;
+    background-color: white;
+    width: 30vw;
+    height: 30vh;
+    border-radius: 10px;
+    box-shadow: 2px 4px 7px -2px rgba(34, 60, 80, 0.2);
+    transition: .5s;
+
+    .exit-modal_buttons {
+
+      button {
+        padding: 5px 15px;
+
+        &:first-child {
+          margin-right: 10px;
+        }
+      }
+    }
+  }
 }
