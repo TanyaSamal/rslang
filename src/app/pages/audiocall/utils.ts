@@ -23,7 +23,7 @@ export const playWord = (src: string) => {
 function playAudio(src: string) {
   const audio = new Audio();
   audio.volume = 0.2;
-  audio.src = `https://raw.githubusercontent.com/tanyasamal/img/master/quiz/${src}.mp3`;
+  audio.src = `https://github.com/dns147/mp3-rs/raw/main/mp3-rs-lang/${src}-answer.mp3`
   audio.play();
 }
 
@@ -44,7 +44,7 @@ export const findLongestSeries = (arr: Array<number>): number => {
 export const showAnswer = (correctness: string, questionNumber: number) => {
   const progress = document.querySelector(`.progress-status li:nth-child(${questionNumber})`);
   progress.classList.add(correctness);
-  const audios = ['audio-right', 'audio-wrong'];
+  const audios = ['right', 'false'];
   if (correctness === 'correct') playAudio(audios[0]);
   else playAudio(audios[1]);
 }

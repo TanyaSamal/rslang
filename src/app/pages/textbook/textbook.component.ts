@@ -26,6 +26,8 @@ class TextbookComponent extends Component {
   private learntWords: IUserWordInfo[] = [];
   private newWords: IUserWordInfo[] = [];
   private userWordsInfo: IUserWordInfo[] = [];
+  private isTranslateShown = true;
+  private isWordButtonsShown = true;
 
   events = (): ComponentEvent[] =>  [{
     event: 'click',
@@ -91,8 +93,48 @@ class TextbookComponent extends Component {
     event: 'click',
     className: '.game-audiocall',
     listener: this.goToAudioCall,
+  },
+  {
+    event: 'click',
+    className: '.settings-svg',
+    listener: this.showSettings,
+  },
+  {
+    event: 'click',
+    className: '.close-settings__btn',
+    listener: this.closeSettings,
+  },
+  {
+    event: 'click',
+    className: '#checkbox-translate',
+    listener: this.toggleTranslate,
+  },
+  {
+    event: 'click',
+    className: '#checkbox-buttons',
+    listener: this.toggleButtons,
   }
 ];
+
+  toggleButtons() {
+    this.isWordButtonsShown = !this.isWordButtonsShown;
+    utils.updateWordButtonsView(this.isWordButtonsShown );
+  }
+
+  toggleTranslate() {
+    this.isTranslateShown = !this.isTranslateShown;
+    utils.updateTranslateView(this.isTranslateShown);
+  }
+
+  closeSettings() {
+    (<HTMLDivElement>document.querySelector('.textbook-setting')).style.opacity = '0';
+    (<SVGElement>document.querySelector('.settings-svg')).style.zIndex = '2';
+  }
+
+  showSettings() {
+    (<HTMLDivElement>document.querySelector('.textbook-setting')).style.opacity = '1';
+    (<SVGElement>document.querySelector('.settings-svg')).style.zIndex = '1';
+  }
 
   saveStateInLocalStorage(setItem: string) {
     localStorage.setItem(setItem, JSON.stringify({
@@ -113,6 +155,8 @@ class TextbookComponent extends Component {
       level: this.currentLevel,
       textbookPage: this.currentPage,
       dictionaryPage: this.currentDictPage,
+      isWordButtonsShown: this.isWordButtonsShown,
+      isTranslateShown: this.isTranslateShown,
     }));
   }
 
@@ -262,7 +306,9 @@ class TextbookComponent extends Component {
       }
       else link.classList.add('disabled');
     });
-    this.savePageInLocalStorage();
+    // this.savePageInLocalStorage();
+    utils.updateTranslateView(this.isTranslateShown);
+    utils.updateWordButtonsView(this.isWordButtonsShown);
     utils.hideDictionaryLoader();
   }
 
@@ -297,7 +343,9 @@ class TextbookComponent extends Component {
       }
       else link.classList.add('disabled');
     });
-    this.savePageInLocalStorage();
+    utils.updateTranslateView(this.isTranslateShown);
+    utils.updateWordButtonsView(this.isWordButtonsShown);
+    // this.savePageInLocalStorage();
   }
 
   async showLearntWords() {
@@ -324,7 +372,9 @@ class TextbookComponent extends Component {
     gameLinks.forEach((link: HTMLDivElement) => {
       link.classList.add('disabled');
     });
-    this.savePageInLocalStorage();
+    // this.savePageInLocalStorage();
+    utils.updateTranslateView(this.isTranslateShown);
+    utils.updateWordButtonsView(this.isWordButtonsShown);
     utils.hideDictionaryLoader();
   }
 
@@ -353,7 +403,9 @@ class TextbookComponent extends Component {
     document.querySelector('.dictionary-word__description').innerHTML = '';
     const activeWord = JSON.parse(localStorage.getItem('activeWord'));
     this.drawActiveWord(+activeWord);
-    this.savePageInLocalStorage();
+    // this.savePageInLocalStorage();
+    utils.updateTranslateView(this.isTranslateShown);
+    utils.updateWordButtonsView(this.isWordButtonsShown);
     utils.hideLoader();
   }
 
@@ -376,14 +428,16 @@ class TextbookComponent extends Component {
       await this.showDifficultWords();
     else
       await this.showNewWords();
-    this.savePageInLocalStorage();
+    // this.savePageInLocalStorage();
+    utils.updateTranslateView(this.isTranslateShown);
+    utils.updateWordButtonsView(this.isWordButtonsShown);
     utils.hideDictionaryLoader();
   }
 
   changeLevelView(): void {
     document.querySelector('.active-level').classList.remove('active-level');
     document.querySelector(`#level-${this.currentLevel}`).classList.add('active-level');
-    this.savePageInLocalStorage();
+    // this.savePageInLocalStorage();
   }
 
   async changePage(event: MouseEvent) {
@@ -395,7 +449,9 @@ class TextbookComponent extends Component {
       utils.channgePaginationView(this.currentPage);
       utils.checkPageProgress(this.currentMode);
       utils.hideLoader();
-      this.savePageInLocalStorage();
+      utils.updateTranslateView(this.isTranslateShown);
+      utils.updateWordButtonsView(this.isWordButtonsShown);
+      // this.savePageInLocalStorage();
     }
   }
 
@@ -405,7 +461,9 @@ class TextbookComponent extends Component {
     await this.initLevelWords();
     utils.channgePaginationView(this.currentPage);
     utils.checkPageProgress(this.currentMode);
-    this.savePageInLocalStorage();
+    utils.updateTranslateView(this.isTranslateShown);
+    utils.updateWordButtonsView(this.isWordButtonsShown);
+    // this.savePageInLocalStorage();
     utils.hideLoader();
   }
 
@@ -415,7 +473,9 @@ class TextbookComponent extends Component {
     await this.initLevelWords();
     utils.checkPageProgress(this.currentMode);
     utils.channgePaginationView(this.currentPage);
-    this.savePageInLocalStorage();
+    utils.updateTranslateView(this.isTranslateShown);
+    utils.updateWordButtonsView(this.isWordButtonsShown);
+    // this.savePageInLocalStorage();
     utils.hideLoader();
   }
 
@@ -500,6 +560,8 @@ class TextbookComponent extends Component {
         const targetId = Number(parentDiv.id.slice(parentDiv.id.indexOf(this.currentMode) + this.currentMode.length));
         this.drawActiveWord(targetId);
       }
+      utils.updateTranslateView(this.isTranslateShown);
+      utils.updateWordButtonsView(this.isWordButtonsShown);
     }
 
     const wordsContainer = document.querySelector('.words-container');
@@ -591,6 +653,8 @@ class TextbookComponent extends Component {
           utils.changeUserWordsCount(this.difficultWords.length, this.learntWords.length, this.newWords.length);
           utils.hideDictionaryLoader();
         }
+        utils.updateTranslateView(this.isTranslateShown);
+        utils.updateWordButtonsView(this.isWordButtonsShown);
       }
     }
 
@@ -608,6 +672,8 @@ class TextbookComponent extends Component {
       this.currentLevel = storageData.level;
       this.currentPage = storageData.textbookPage;
       this.currentDictPage = storageData.dictionaryPage;
+      this.isTranslateShown = storageData.isTranslateShown;
+      this.isWordButtonsShown = storageData.isWordButtonsShown;
       if (this.currentMode === Mode.TEXTBOOK) {
         await this.initLevelWords();
         utils.channgePaginationView(this.currentPage);
@@ -616,12 +682,15 @@ class TextbookComponent extends Component {
       }
       this.changeLevelView();
       utils.changeColorTheme(this.currentLevel);
+      utils.changeSettingsView(this.isTranslateShown, this.isWordButtonsShown);
     }
     utils.checkPageProgress(this.currentMode);
     this.addWordsListeners();
     this.addLevelListeners();
     utils.hideLoader();
+    window.addEventListener('beforeunload', this.savePageInLocalStorage.bind(this));
   }
+  
 }
 
 export const textbookComponent = new TextbookComponent({
