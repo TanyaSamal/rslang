@@ -1,7 +1,7 @@
 import './app.word.scss';
 import { Component, Controller } from '../../../spa';
 import { ComponentEvent, IComponentConfig } from '../../../spa/core/coreTypes';
-import { IAuth, IStatistics, IUserWord, WordStatus } from '../../../spa/tools/controllerTypes';
+import { IAuth, IStatistics, IUserWord, IUserWordInfo, WordStatus } from '../../../spa/tools/controllerTypes';
 import { makeStatistic } from '../../pages/audiocall/utils';
 import * as utils from '../../pages/textbook/utils';
 import { Mode } from '../../componentTypes';
@@ -71,7 +71,15 @@ export class AppWord extends Component {
     const wordProgress: IUserWord = this.setWordProgress(WordStatus.difficult);
     const userInfo: IAuth = JSON.parse(localStorage.getItem('userInfo'));
     const wordID: string = JSON.parse(localStorage.getItem('activeWordID'));
-    await this.controller.createUserWord(userInfo.userId, wordID, wordProgress, userInfo.token);
+    const userWordInfo: IUserWordInfo = await this.controller.getUserWordById(userInfo.userId, userInfo.token, wordID);
+    if (!userWordInfo) {
+      await this.controller.createUserWord(userInfo.userId, wordID, wordProgress, userInfo.token);
+    } else if (userWordInfo.optional.status !== WordStatus.difficult) {
+      delete userWordInfo.id;
+      delete userWordInfo.wordId;
+      userWordInfo.optional.status = WordStatus.difficult;
+      await this.controller.updateUserWord(userInfo.userId, userInfo.token, wordID, userWordInfo);
+    }
   }
 
   async addInLearnt() {
@@ -80,8 +88,20 @@ export class AppWord extends Component {
     const wordProgress: IUserWord = this.setWordProgress(WordStatus.learnt);
     const userInfo: IAuth = JSON.parse(localStorage.getItem('userInfo'));
     const wordID: string = JSON.parse(localStorage.getItem('activeWordID'));
-    await this.controller.createUserWord(userInfo.userId, wordID, wordProgress, userInfo.token);
-    await this.sendStatistic(userInfo.userId, userInfo.token);
+    const userWordInfo: IUserWordInfo = await this.controller.getUserWordById(userInfo.userId, userInfo.token, wordID);
+    if (userWordInfo) {
+      delete userWordInfo.id;
+      delete userWordInfo.wordId;
+      if (userWordInfo.optional.status !== WordStatus.learnt) {
+        userWordInfo.optional.status = WordStatus.learnt;
+        userWordInfo.optional.updatedDate = new Date().toLocaleDateString();
+        await this.controller.updateUserWord(userInfo.userId, userInfo.token, wordID, userWordInfo);
+        await this.sendStatistic(userInfo.userId, userInfo.token);
+      }
+    } else {
+      await this.controller.createUserWord(userInfo.userId, wordID, wordProgress, userInfo.token);
+      await this.sendStatistic(userInfo.userId, userInfo.token);
+    }
   }
 
   afterInit() {

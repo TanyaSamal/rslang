@@ -109,7 +109,8 @@ export const savePoints = () => {
       points: points.toString(),
       date: today
     }));
-    document.querySelector('.game-points').textContent = `${points}`;
+    const headerPoints = <HTMLDivElement>document.querySelector('.game-points');
+    headerPoints.textContent = `${Number(headerPoints.textContent) + points}`;
   }
 }
 
