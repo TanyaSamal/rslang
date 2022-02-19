@@ -1,30 +1,35 @@
 import { IUserWordInfo } from "../../../spa/tools/controllerTypes";
+import { AppLoader } from "../../components/loader/app.loader";
+import Loader from "../../components/loader/app.loader.html";
+import { Mode } from "../../componentTypes";
 
-export const checkPageProgress = (): void => {
-  const statuses = document.querySelectorAll('.status-info');
-  let activeCount = 0;
-  statuses.forEach((status: HTMLDivElement) => {
-    if (status.textContent !== '')
-      activeCount += 1;
-  });
-  const pageStatusInfo = <HTMLDivElement>document.querySelector('.page-status__info');
-  const wordsMeaning = <HTMLDivElement>document.querySelector('.words-meaning');
-  const gameLinks = document.querySelectorAll('.link-container');
-  const currPage = <HTMLButtonElement>document.querySelector('.current-page');
-  if (activeCount === 20) {
-    pageStatusInfo.style.display = 'block';
-    wordsMeaning.classList.add('done');
-    gameLinks.forEach((link: HTMLDivElement) => {
-      link.classList.add('disabled');
+export const checkPageProgress = (mode: string): void => {
+  if (mode === Mode.TEXTBOOK) {
+    const statuses = document.querySelectorAll('.status-info');
+    let activeCount = 0;
+    statuses.forEach((status: HTMLDivElement) => {
+      if (status.textContent !== '')
+        activeCount += 1;
     });
-    currPage.classList.add('learnt-page');
-  } else {
-    pageStatusInfo.style.display = 'none';
-    wordsMeaning.classList.remove('done');
-    gameLinks.forEach((link: HTMLDivElement) => {
-      link.classList.remove('disabled');
-    });
-    currPage.classList.remove('learnt-page');
+    const pageStatusInfo = <HTMLDivElement>document.querySelector('.page-status__info');
+    const wordsMeaning = <HTMLDivElement>document.querySelector('.words-meaning');
+    const gameLinks = document.querySelectorAll('.link-container');
+    const currPage = <HTMLButtonElement>document.querySelector('.current-page');
+    if (activeCount === 20) {
+      pageStatusInfo.style.display = 'block';
+      wordsMeaning.classList.add('done');
+      gameLinks.forEach((link: HTMLDivElement) => {
+        link.classList.add('disabled');
+      });
+      currPage.classList.add('learnt-page');
+    } else {
+      pageStatusInfo.style.display = 'none';
+      wordsMeaning.classList.remove('done');
+      gameLinks.forEach((link: HTMLDivElement) => {
+        link.classList.remove('disabled');
+      });
+      currPage.classList.remove('learnt-page');
+    }
   }
 }
 
@@ -104,11 +109,13 @@ export const switchMode = (mode: string): void => {
     else headersTitles[1].classList.remove('active-textbook');
 }
 
-export const changeUserWordsCount = (difficultCount: number, learntCount: number): void => {
+export const changeUserWordsCount = (difficultCount: number, learntCount: number, newCount: number): void => {
   const difficult = document.querySelector('.difficult-words .word__count span');
   difficult.textContent = String(difficultCount);
   const learnt = document.querySelector('.learnt-words .word__count span');
   learnt.textContent = String(learntCount);
+  const newWords = document.querySelector('.new-words .word__count span');
+  newWords.textContent = String(newCount);
 }
 
 const createPagination = (currentPage: number, maxPageCount: number): Array<number | string> => {  // source https://gist.github.com/kottenator/9d936eb3e4e3c3e02598
@@ -170,4 +177,74 @@ export const drawGameData = (userData: IUserWordInfo) => {
   audiocall.lastElementChild.firstElementChild.textContent = `${userData.optional.gameProgress.audiocall.wrong}`;
   sprint.firstElementChild.firstElementChild.textContent = `${userData.optional.gameProgress.sprint.right}`;
   sprint.lastElementChild.firstElementChild.textContent = `${userData.optional.gameProgress.sprint.wrong}`;
+}
+
+function addLoader() {
+  const loaderContainer = <HTMLDivElement>document.querySelector('.loader');
+  loaderContainer.insertAdjacentHTML('afterbegin', `<app-loader></app-loader>`);
+  const appLoader = new AppLoader({
+    selector: 'app-loader',
+    template: Loader,
+  });
+  loaderContainer.firstElementChild.innerHTML = appLoader.template;
+  appLoader.render('app-loader');
+}
+
+export const showLoader = () => {
+  const wordsContent = <HTMLDivElement>document.querySelector('.words-meaning');
+  wordsContent.style.display = 'none';
+  addLoader();
+}
+
+export const hideLoader = () => {
+  document.querySelector('.loader').innerHTML = '';
+  const wordsContent = <HTMLDivElement>document.querySelector('.words-meaning');
+  wordsContent.style.display = 'flex';
+}
+
+export const showDictionaryLoader = () => {
+  const dictionaryContent = <HTMLDivElement>document.querySelector('.dictionary-words__content');
+  dictionaryContent.style.display = 'none';
+  addLoader();
+}
+
+export const hideDictionaryLoader = () => {
+  document.querySelector('.loader').innerHTML = '';
+  const dictionaryContent = <HTMLDivElement>document.querySelector('.dictionary-words__content');
+  dictionaryContent.style.display = 'flex';
+}
+
+export const updateTranslateView = (isShown: boolean) => {
+  const wordsTranslate = document.querySelectorAll('.word-ru');
+  const wordDescription = document.querySelector('.word-meaning');
+  const wordTranslate = <HTMLHeadingElement>document.querySelector('.word-translate');
+  if (!isShown) {
+    wordsTranslate.forEach((translate: HTMLParagraphElement) => {
+      translate.style.opacity = '0';
+    });
+    (<HTMLParagraphElement>wordDescription.children[2]).style.display = 'none';
+    (<HTMLParagraphElement>wordDescription.children[5]).style.display = 'none';
+    wordTranslate.style.display = 'none';
+  } else {
+    wordsTranslate.forEach((translate: HTMLParagraphElement) => {
+      translate.style.opacity = '1';
+    });
+    (<HTMLParagraphElement>wordDescription.children[2]).style.display = 'block';
+    (<HTMLParagraphElement>wordDescription.children[5]).style.display = 'block';
+    wordTranslate.style.display = 'block';
+  }
+}
+
+export const updateWordButtonsView = (isShown: boolean) => {
+  const btns = <HTMLDivElement>document.querySelector('.word-actions');
+  btns.style.display = (isShown) ? 'flex' : 'none';
+}
+
+export const changeSettingsView = (isTranslate: boolean, isButtons: boolean) => {
+  const translateSetting = <HTMLInputElement>document.querySelector('#checkbox-translate');
+  const bntSetting = <HTMLInputElement>document.querySelector('#checkbox-buttons');
+  translateSetting.checked = isTranslate;
+  bntSetting.checked = isButtons;
+  updateWordButtonsView(isButtons);
+  updateTranslateView(isTranslate);
 }

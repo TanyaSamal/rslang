@@ -1,8 +1,10 @@
 import './app.auth-form.scss';
 import AuthForm from './app.auth-form.html';
+import Loader from '../loader/app.loader.html';
 import { ComponentEvent } from '../../../spa/core/coreTypes';
 import { IAuth } from '../../../spa/tools/controllerTypes';
 import { Component, router, Controller } from '../../../spa';
+import { AppLoader } from '../loader/app.loader';
 
 const LOGIN = 'login';
 const REGISTRATION = 'registration';
@@ -120,6 +122,27 @@ class AppAuthForm extends Component {
     }
   }
 
+  showLoader() {
+    const form = <HTMLFormElement>document.querySelector('.registration-form');
+    const formContent = <HTMLDivElement>document.querySelector('.form-content');
+    formContent.style.display = 'none';
+    form.style.height = '345px';
+    form.insertAdjacentHTML('afterbegin', `<app-loader></app-loader>`);
+    const appLoader = new AppLoader({
+      selector: 'app-loader',
+      template: Loader,
+    });
+    form.firstElementChild.innerHTML = appLoader.template;
+    appLoader.render('app-loader');
+  }
+
+  showForm() {
+    (<HTMLFormElement>document.querySelector('.registration-form')).style.height = 'auto';
+    (<HTMLDivElement>document.querySelector('.lds-ellipsis')).style.display = 'none';
+    const form = <HTMLDivElement>document.querySelector('.form-content');
+    form.style.display = 'block';
+  }
+
   async loginUser(userEmail: string, userPwd: string): Promise<void> {
     const res = await this.controller.loginUser({email: userEmail, password: userPwd});
     if (res.status !== 404 && res.status !== 403) {
@@ -131,6 +154,7 @@ class AppAuthForm extends Component {
       if (content) router.navigate('textbook');
       await this.setUserName(content.userId, token);
     } else {
+      this.showForm();
       this.showLoginError('Неправильный e-mail или пароль');
     }
   }
@@ -139,18 +163,21 @@ class AppAuthForm extends Component {
     const name = <HTMLInputElement>document.querySelector('#name');
     const email = <HTMLInputElement>document.querySelector('#email');
     const password = <HTMLInputElement>document.querySelector('#pwd');
+    this.showLoader();
     const res = await this.controller.createUser({name: name.value, email: email.value, password: password.value});
     if (res.ok) {
       this.loginUser(email.value, password.value);
     } else {
+      this.showForm();
       this.showLoginError('Пользователь с таким e-mail уже существует');
     }
   }
 
-  login(): void {
+  async login(): Promise<void> {
     const email = <HTMLInputElement>document.querySelector('#email');
     const password = <HTMLInputElement>document.querySelector('#pwd');
-    this.loginUser(email.value, password.value);
+    this.showLoader();
+    await this.loginUser(email.value, password.value);
   }
 }
 

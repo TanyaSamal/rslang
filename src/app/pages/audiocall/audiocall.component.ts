@@ -4,7 +4,7 @@ import * as utils from './utils';
 import './audiocall.component.scss';
 import AudioQuestion from '../../components/audio-question/app.audio-question.html';
 import { appHeader } from '../../components/header/app.header';
-import { IAuth, IStatistics, IWord, WordStatus } from '../../../spa/tools/controllerTypes';
+import { IAuth, IWord, WordStatus } from '../../../spa/tools/controllerTypes';
 import { AppAudioQuestion } from '../../components/audio-question/app.audio-question';
 import { ComponentEvent, ICallQuestion } from '../../../spa/core/coreTypes';
 import { IGameState, IGameStatistic, Mode } from '../../componentTypes';
@@ -41,7 +41,7 @@ class AudiocallComponent extends Component {
     const target = <HTMLDivElement>event.target;
     if (target.tagName === 'DIV') {
       utils.savePoints();
-      router.navigate('textbook');
+      router.navigate('');
     }
   }
 
@@ -198,7 +198,10 @@ class AudiocallComponent extends Component {
       }
     }
 
+    const deleteData = () => localStorage.removeItem('audiocallState');
+
     window.addEventListener('keyup', ckeckKey);
+    window.addEventListener('beforeunload', deleteData);
   }
 
   drawProgress() {
@@ -256,7 +259,6 @@ class AudiocallComponent extends Component {
       } else {
         gameWords = gameState.textbookWords;
       }
-      localStorage.removeItem('audiocallState');
     } else {
       let page = JSON.parse(localStorage.getItem('page'));
       this.level = JSON.parse(localStorage.getItem('group'));
@@ -280,6 +282,7 @@ class AudiocallComponent extends Component {
   makeQuestionData(idx: number): ICallQuestion {
     let answers: Array<number> = this.generateAnswers(idx);
     answers = utils.shuffleArray(answers);
+    
     return {
       answerWord: this.gameWords[idx].word,
       answerTranslate: this.gameWords[idx].wordTranslate,
@@ -337,10 +340,17 @@ class AudiocallComponent extends Component {
     const startGame = async () => {
       this.currentQuestion = 0;
       this.showGame();
+      utils.showLoader();
       await this.getRoundWords();
-      this.drawQuestion(this.currentQuestion);
-      this.drawProgress();
-      this.addWindowListeners();
+      if (this.gameWords.length < ANSWERS_COUNT) {
+        utils.hideLoader();
+        utils.showErrorMessage();
+      } else {
+        this.drawQuestion(this.currentQuestion);
+        this.drawProgress();
+        this.addWindowListeners();
+        utils.hideLoader();
+      }
     }
 
     const startBtn = document.querySelector('.start-sprint');
