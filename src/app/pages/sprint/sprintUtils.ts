@@ -191,6 +191,12 @@ function startGameSprint(group?: string, page?: string): void {
     rightNamePoints.innerHTML = 'балл';
 
     if (localStorage[CONSTS.SPRINT_STATE]) {
+        const id = JSON.parse(localStorage['userInfo']).userId;
+        const token = JSON.parse(localStorage['userInfo']).token;
+        const testWords = new Controller().myGetAgregatedWords(id, token);
+        console.log(testWords);
+
+
         const gameState: IGameState = JSON.parse(localStorage[CONSTS.SPRINT_STATE]);
         const words: IWord[] = gameState.textbookWords;
         const wordsTranslate: string[] = fillArrayWordTranslate(words);
@@ -202,7 +208,6 @@ function startGameSprint(group?: string, page?: string): void {
         makeWordCard(words, CONSTS.START_NUMBER_CARD, wordsTranslate);
     } else {
         const wordsPromise: Promise<IWord[]> = new Controller().getWords(group, page);
-
         wordsPromise.then((words: IWord[]) => {
             const wordsTranslate: string[] = fillArrayWordTranslate(words);
 
@@ -400,10 +405,8 @@ function saveGameStatistic(): void {
     let longest: number = resultGameStatistic.rightAnswers + resultGameStatistic.falseAnswers;
     let rightAnswers: number = resultGameStatistic.rightAnswers;
     let totalAnswers: number = resultGameStatistic.rightAnswers + resultGameStatistic.falseAnswers;
-    const wordStorage: WordStorage = JSON.parse(localStorage[CONSTS.WORD_STORAGE]);
-    const newWords: number = wordStorage.length;
+    const newWords: number = localStorage[CONSTS.SPRINT_NEW_WORDS] ? Number(localStorage[CONSTS.SPRINT_NEW_WORDS]) : 0;
     
-
     if (localStorage[CONSTS.SPRINT_STATISTIC]) {
         const statistic: IGameStatistic = JSON.parse(localStorage[CONSTS.SPRINT_STATISTIC]);
         
@@ -425,9 +428,19 @@ function saveGameStatistic(): void {
 
 async function sendAnswerToServer(wordId: string, correctness: string, level: string) {
     if (localStorage.getItem('userInfo')) {
-        const isNew = await sendAnswer(wordId, correctness, level, 'sprint');
+        console.log(wordId);
+        const isNew: boolean = await sendAnswer(wordId, correctness, level, 'sprint');
+
+        console.log(isNew);
         
-        if (isNew) this.newWords += 1;
+        if (isNew) {
+            if (localStorage[CONSTS.SPRINT_NEW_WORDS]) {
+                const newWords = Number(localStorage[CONSTS.SPRINT_NEW_WORDS]);
+                localStorage.setItem(CONSTS.SPRINT_NEW_WORDS, String(newWords + 1));
+            } else {
+                localStorage.setItem(CONSTS.SPRINT_NEW_WORDS, String(1));
+            }
+        }
     }
 }
 
@@ -465,10 +478,6 @@ function checkAnswer(): void {
         localStorage.setItem(CONSTS.BONUS_STAR, String(star));
         localStorage.setItem(CONSTS.BONUS_MEDAL, String(medal));
 
-        // if (localStorage.getItem('userInfo')) {  // если залогинен
-        //     const isNew = await sendAnswer(this.gameWords[this.currentQuestion].id, correctness, this.level, 'sprint');
-        //     if (isNew) this.newWords += 1;
-        // }
         sendAnswerToServer(wordId, 'correct', level);
         getBonus(star, medal);
         getPoints(medal);

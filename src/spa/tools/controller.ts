@@ -197,4 +197,23 @@ export default class Controller {
     }
   }
 
+  async myGetAgregatedWords(userId: string, token: string) {
+    const rawResponse = await fetch(`${this.baseUrl + UrlPath.USERS}/${userId}/aggregatedWords?group=4&page=0&wordsPerPage=20&filter={"$or":[{"$and":[{"userWord.difficulty":"easy", "userWord.optional.repeat":true}]},{"userWord":null}]}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if (rawResponse.status === 401) {
+        const newToken = await new Controller().getNewToken(userId);
+        await this.myGetAgregatedWords(userId, newToken);
+        return null;
+    }
+    const body = await rawResponse.json();
+    return body;
+  }
+
 }
