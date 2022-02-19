@@ -184,13 +184,17 @@
   .video-container {
     @include flex-column-center;
 
-    video {
+    .video-img {
       width: 1396px;
       height: 711px;
       margin: 50px 0 0;
-      @include border-with-shadow;
       cursor: pointer;
       transition: .5s;
+
+      img {
+        width: 100%;
+        @include border-with-shadow;
+      }
 
       @media (max-width: 1440px) {
         width: 1024px;

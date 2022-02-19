@@ -11,7 +11,18 @@ class HomePageComponent extends Component {
     event: 'click',
     className: '.more-btn',
     listener: this.readMore,
+  },
+  {
+    event: 'click',
+    className: '.video-img',
+    listener: this.loadVideo,
   }];
+
+  loadVideo() {
+    const video = '<iframe width="1024" height="560" src="https://www.youtube.com/embed/a0xvb7g6syE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+    const target = document.querySelector('.video-img');
+    target.innerHTML = video;
+  }
 
   addAnimation() {
     function onEntry(entry: IntersectionObserverEntry[]) {

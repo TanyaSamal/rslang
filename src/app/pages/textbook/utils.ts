@@ -218,26 +218,30 @@ export const updateTranslateView = (isShown: boolean) => {
   const wordsTranslate = document.querySelectorAll('.word-ru');
   const wordDescription = document.querySelector('.word-meaning');
   const wordTranslate = <HTMLHeadingElement>document.querySelector('.word-translate');
-  if (!isShown) {
-    wordsTranslate.forEach((translate: HTMLParagraphElement) => {
-      translate.style.opacity = '0';
-    });
-    (<HTMLParagraphElement>wordDescription.children[2]).style.display = 'none';
-    (<HTMLParagraphElement>wordDescription.children[5]).style.display = 'none';
-    wordTranslate.style.display = 'none';
-  } else {
-    wordsTranslate.forEach((translate: HTMLParagraphElement) => {
-      translate.style.opacity = '1';
-    });
-    (<HTMLParagraphElement>wordDescription.children[2]).style.display = 'block';
-    (<HTMLParagraphElement>wordDescription.children[5]).style.display = 'block';
-    wordTranslate.style.display = 'block';
+  if (localStorage.getItem('userInfo')) {
+    if (!isShown) {
+      wordsTranslate.forEach((translate: HTMLParagraphElement) => {
+        translate.style.opacity = '0';
+      });
+      (<HTMLParagraphElement>wordDescription.children[2]).style.display = 'none';
+      (<HTMLParagraphElement>wordDescription.children[5]).style.display = 'none';
+      wordTranslate.style.display = 'none';
+    } else {
+      wordsTranslate.forEach((translate: HTMLParagraphElement) => {
+        translate.style.opacity = '1';
+      });
+      (<HTMLParagraphElement>wordDescription.children[2]).style.display = 'block';
+      (<HTMLParagraphElement>wordDescription.children[5]).style.display = 'block';
+      wordTranslate.style.display = 'block';
+    }
   }
 }
 
 export const updateWordButtonsView = (isShown: boolean) => {
-  const btns = <HTMLDivElement>document.querySelector('.word-actions');
-  btns.style.display = (isShown) ? 'flex' : 'none';
+  if (localStorage.getItem('userInfo')) {
+    const btns = <HTMLDivElement>document.querySelector('.word-actions');
+    btns.style.display = (isShown) ? 'flex' : 'none';
+  }
 }
 
 export const changeSettingsView = (isTranslate: boolean, isButtons: boolean) => {
