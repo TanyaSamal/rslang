@@ -25,3 +25,8 @@ export interface IGameSprintStatistic {
     rightWords: WordAnswer[],
     falseWords: WordAnswer[],
 }
+
+export interface aggregatedWords {
+    paginatedResults: [],
+    totalCount: [],
+}

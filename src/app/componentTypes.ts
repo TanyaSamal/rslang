@@ -29,4 +29,12 @@ export interface IGamePoints {
   date: string
 }
 
-export type IPageState = Omit<IGameState, 'textbookWords' | 'dictionaryWords'>
+export interface IPageState {
+  mode: Mode,
+  state: WordStatus,
+  level: string,
+  textbookPage: number,
+  dictionaryPage: number,
+  isTranslateShown: boolean,
+  isWordButtonsShown: boolean
+}

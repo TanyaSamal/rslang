@@ -54,10 +54,11 @@ class AppHeader extends Component {
   afterInit() {
     if (window.localStorage.getItem('userInfo'))
       this.token = JSON.parse(window.localStorage.getItem('userInfo')).token;
-    if (this.token && this.token !== '') {
+    if (this.token && this.token !== '')
       this.isLoggedIn = true;
-      this.changeLoginStatus();
-    }
+    else
+      this.isLoggedIn = false;
+    this.changeLoginStatus();
   }
 
   toggleMenu(e: Event): void {

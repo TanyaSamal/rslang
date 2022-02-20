@@ -1,5 +1,7 @@
 import { Controller } from "../../../spa";
 import { IAuth, IStatistics, IStatOptions, IUserWord, WordStatus } from "../../../spa/tools/controllerTypes";
+import { AppLoader } from "../../components/loader/app.loader";
+import Loader from "../../components/loader/app.loader.html";
 import { IGamePoints } from "../../componentTypes";
 
 export const getRandomNumber = (max: number): number => Math.floor(Math.random() * max);
@@ -21,7 +23,7 @@ export const playWord = (src: string) => {
 function playAudio(src: string) {
   const audio = new Audio();
   audio.volume = 0.2;
-  audio.src = `https://raw.githubusercontent.com/tanyasamal/img/master/quiz/${src}.mp3`;
+  audio.src = `https://github.com/dns147/mp3-rs/raw/main/mp3-rs-lang/${src}-answer.mp3`
   audio.play();
 }
 
@@ -42,7 +44,7 @@ export const findLongestSeries = (arr: Array<number>): number => {
 export const showAnswer = (correctness: string, questionNumber: number) => {
   const progress = document.querySelector(`.progress-status li:nth-child(${questionNumber})`);
   progress.classList.add(correctness);
-  const audios = ['audio-right', 'audio-wrong'];
+  const audios = ['right', 'false'];
   if (correctness === 'correct') playAudio(audios[0]);
   else playAudio(audios[1]);
 }
@@ -205,4 +207,27 @@ export const sendAnswer = async (wordId: string, correctness: string, level: str
     await controller.createUserWord(userInfo.userId, wordId, userWord, userInfo.token);
   }
   return isNew;
+}
+
+export const showLoader = () => {
+  const loader = <HTMLDivElement>document.querySelector('.loader');
+  const game = <HTMLDivElement>document.querySelector('.game-audiocall');
+  game.style.display = 'none';
+  loader.insertAdjacentHTML('afterbegin', `<app-loader></app-loader>`);
+  const appLoader = new AppLoader({
+    selector: 'app-loader',
+    template: Loader,
+  });
+  loader.innerHTML = appLoader.template;
+  appLoader.render('app-loader');
+}
+
+export const hideLoader = () => {
+  document.querySelector('.loader').innerHTML = '';
+  const game = <HTMLDivElement>document.querySelector('.game-audiocall');
+  game.style.display = 'block';
+}
+
+export const showErrorMessage = () => {
+  document.querySelector('.question-container').textContent = 'Слов для игры недостаточно. Выберите другую страницу';
 }

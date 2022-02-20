@@ -90,7 +90,12 @@ class SprintComponent extends Component {
         UTILS.hideContainer(resultGameContainer);
         
         router.navigate('#');
-        router.navigate('sprint');
+
+        if (localStorage[CONSTS.SPRINT_STATE]) {
+          router.navigate('_sprint');
+        } else {
+          router.navigate('sprint');
+        }
       }
     }
   }

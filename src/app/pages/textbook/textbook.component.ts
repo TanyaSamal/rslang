@@ -24,7 +24,10 @@ class TextbookComponent extends Component {
   private userWords: IWord[] = [];
   private difficultWords: IUserWordInfo[] = [];
   private learntWords: IUserWordInfo[] = [];
+  private newWords: IUserWordInfo[] = [];
   private userWordsInfo: IUserWordInfo[] = [];
+  private isTranslateShown = true;
+  private isWordButtonsShown = true;
 
   events = (): ComponentEvent[] =>  [{
     event: 'click',
@@ -78,6 +81,11 @@ class TextbookComponent extends Component {
   },
   {
     event: 'click',
+    className: '.new-words',
+    listener: this.showNewWords,
+  },
+  {
+    event: 'click',
     className: '.game-sprint',
     listener: this.goToSpring,
   },
@@ -85,8 +93,48 @@ class TextbookComponent extends Component {
     event: 'click',
     className: '.game-audiocall',
     listener: this.goToAudioCall,
+  },
+  {
+    event: 'click',
+    className: '.settings-svg',
+    listener: this.showSettings,
+  },
+  {
+    event: 'click',
+    className: '.close-settings__btn',
+    listener: this.closeSettings,
+  },
+  {
+    event: 'click',
+    className: '#checkbox-translate',
+    listener: this.toggleTranslate,
+  },
+  {
+    event: 'click',
+    className: '#checkbox-buttons',
+    listener: this.toggleButtons,
   }
 ];
+
+  toggleButtons() {
+    this.isWordButtonsShown = !this.isWordButtonsShown;
+    utils.updateWordButtonsView(this.isWordButtonsShown );
+  }
+
+  toggleTranslate() {
+    this.isTranslateShown = !this.isTranslateShown;
+    utils.updateTranslateView(this.isTranslateShown);
+  }
+
+  closeSettings() {
+    (<HTMLDivElement>document.querySelector('.textbook-setting')).style.opacity = '0';
+    (<SVGElement>document.querySelector('.settings-svg')).style.zIndex = '2';
+  }
+
+  showSettings() {
+    (<HTMLDivElement>document.querySelector('.textbook-setting')).style.opacity = '1';
+    (<SVGElement>document.querySelector('.settings-svg')).style.zIndex = '1';
+  }
 
   saveStateInLocalStorage(setItem: string) {
     localStorage.setItem(setItem, JSON.stringify({
@@ -107,6 +155,8 @@ class TextbookComponent extends Component {
       level: this.currentLevel,
       textbookPage: this.currentPage,
       dictionaryPage: this.currentDictPage,
+      isWordButtonsShown: this.isWordButtonsShown,
+      isTranslateShown: this.isTranslateShown,
     }));
   }
 
@@ -124,11 +174,13 @@ class TextbookComponent extends Component {
     let pagesCount = 1;
     if (this.currentState === WordStatus.difficult) {
       pagesCount = utils.culcPagesCount(this.difficultWords.length);
-    } else {
+    } else if (this.currentState === WordStatus.learnt) {
       pagesCount = utils.culcPagesCount(this.learntWords.length);
+    } else {
+      pagesCount = utils.culcPagesCount(this.newWords.length);
     }
     this.drawActiveWord(this.currentDictPage * WORDS_ON_PAGE);
-    this.drawDictionaryPagination(this.currentDictPage + 1, pagesCount);
+    if (pagesCount !== 0) this.drawDictionaryPagination(this.currentDictPage + 1, pagesCount);
     document.querySelector('.current-dict__page').classList.remove('current-dict__page');
     const newCurrent = document.querySelector(`[aria-label="page ${this.currentDictPage + 1}"]`);
     newCurrent.classList.add('current-dict__page');
@@ -140,7 +192,7 @@ class TextbookComponent extends Component {
 
   changeDictPage(event: MouseEvent) {
     const target = <HTMLButtonElement>event.target;
-    if (target.classList.contains('pag-number')) {
+    if (target.classList.contains('pag-number') && target.textContent !== '...') {
       this.currentDictPage = Number(target.textContent) - 1;
       this.changeDictPaginationState();
     }
@@ -180,7 +232,7 @@ class TextbookComponent extends Component {
     deleteDifficultBtn.forEach((deleteBtn: SVGElement) => {
       deleteBtn.style.display = 'block';
     });
-    utils.changeUserWordsCount(this.difficultWords.length, this.learntWords.length);
+    utils.changeUserWordsCount(this.difficultWords.length, this.learntWords.length, this.newWords.length);
   }
 
   drawDictionaryWords(wordsArr: IUserWordInfo[], drawnArray: IWord[]) {
@@ -208,19 +260,56 @@ class TextbookComponent extends Component {
   }
 
   drawDictionaryPagination(currentPage: number, pagesCount: number) {
-    const paginationList = utils.createPaginationView(currentPage, pagesCount);
-    document.querySelector('.pagination-dict__list').innerHTML = paginationList.trim();
-    document.querySelector('.pagination-dict__list li:first-child button')?.classList.add('current-dict__page');
-    if (pagesCount === 1 || pagesCount === currentPage) {
-      (<HTMLButtonElement>document.querySelector('.next-dict__page')).disabled = true;
+    if (pagesCount === 0) {
+      (<HTMLDivElement>document.querySelector('.dictionary-pagination')).style.display = 'none';
     } else {
-      (<HTMLButtonElement>document.querySelector('.next-dict__page')).disabled = false;
+      (<HTMLDivElement>document.querySelector('.dictionary-pagination')).style.display = 'flex';
+      const paginationList = utils.createPaginationView(currentPage, pagesCount);
+      document.querySelector('.pagination-dict__list').innerHTML = paginationList.trim();
+      document.querySelector('.pagination-dict__list li:first-child button')?.classList.add('current-dict__page');
+      if (pagesCount === 1 || pagesCount === currentPage) {
+        (<HTMLButtonElement>document.querySelector('.next-dict__page')).disabled = true;
+      } else {
+        (<HTMLButtonElement>document.querySelector('.next-dict__page')).disabled = false;
+      }
+      if (currentPage > 1) {
+        (<HTMLButtonElement>document.querySelector('.prev-dict__page')).disabled = false;
+      } else {
+        (<HTMLButtonElement>document.querySelector('.prev-dict__page')).disabled = true;
+      }
     }
-    if (currentPage > 1) {
-      (<HTMLButtonElement>document.querySelector('.prev-dict__page')).disabled = false;
-    } else {
-      (<HTMLButtonElement>document.querySelector('.prev-dict__page')).disabled = true;
-    }
+  }
+
+  async showNewWords() {
+    utils.showDictionaryLoader();
+    this.currentState = WordStatus.inProgress;
+    this.currentDictPage = 0;
+    (<HTMLDivElement>document.querySelector('.dictionary-words__container')).style.marginTop = '0px';
+    document.querySelector('.active-state').classList.remove('active-state');
+    const target = <HTMLDivElement>document.querySelector('.new-words');
+    target.classList.add('active-state');
+
+    const usersDifficulty = document.querySelectorAll('.users-difficulty');
+    (<HTMLParagraphElement>usersDifficulty[0]).classList.add('hide');
+    (<HTMLParagraphElement>usersDifficulty[1]).classList.add('hide');
+    (<HTMLParagraphElement>usersDifficulty[2]).classList.remove('hide');
+
+    this.userWords = await this.getFilteredDictionary(this.newWords);
+    this.drawDictionaryWords(this.newWords, this.userWords);
+    const pagesCount = utils.culcPagesCount(this.newWords.length);
+    this.drawDictionaryPagination(1, pagesCount);
+
+    const gameLinks = document.querySelectorAll('.link-container');
+    gameLinks.forEach((link: HTMLDivElement) => {
+      if (this.newWords.length !== 0) {
+        if (link.classList.contains('disabled')) link.classList.remove('disabled');
+      }
+      else link.classList.add('disabled');
+    });
+    // this.savePageInLocalStorage();
+    utils.updateTranslateView(this.isTranslateShown);
+    utils.updateWordButtonsView(this.isWordButtonsShown);
+    utils.hideDictionaryLoader();
   }
 
   async showDifficultWords(event?: MouseEvent) {
@@ -235,6 +324,7 @@ class TextbookComponent extends Component {
     const usersDifficulty = document.querySelectorAll('.users-difficulty');
     (<HTMLParagraphElement>usersDifficulty[0]).classList.remove('hide');
     (<HTMLParagraphElement>usersDifficulty[1]).classList.add('hide');
+    (<HTMLParagraphElement>usersDifficulty[2]).classList.add('hide');
 
     this.userWords = await this.getFilteredDictionary(this.difficultWords);
     this.drawDictionaryWords(this.difficultWords, this.userWords);
@@ -243,16 +333,23 @@ class TextbookComponent extends Component {
       deleteBtn.style.display = 'block';
     });
     const pagesCount = utils.culcPagesCount(this.difficultWords.length);
+    
     this.drawDictionaryPagination(1, pagesCount);
 
     const gameLinks = document.querySelectorAll('.link-container');
     gameLinks.forEach((link: HTMLDivElement) => {
-      if (link.classList.contains('disabled')) link.classList.remove('disabled');
+      if (this.difficultWords.length !== 0) {
+        if (link.classList.contains('disabled')) link.classList.remove('disabled');
+      }
+      else link.classList.add('disabled');
     });
-    this.savePageInLocalStorage();
+    utils.updateTranslateView(this.isTranslateShown);
+    utils.updateWordButtonsView(this.isWordButtonsShown);
+    // this.savePageInLocalStorage();
   }
 
   async showLearntWords() {
+    utils.showDictionaryLoader();
     this.currentState = WordStatus.learnt;
     this.currentDictPage = 0;
     (<HTMLDivElement>document.querySelector('.dictionary-words__container')).style.marginTop = '0px';
@@ -263,17 +360,22 @@ class TextbookComponent extends Component {
     const usersDifficulty = document.querySelectorAll('.users-difficulty');
     (<HTMLParagraphElement>usersDifficulty[0]).classList.add('hide');
     (<HTMLParagraphElement>usersDifficulty[1]).classList.remove('hide');
+    (<HTMLParagraphElement>usersDifficulty[2]).classList.add('hide');
 
     this.userWords = await this.getFilteredDictionary(this.learntWords);
     this.drawDictionaryWords(this.learntWords, this.userWords);
     const pagesCount = utils.culcPagesCount(this.learntWords.length);
+    
     this.drawDictionaryPagination(1, pagesCount);
 
     const gameLinks = document.querySelectorAll('.link-container');
     gameLinks.forEach((link: HTMLDivElement) => {
       link.classList.add('disabled');
     });
-    this.savePageInLocalStorage();
+    // this.savePageInLocalStorage();
+    utils.updateTranslateView(this.isTranslateShown);
+    utils.updateWordButtonsView(this.isWordButtonsShown);
+    utils.hideDictionaryLoader();
   }
 
   async getDictionaryWords() {
@@ -284,28 +386,36 @@ class TextbookComponent extends Component {
   getFilteredWords() {
     this.learntWords.length = 0;
     this.difficultWords.length = 0;
+    this.newWords.length = 0;
     this.learntWords = this.userWordsInfo.filter((word) =>
       word.difficulty === this.currentLevel && word.optional.status === WordStatus.learnt);
     this.difficultWords = this.userWordsInfo.filter((word) =>
       word.difficulty === this.currentLevel && word.optional.status === WordStatus.difficult);
+    this.newWords = this.userWordsInfo.filter((word) =>
+      word.difficulty === this.currentLevel && word.optional.status === WordStatus.inProgress);
   }
 
   async showTextbook() {
+    utils.showLoader();
     utils.switchMode(Mode.TEXTBOOK);
     this.currentMode = Mode.TEXTBOOK;
     await this.initLevelWords();
     document.querySelector('.dictionary-word__description').innerHTML = '';
     const activeWord = JSON.parse(localStorage.getItem('activeWord'));
     this.drawActiveWord(+activeWord);
-    this.savePageInLocalStorage();
+    // this.savePageInLocalStorage();
+    utils.updateTranslateView(this.isTranslateShown);
+    utils.updateWordButtonsView(this.isWordButtonsShown);
+    utils.hideLoader();
   }
 
   async showDictionary() {
+    utils.showDictionaryLoader();
     await this.getDictionaryWords();
     utils.switchMode(Mode.DICTIONARY);
     this.currentMode = Mode.DICTIONARY;
     this.getFilteredWords();
-    utils.changeUserWordsCount(this.difficultWords.length, this.learntWords.length);
+    utils.changeUserWordsCount(this.difficultWords.length, this.learntWords.length, this.newWords.length);
     document.querySelector('.active-state').classList.remove('active-state');
     document.querySelector('.difficult-words').classList.add('active-state');
     const gameLinks = document.querySelectorAll('.link-container');
@@ -314,42 +424,59 @@ class TextbookComponent extends Component {
     });
     if (JSON.parse(localStorage.getItem('currentPage')).state === WordStatus.learnt)
       await this.showLearntWords();
-    else
+    else if (JSON.parse(localStorage.getItem('currentPage')).state === WordStatus.difficult)
       await this.showDifficultWords();
-    this.savePageInLocalStorage();
+    else
+      await this.showNewWords();
+    // this.savePageInLocalStorage();
+    utils.updateTranslateView(this.isTranslateShown);
+    utils.updateWordButtonsView(this.isWordButtonsShown);
+    utils.hideDictionaryLoader();
   }
 
   changeLevelView(): void {
     document.querySelector('.active-level').classList.remove('active-level');
     document.querySelector(`#level-${this.currentLevel}`).classList.add('active-level');
-    this.savePageInLocalStorage();
+    // this.savePageInLocalStorage();
   }
 
   async changePage(event: MouseEvent) {
     const target = <HTMLButtonElement>event.target;
     if (target.classList.contains('pag-number')) {
+      utils.showLoader();
       this.currentPage = Number(target.textContent) - 1;
       await this.initLevelWords();
       utils.channgePaginationView(this.currentPage);
-      utils.checkPageProgress();
-      this.savePageInLocalStorage();
+      utils.checkPageProgress(this.currentMode);
+      utils.hideLoader();
+      utils.updateTranslateView(this.isTranslateShown);
+      utils.updateWordButtonsView(this.isWordButtonsShown);
+      // this.savePageInLocalStorage();
     }
   }
 
   async goToPrevPage() {
+    utils.showLoader();
     this.currentPage -= 1;
     await this.initLevelWords();
     utils.channgePaginationView(this.currentPage);
-    utils.checkPageProgress();
-    this.savePageInLocalStorage();
+    utils.checkPageProgress(this.currentMode);
+    utils.updateTranslateView(this.isTranslateShown);
+    utils.updateWordButtonsView(this.isWordButtonsShown);
+    // this.savePageInLocalStorage();
+    utils.hideLoader();
   }
 
   async goToNextPage() {
+    utils.showLoader();
     this.currentPage += 1;
     await this.initLevelWords();
-    utils.checkPageProgress();
+    utils.checkPageProgress(this.currentMode);
     utils.channgePaginationView(this.currentPage);
-    this.savePageInLocalStorage();
+    utils.updateTranslateView(this.isTranslateShown);
+    utils.updateWordButtonsView(this.isWordButtonsShown);
+    // this.savePageInLocalStorage();
+    utils.hideLoader();
   }
 
   addAudio(idx: number): void {
@@ -433,6 +560,8 @@ class TextbookComponent extends Component {
         const targetId = Number(parentDiv.id.slice(parentDiv.id.indexOf(this.currentMode) + this.currentMode.length));
         this.drawActiveWord(targetId);
       }
+      utils.updateTranslateView(this.isTranslateShown);
+      utils.updateWordButtonsView(this.isWordButtonsShown);
     }
 
     const wordsContainer = document.querySelector('.words-container');
@@ -479,16 +608,20 @@ class TextbookComponent extends Component {
         const idx = this.pageWords.findIndex((pageWord) => pageWord.id === word.id);
         if (idx !== -1) {
           const activBlock = <HTMLDivElement>document.querySelector(`#textbook${idx} .word-status`);
-          activBlock.style.display = 'block';
-          activBlock.lastElementChild.textContent = 'С';
+          if (activBlock) {
+            activBlock.style.display = 'block';
+            activBlock.lastElementChild.textContent = 'С';
+          }
         }
       });
       learnt.forEach((word) => {
         const idx = this.pageWords.findIndex((pageWord) => pageWord.id === word.id);
         if (idx !== -1) {
           const activBlock = <HTMLDivElement>document.querySelector(`#textbook${idx} .word-status`);
-          activBlock.style.display = 'block';
-          activBlock.lastElementChild.textContent = 'И';
+          if (activBlock) {
+            activBlock.style.display = 'block';
+            activBlock.lastElementChild.textContent = 'И';
+          }
         }
       });
     }
@@ -507,15 +640,21 @@ class TextbookComponent extends Component {
         this.changeLevelView();
         utils.changeColorTheme(this.currentLevel);
         if (this.currentMode === Mode.TEXTBOOK) {
+          utils.showLoader();
           await this.initLevelWords();
-          utils.checkPageProgress();
+          utils.checkPageProgress(this.currentMode);
+          utils.hideLoader();
         } else {
+          utils.showDictionaryLoader();
           document.querySelector('.active-state').classList.remove('active-state');
           document.querySelector('.difficult-words').classList.add('active-state');
           this.getFilteredWords();
           await this.showDifficultWords();
-          utils.changeUserWordsCount(this.difficultWords.length, this.learntWords.length);
+          utils.changeUserWordsCount(this.difficultWords.length, this.learntWords.length, this.newWords.length);
+          utils.hideDictionaryLoader();
         }
+        utils.updateTranslateView(this.isTranslateShown);
+        utils.updateWordButtonsView(this.isWordButtonsShown);
       }
     }
 
@@ -524,6 +663,7 @@ class TextbookComponent extends Component {
   }
 
   async afterInit() {
+    utils.showLoader();
     await this.initLevelWords();
     if (localStorage.getItem('currentPage')) {
       const storageData: IPageState = JSON.parse(localStorage.getItem('currentPage'));
@@ -532,6 +672,8 @@ class TextbookComponent extends Component {
       this.currentLevel = storageData.level;
       this.currentPage = storageData.textbookPage;
       this.currentDictPage = storageData.dictionaryPage;
+      this.isTranslateShown = storageData.isTranslateShown;
+      this.isWordButtonsShown = storageData.isWordButtonsShown;
       if (this.currentMode === Mode.TEXTBOOK) {
         await this.initLevelWords();
         utils.channgePaginationView(this.currentPage);
@@ -540,11 +682,15 @@ class TextbookComponent extends Component {
       }
       this.changeLevelView();
       utils.changeColorTheme(this.currentLevel);
+      utils.changeSettingsView(this.isTranslateShown, this.isWordButtonsShown);
     }
+    utils.checkPageProgress(this.currentMode);
     this.addWordsListeners();
     this.addLevelListeners();
-    utils.checkPageProgress();
+    utils.hideLoader();
+    window.addEventListener('beforeunload', this.savePageInLocalStorage.bind(this));
   }
+  
 }
 
 export const textbookComponent = new TextbookComponent({

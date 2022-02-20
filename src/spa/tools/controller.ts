@@ -64,8 +64,6 @@ export default class Controller {
     if (rawResponse.status === 401) {
       localStorage.removeItem('userInfo');
       router.navigate('auth');
-      (<HTMLAnchorElement>document.querySelector('.auth-btn')).style.display = 'block';
-      (<HTMLAnchorElement>document.querySelector('.user-info')).style.display = 'none';
       return null;
     }
     const content: Promise<IAuth> = await rawResponse.json();
@@ -145,7 +143,7 @@ export default class Controller {
   }
 
   async getAgregatedWords(userId: string, token: string, group: string, filter: string) {
-    const rawResponse = await fetch(`${this.baseUrl + UrlPath.USERS}/${userId}/${UrlPath.AGREGATED}?group=${group}&wordsPerPage=20&filter=${filter}`, {
+    const rawResponse = await fetch(`${this.baseUrl + UrlPath.USERS}/${userId}/${UrlPath.AGREGATED}?group=${group}&wordsPerPage=3600&filter=${filter}`, {
       method: HttpMethod.GET,
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -195,25 +193,5 @@ export default class Controller {
       const newToken = await this.getNewToken(userId);
       await this.setStatistics(userId, newToken, statistic);
     }
-  }
-
-  async myGetAgregatedWords(userId: string, token: string) {
-    const rawResponse = await fetch(`${this.baseUrl + UrlPath.USERS}/${userId}/aggregatedWords?group=4&page=0&wordsPerPage=20&filter={"$or":[{"$and":[{"userWord.difficulty":"easy", "userWord.optional.repeat":true}]},{"userWord":null}]}`, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-    });
-
-    if (rawResponse.status === 401) {
-        const newToken = await new Controller().getNewToken(userId);
-        await this.myGetAgregatedWords(userId, newToken);
-        return null;
-    }
-    const body = await rawResponse.json();
-    return body;
-  }
-
+  } 
 }

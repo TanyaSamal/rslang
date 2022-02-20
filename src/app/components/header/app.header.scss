@@ -306,12 +306,11 @@ header {
 
     .auth-btn {
       margin-left: 25px;
-      width: 140px;
-      padding: 10px 0;
+      width: 120px;
+      padding: 3px 0;
 
       @media (max-width: 1440px) {
         width: 100px;
-        padding: 3px 0;
       }
 
       @media (max-width: 1048px) {
