@@ -102,14 +102,12 @@ export const savePoints = () => {
       localStorage.removeItem('audiocallPoints');
     }
   }
-  if (userInfo) {
-    localStorage.setItem('audiocallPoints', JSON.stringify({
-      userId: userInfo.userId,
-      points: points.toString(),
-      date: today
-    }));
-    document.querySelector('.game-points').textContent = `${points}`;
-  }
+  localStorage.setItem('audiocallPoints', JSON.stringify({
+    userId: userInfo.userId,
+    points: points.toString(),
+    date: today
+  }));
+  document.querySelector('.game-points').textContent = `${points}`;
 }
 
 export const makeStatistic = (currentStatistic: IStatistics): IStatistics => {

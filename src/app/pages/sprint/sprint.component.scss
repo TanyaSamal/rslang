@@ -103,7 +103,8 @@
                 transform: scale(0.9);
             }
 
-            .volume {
+            .volume,
+            .fullscreen {
                 font-size: 40px;
                 width: 45px;
             }
@@ -119,15 +120,31 @@
                 font-weight: 900; 
                 content: "\f6a9";
             }
+
+            .fullscreen-on::before {
+                font-family: "Font Awesome 5 Free"; 
+                font-weight: 900; 
+                content: "\f065";
+            }
+
+            .fullscreen-off::before {
+                font-family: "Font Awesome 5 Free"; 
+                font-weight: 900; 
+                content: "\f066";
+            }
             
             .volume-on:hover,
-            .volume-mute:hover {
+            .volume-mute:hover,
+            .fullscreen-on:hover,
+            .fullscreen-off:hover {
                 cursor: pointer;
                 color: #fe8365;
             }
 
             .volume-on:active,
-            .volume-mute:active {
+            .volume-mute:active,
+            .fullscreen-on:active,
+            .fullscreen-off:active {
                 transform: scale(0.9);
             }
         }

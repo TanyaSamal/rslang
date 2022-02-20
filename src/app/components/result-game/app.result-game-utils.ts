@@ -37,7 +37,7 @@ export function makeDiagram(): void {
   const percentResult = document.querySelector('.percent-result') as HTMLElement;
 
   const maxNumberWords: number = resultGameStatistic.rightAnswers + resultGameStatistic.falseAnswers;
-  const bestScore: number = 100;
+  const bestScore = 100;
   const currentScore: number = (maxNumberWords === 0) ? 0 : Math.round((resultGameStatistic.rightAnswers * 100) / maxNumberWords);
   let sector = 0;
   let timerId: number = null;
