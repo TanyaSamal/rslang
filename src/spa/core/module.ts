@@ -56,6 +56,10 @@ export default class Module implements IModule {
     clearInterval(timerIdStartGame);
 
     CONSTS.SOUND_TIME.pause();
+
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    }
   }
 
   private initRoutes(): void  {

@@ -13,6 +13,7 @@ class SprintComponent extends Component {
     if (event.target instanceof Element) {
       const buttonStartSprint = event.target.closest('.start-sprint') as HTMLElement;
       const volume = event.target.closest('.volume') as HTMLElement;
+      const fullscreen = event.target.closest('.fullscreen') as HTMLElement;
       const close = event.target.closest('.fa-window-close') as HTMLElement;
       const buttonTrue = event.target.closest('.button-true') as HTMLElement;
       const buttonFalse = event.target.closest('.button-false') as HTMLElement;
@@ -40,6 +41,16 @@ class SprintComponent extends Component {
         } else {
           localStorage.removeItem(CONSTS.AUDIO_MUTE);
           CONSTS.SOUND_TIME.play();
+        }
+      }
+
+      if (fullscreen) {
+        fullscreen.classList.toggle('fullscreen-off');
+
+        if (fullscreen.classList.contains('fullscreen-off')) {
+          document.documentElement.requestFullscreen();
+        } else {
+          document.exitFullscreen();
         }
       }
 

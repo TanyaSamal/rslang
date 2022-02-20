@@ -130,12 +130,12 @@ function startTimerGame(): void {
         
         if (currentTimer < 0) {
             clearInterval(timerId);
-            getResultGame();
-            saveGameStatistic();
-            CONSTS.SOUND_TIME.pause();
-            if (localStorage[CONSTS.USER_INFO]) {
-                saveSprintPoints();
-            }
+            // getResultGame();
+            // saveGameStatistic();
+            // CONSTS.SOUND_TIME.pause();
+            // if (localStorage[CONSTS.USER_INFO]) {
+            //     saveSprintPoints();
+            // }
         } else {
             timerId = setTimeout(tick, 1000);
             localStorage.setItem(CONSTS.TIMER_ID_SPRINT, String(timerId));
@@ -537,6 +537,16 @@ function closeGame(): void {
     }, 600);
 }
 
+function toggleFullScreen() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
+    }
+}
+
 export default {
     getGroup,
     showStopwatch,
@@ -549,4 +559,5 @@ export default {
     playAudioWord,
     rightDeclensionWord,
     hideContainer,
+    toggleFullScreen
 };
