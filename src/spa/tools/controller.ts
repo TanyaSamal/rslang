@@ -143,7 +143,7 @@ export default class Controller {
   }
 
   async getAgregatedWords(userId: string, token: string, group: string, filter: string) {
-    const rawResponse = await fetch(`${this.baseUrl + UrlPath.USERS}/${userId}/${UrlPath.AGREGATED}?group=${group}&wordsPerPage=20&filter=${filter}`, {
+    const rawResponse = await fetch(`${this.baseUrl + UrlPath.USERS}/${userId}/${UrlPath.AGREGATED}?group=${group}&wordsPerPage=3600&filter=${filter}`, {
       method: HttpMethod.GET,
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -193,6 +193,5 @@ export default class Controller {
       const newToken = await this.getNewToken(userId);
       await this.setStatistics(userId, newToken, statistic);
     }
-  }
-
+  } 
 }

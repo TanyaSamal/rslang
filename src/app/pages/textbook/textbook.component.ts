@@ -708,6 +708,7 @@ class TextbookComponent extends Component {
       } else if (localStorage.getItem('userInfo')) {
         await this.showDictionary();
       }
+      if (!localStorage.getItem('userInfo')) this.currentMode = Mode.TEXTBOOK;
       this.changeLevelView();
       utils.changeColorTheme(this.currentLevel);
     }

@@ -1,9 +1,10 @@
 import Controller from "../../../spa/tools/controller";
-import { IWord } from "../../../spa/tools/controllerTypes";
-import { IGameState, IGameStatistic } from  "../../componentTypes";
+import { IWord, IAuth } from "../../../spa/tools/controllerTypes";
+import { IGameState, IGameStatistic, IGamePoints } from  "../../componentTypes";
 import CONSTS from "./sprintConsts";
-import { Bonus, IGameSprintStatistic, WordAnswer, WordStorage } from "./sprintTypes";
-import { appResultGame } from '../../components/result-game/app.result-game';
+import { aggregatedWords, Bonus, IGameSprintStatistic, WordStorage } from "./sprintTypes";
+import { appResultGame } from "../../components/result-game/app.result-game";
+import { sendAnswer } from "../audiocall/utils";
 
 function getGroup(): string {
     const level = document.querySelector('.click-level') as HTMLElement;
@@ -39,6 +40,81 @@ function getResultGame(): void {
     }, 600);
 }
 
+function updatePointsHeader(): void {
+    const gamePoints = document.querySelector('.game-points') as HTMLElement;
+    if (localStorage[CONSTS.AUDIOCALL_POINTS] && localStorage[CONSTS.SPRINT_POINTS]) {
+        const audiocallResult: IGamePoints = JSON.parse(localStorage[CONSTS.AUDIOCALL_POINTS]);
+        const sprintResult: IGamePoints = JSON.parse(localStorage[CONSTS.SPRINT_POINTS]);
+
+        const sumPoints: number = Number(audiocallResult.points) + Number(sprintResult.points);
+        gamePoints.textContent = String(sumPoints);
+    }
+}
+
+function saveSprintPoints(): void {
+    const resultGameStatistic: IGameSprintStatistic = JSON.parse(localStorage[CONSTS.GAME_SPRINT_STATISTIC]);
+    const userInfo: IAuth = JSON.parse(localStorage[CONSTS.USER_INFO]);
+
+    if (localStorage[CONSTS.SPRINT_POINTS]) {
+        const localResults: IGamePoints = JSON.parse(localStorage[CONSTS.SPRINT_POINTS]);
+        
+        if (localResults.date === new Date().toLocaleDateString()) {
+            const newPoints: number = Number(localResults.points) + resultGameStatistic.score;
+            const sprintPoints: IGamePoints = {
+                userId: userInfo.userId,
+                points: String(newPoints),
+                date: new Date().toLocaleDateString(),
+            };
+            localStorage.setItem(CONSTS.SPRINT_POINTS, JSON.stringify(sprintPoints));
+        } else {
+            localStorage.removeItem(CONSTS.SPRINT_POINTS);
+            const sprintPoints: IGamePoints = {
+                userId: userInfo.userId,
+                points: String(resultGameStatistic.score),
+                date: new Date().toLocaleDateString(),
+            };
+            localStorage.setItem(CONSTS.SPRINT_POINTS, JSON.stringify(sprintPoints));
+        }
+    } else {
+        const sprintPoints: IGamePoints = {
+            userId: userInfo.userId,
+            points: String(resultGameStatistic.score),
+            date: new Date().toLocaleDateString(),
+        };
+        localStorage.setItem(CONSTS.SPRINT_POINTS, JSON.stringify(sprintPoints));
+    }
+
+    if (userInfo) {
+        updatePointsHeader();
+    }
+}
+
+function saveGameStatistic(): void {
+    const resultGameStatistic: IGameSprintStatistic = JSON.parse(localStorage[CONSTS.GAME_SPRINT_STATISTIC]);
+    let longest: number = resultGameStatistic.rightAnswers + resultGameStatistic.falseAnswers;
+    let { rightAnswers } = resultGameStatistic;
+    let totalAnswers: number = resultGameStatistic.rightAnswers + resultGameStatistic.falseAnswers;
+    const newWords: number = localStorage[CONSTS.SPRINT_NEW_WORDS] ? Number(localStorage[CONSTS.SPRINT_NEW_WORDS]) : 0;
+    
+    if (localStorage[CONSTS.SPRINT_STATISTIC]) {
+        const statistic: IGameStatistic = JSON.parse(localStorage[CONSTS.SPRINT_STATISTIC]);
+        
+        if (statistic.date === new Date().toLocaleDateString()) {
+            longest = (longest > statistic.longest) ? longest : statistic.longest;
+            rightAnswers += statistic.rightAnswers;
+            totalAnswers += statistic.totalAnswers;
+        }
+    }
+
+    localStorage.setItem(CONSTS.SPRINT_STATISTIC, JSON.stringify({
+        date: new Date().toLocaleDateString(), 
+        longest,
+        rightAnswers,
+        totalAnswers,
+        newWords
+    }));
+}
+
 function startTimerGame(): void {
     const gameTimer = document.querySelector('.game-timer') as HTMLElement;
     const count = document.createElement('span') as HTMLElement;
@@ -57,6 +133,9 @@ function startTimerGame(): void {
             getResultGame();
             saveGameStatistic();
             CONSTS.SOUND_TIME.pause();
+            if (localStorage[CONSTS.USER_INFO]) {
+                saveSprintPoints();
+            }
         } else {
             timerId = setTimeout(tick, 1000);
             localStorage.setItem(CONSTS.TIMER_ID_SPRINT, String(timerId));
@@ -74,14 +153,12 @@ function saveWordLocalStorage(word: string, translate: string, url: string): voi
             rus: translate,
             audioURL: url
         });
-    } else {
-        if (wordStorage.every(store => word !== store.eng)) {
-            newStorage.push({
-                eng: word,
-                rus: translate,
-                audioURL: url
-            });
-        }
+    } else if (wordStorage.every(store => word !== store.eng)) {
+        newStorage.push({
+            eng: word,
+            rus: translate,
+            audioURL: url
+        });
     }
 
     localStorage.setItem(CONSTS.WORD_STORAGE, JSON.stringify(newStorage));
@@ -93,8 +170,9 @@ function makeWordCard(words: IWord[], index: number, translates: string[]): void
     
     wordText.innerHTML = words[index].word;
     localStorage.setItem(CONSTS.WORD_ENG, words[index].word);
+    localStorage.setItem(CONSTS.SPRINT_WORD_ID, words[index].id);
 
-    const word: string = words[index].word;
+    const { word } = words[index];
     const trueTranslate: string = words[index].wordTranslate;
     const audioWord: string = words[index].audio;
     localStorage.setItem(CONSTS.TRUE_TRANSLATE, trueTranslate);
@@ -124,6 +202,28 @@ function fillArrayWordTranslate(words: IWord[]): string[] {
     return wordsTranslate;
 }
 
+function makeNextPage(): void {
+    const group: string = localStorage[CONSTS.GROUP];
+    let page = Number(localStorage[CONSTS.PAGE]);
+
+    if (page === 29) {
+        page = 0;
+    } else {
+        page += 1;
+    }
+
+    localStorage.setItem(CONSTS.PAGE, String(page));
+
+    const wordsPromise: Promise<IWord[]> = new Controller().getWords(group, String(page));
+
+    wordsPromise.then((words: IWord[]) => {
+        const wordsTranslate: string[] = fillArrayWordTranslate(words);
+        localStorage.setItem(CONSTS.WORDS, JSON.stringify(words));
+        localStorage.setItem(CONSTS.CURRENT_CARD, String(CONSTS.START_NUMBER_CARD));
+        makeWordCard(words, CONSTS.START_NUMBER_CARD, wordsTranslate);
+    });
+}
+
 function startGameSprint(group?: string, page?: string): void {
     CONSTS.SOUND_TIME.play();
 
@@ -148,18 +248,29 @@ function startGameSprint(group?: string, page?: string): void {
     rightNamePoints.innerHTML = 'балл';
 
     if (localStorage[CONSTS.SPRINT_STATE]) {
+        const { userId, token } = JSON.parse(localStorage[CONSTS.USER_INFO]);
         const gameState: IGameState = JSON.parse(localStorage[CONSTS.SPRINT_STATE]);
-        const words: IWord[] = gameState.textbookWords;
-        const wordsTranslate: string[] = fillArrayWordTranslate(words);
-
-        localStorage.setItem(CONSTS.WORDS, JSON.stringify(words));
-        localStorage.setItem(CONSTS.CURRENT_CARD, String(CONSTS.START_NUMBER_CARD));
-
-        startTimerGame();
-        makeWordCard(words, CONSTS.START_NUMBER_CARD, wordsTranslate);
+        const allWords: IWord[] = gameState.textbookWords;
+        const { level } = gameState;
+        const learntWordsPromise: Promise<aggregatedWords[]> = new Controller().getAgregatedWords(userId, token, level, '{"userWord.optional.status":"learnt"}');
+        
+        learntWordsPromise.then((data) => {
+            const learntWords: IWord[] = data[0].paginatedResults;
+            const unlearntWords: IWord[] = learntWords.reduce((accum: IWord[], learntWord: IWord) => accum.filter((someWord) => someWord.word !== learntWord.word), allWords);
+    
+            localStorage.setItem(CONSTS.WORDS, JSON.stringify(unlearntWords));
+            localStorage.setItem(CONSTS.CURRENT_CARD, String(CONSTS.START_NUMBER_CARD));
+    
+            startTimerGame();
+            if (unlearntWords.length !== 0) {
+                const wordsTranslate: string[] = fillArrayWordTranslate(unlearntWords);
+                makeWordCard(unlearntWords, CONSTS.START_NUMBER_CARD, wordsTranslate);
+            } else {
+                makeNextPage();
+            }
+        });
     } else {
         const wordsPromise: Promise<IWord[]> = new Controller().getWords(group, page);
-
         wordsPromise.then((words: IWord[]) => {
             const wordsTranslate: string[] = fillArrayWordTranslate(words);
 
@@ -205,30 +316,6 @@ function makeNextWordCard(): void {
     const index = Number(localStorage[CONSTS.CURRENT_CARD]);
 
     makeWordCard(words, index, wordsTranslate);
-}
-
-function makeNextPage(): void {
-    const group: string = localStorage[CONSTS.GROUP];
-    let page = Number(localStorage[CONSTS.PAGE]);
-
-    if (page === 29) {
-        page = 0;
-    } else {
-        page += 1;
-    }
-
-    localStorage.setItem(CONSTS.PAGE, String(page));
-
-    const wordsPromise: Promise<IWord[]> = new Controller().getWords(group, String(page));
-
-    wordsPromise.then((words: IWord[]) => {
-        const wordsTranslate: string[] = fillArrayWordTranslate(words);
-
-        localStorage.setItem(CONSTS.WORDS, JSON.stringify(words));
-        localStorage.setItem(CONSTS.CURRENT_CARD, String(CONSTS.START_NUMBER_CARD));
-
-        makeWordCard(words, CONSTS.START_NUMBER_CARD, wordsTranslate);
-    });
 }
 
 function rightDeclensionWord(value: number): number {
@@ -352,32 +439,18 @@ function countBonus(): Bonus {
     };
 }
 
-function saveGameStatistic(): void {
-    const resultGameStatistic: IGameSprintStatistic = JSON.parse(localStorage[CONSTS.GAME_SPRINT_STATISTIC]);
-    let longest: number = resultGameStatistic.rightAnswers + resultGameStatistic.falseAnswers;
-    let rightAnswers: number = resultGameStatistic.rightAnswers;
-    let totalAnswers: number = resultGameStatistic.rightAnswers + resultGameStatistic.falseAnswers;
-    const wordStorage: WordStorage = JSON.parse(localStorage[CONSTS.WORD_STORAGE]);
-    const newWords: number = wordStorage.length;
-    
-
-    if (localStorage[CONSTS.SPRINT_STATISTIC]) {
-        const statistic: IGameStatistic = JSON.parse(localStorage[CONSTS.SPRINT_STATISTIC]);
-        
-        if (statistic.date === new Date().toLocaleDateString()) {
-            longest = (longest > statistic.longest) ? longest : statistic.longest;
-            rightAnswers += statistic.rightAnswers;
-            totalAnswers += statistic.totalAnswers;
+async function sendAnswerToServer(wordId: string, correctness: string, level: string) {
+    if (localStorage.getItem('userInfo')) {
+        const isNew: boolean = await sendAnswer(wordId, correctness, level, 'sprint');
+        if (isNew) {
+            if (localStorage[CONSTS.SPRINT_NEW_WORDS]) {
+                const newWords = Number(localStorage[CONSTS.SPRINT_NEW_WORDS]);
+                localStorage.setItem(CONSTS.SPRINT_NEW_WORDS, String(newWords + 1));
+            } else {
+                localStorage.setItem(CONSTS.SPRINT_NEW_WORDS, String(1));
+            }
         }
     }
-
-    localStorage.setItem(CONSTS.SPRINT_STATISTIC, JSON.stringify({
-        date: new Date().toLocaleDateString(), 
-        longest,
-        rightAnswers,
-        totalAnswers,
-        newWords
-    }));
 }
 
 function checkAnswer(): void {
@@ -389,6 +462,8 @@ function checkAnswer(): void {
     const currentCard = Number(localStorage[CONSTS.CURRENT_CARD]);
     const words: IWord[] = JSON.parse(localStorage[CONSTS.WORDS]);
     const { minStar, minMedal } = CONSTS.BONUS_STAR_MEDAL;
+    const wordId: string = localStorage[CONSTS.SPRINT_WORD_ID];
+    const level: string = localStorage[CONSTS.GROUP];
 
     if (currentCard === words.length - 1) {
         return;
@@ -412,6 +487,7 @@ function checkAnswer(): void {
         localStorage.setItem(CONSTS.BONUS_STAR, String(star));
         localStorage.setItem(CONSTS.BONUS_MEDAL, String(medal));
 
+        sendAnswerToServer(wordId, 'correct', level);
         getBonus(star, medal);
         getPoints(medal);
         getScore();
@@ -436,6 +512,7 @@ function checkAnswer(): void {
         localStorage.setItem(CONSTS.BONUS_STAR, String(star));
         localStorage.setItem(CONSTS.BONUS_MEDAL, String(medal));
 
+        sendAnswerToServer(wordId, 'incorrect', level);
         deleteBonus();
         getPoints(medal);
     }

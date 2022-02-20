@@ -36,6 +36,7 @@ class AppHeader extends Component {
     loginBtn.style.display = (this.isLoggedIn) ? 'none' : 'block';
     logoutBtn.style.display = (this.isLoggedIn) ? 'flex' : 'none';
     const userName = localStorage.getItem('userName');
+
     if (userName) {
       (<HTMLDivElement>document.querySelector('.user-name')).textContent = userName;
     }
@@ -53,6 +54,8 @@ class AppHeader extends Component {
   afterInit() {
     if (window.localStorage.getItem('userInfo'))
       this.token = JSON.parse(window.localStorage.getItem('userInfo')).token;
+    else
+      this.token = '';
     if (this.token && this.token !== '')
       this.isLoggedIn = true;
     else

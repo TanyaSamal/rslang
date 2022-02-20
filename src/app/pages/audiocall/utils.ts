@@ -292,5 +292,5 @@ export const showModal = () => {
 
 export const hideModal = () => {
   const modal = <HTMLDivElement>document.querySelector('.exit-modal');
-  modal.style.marginTop = '-100%';
+  modal.style.marginTop = '-150vh';
 }

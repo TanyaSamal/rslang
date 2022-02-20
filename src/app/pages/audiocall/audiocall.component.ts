@@ -4,10 +4,10 @@ import * as utils from './utils';
 import './audiocall.component.scss';
 import AudioQuestion from '../../components/audio-question/app.audio-question.html';
 import { appHeader } from '../../components/header/app.header';
-import { IAuth, IWord, WordStatus } from '../../../spa/tools/controllerTypes';
+import { IWord } from '../../../spa/tools/controllerTypes';
 import { AppAudioQuestion } from '../../components/audio-question/app.audio-question';
 import { ComponentEvent, ICallQuestion } from '../../../spa/core/coreTypes';
-import { IGameState, IGameStatistic, Mode } from '../../componentTypes';
+import { IGameStatistic } from '../../componentTypes';
 import { appSelectDifficulty } from '../../components/select-dificult/app.select-difficulty';
 import { WordAnswer } from './audiocallTypes';
 import { appResultGame } from '../../components/result-game/app.result-game';
@@ -136,26 +136,28 @@ class AudiocallComponent extends Component {
   }
 
   saveGameResults() {
-    let longest = utils.findLongestSeries(this.answers);
-    let rightAnswers = this.answers.filter((answer) => answer === 1).length;
-    let totalAnswers = this.answers.filter((answer) => answer === 1 || answer === -1).length;
-    let { newWords } = this;
-    if (localStorage.getItem('audiocallStatistic')) {
-      const statistic: IGameStatistic = JSON.parse(localStorage.getItem('audiocallStatistic'));
-      if (statistic.date === new Date().toLocaleDateString()) {
-        longest = (longest > statistic.longest) ? longest : statistic.longest;
-        rightAnswers += statistic.rightAnswers;
-        totalAnswers += statistic.totalAnswers;
-        newWords += statistic.newWords;
+    if (localStorage.getItem('userInfo')) {
+      let longest = utils.findLongestSeries(this.answers);
+      let rightAnswers = this.answers.filter((answer) => answer === 1).length;
+      let totalAnswers = this.answers.filter((answer) => answer === 1 || answer === -1).length;
+      let { newWords } = this;
+      if (localStorage.getItem('audiocallStatistic')) {
+        const statistic: IGameStatistic = JSON.parse(localStorage.getItem('audiocallStatistic'));
+        if (statistic.date === new Date().toLocaleDateString()) {
+          longest = (longest > statistic.longest) ? longest : statistic.longest;
+          rightAnswers += statistic.rightAnswers;
+          totalAnswers += statistic.totalAnswers;
+          newWords += statistic.newWords;
+        }
       }
+      localStorage.setItem('audiocallStatistic', JSON.stringify({
+        date: new Date().toLocaleDateString(), 
+        longest,
+        rightAnswers,
+        totalAnswers,
+        newWords
+      }));
     }
-    localStorage.setItem('audiocallStatistic', JSON.stringify({
-      date: new Date().toLocaleDateString(), 
-      longest,
-      rightAnswers,
-      totalAnswers,
-      newWords
-    }));
     this.saveResultsForResultWindow();
   }
 

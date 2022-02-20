@@ -169,7 +169,7 @@ class AppAuthForm extends Component {
       this.loginUser(email.value, password.value);
     } else {
       this.showForm();
-      this.showLoginError('Пользователь с таким e-mail уже существует');
+      this.showLoginError('Ошибка в e-mail или он уже занят');
     }
   }
 
