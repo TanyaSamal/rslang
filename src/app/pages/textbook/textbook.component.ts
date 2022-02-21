@@ -173,12 +173,19 @@ class TextbookComponent extends Component {
 
   changeDictPaginationState() {
     let pagesCount = 1;
-    if (this.currentState === WordStatus.difficult) {
-      pagesCount = utils.culcPagesCount(this.difficultWords.length);
-    } else if (this.currentState === WordStatus.learnt) {
-      pagesCount = utils.culcPagesCount(this.learntWords.length);
-    } else {
-      pagesCount = utils.culcPagesCount(this.newWords.length);
+    switch (this.currentState) {
+      case WordStatus.difficult:
+        pagesCount = utils.culcPagesCount(this.difficultWords.length);
+        break;
+      case WordStatus.learnt:
+        pagesCount = utils.culcPagesCount(this.learntWords.length);
+        break;
+      case WordStatus.inProgress:
+        pagesCount = utils.culcPagesCount(this.newWords.length);
+        break;
+      default:
+        pagesCount = utils.culcPagesCount(this.difficultWords.length);
+        break;
     }
     this.drawActiveWord(this.currentDictPage * WORDS_ON_PAGE);
     if (pagesCount !== 0) this.drawDictionaryPagination(this.currentDictPage + 1, pagesCount);
