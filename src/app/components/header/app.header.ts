@@ -54,6 +54,8 @@ class AppHeader extends Component {
   afterInit() {
     if (window.localStorage.getItem('userInfo'))
       this.token = JSON.parse(window.localStorage.getItem('userInfo')).token;
+    else
+      this.token = '';
     if (this.token && this.token !== '')
       this.isLoggedIn = true;
     else

@@ -70,7 +70,7 @@ a {
 }
 
 .fill-btn {
-  font-size: 1.2rem;
+  font-size: 1.2em;
   background-color: #FE8366;
   border: 1px solid #FE8366;
   border-radius: 42px;
@@ -78,7 +78,7 @@ a {
   transition: .3s;
 
   @media (max-width: 780px) {
-    font-size: 1rem;
+    font-size: 1em;
   }
 
   &:hover {
@@ -96,7 +96,7 @@ a {
   transition: .3s;
 
   @media (max-width: 780px) {
-    font-size: 1rem;
+    font-size: 1em;
   }
   
   svg {
@@ -105,12 +105,11 @@ a {
 
     @media (max-width: 1440px) {
       width: 40px;
-      height: 17px;
+      height: 13px;
     }
 
     @media (max-width: 1040px) {
       width: 25px;
-      height: 13px;
     }
   }
 

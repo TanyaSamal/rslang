@@ -26,8 +26,8 @@ class StatisticComponent extends Component {
     } else if ((audiocallStatistic && audiocallStatistic.date === new Date().toLocaleDateString())
       || (sprintStatistic && sprintStatistic.date === new Date().toLocaleDateString())){
       percentWordsEl.textContent = (audiocallStatistic) ?
-        (document.querySelectorAll('.games-statistic .right-answers'))[0].textContent :
-        (document.querySelectorAll('.games-statistic .right-answers'))[1].textContent;
+        `${(document.querySelectorAll('.games-statistic .right-answers'))[0].textContent}%` :
+        `${(document.querySelectorAll('.games-statistic .right-answers'))[1].textContent}%`;
       newWordsEl.textContent =  `${(audiocallStatistic) ? audiocallStatistic.newWords : sprintStatistic.newWords}`;
     }
 
