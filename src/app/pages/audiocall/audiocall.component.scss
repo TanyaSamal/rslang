@@ -1,0 +1,159 @@
+.audiocall-page {
+  background: rgb(2,0,36);
+  background: linear-gradient(180deg, rgba(2,0,36,1) 0%, rgba(150,77,75,1) 0%, rgba(254,131,102,1) 51%, rgba(255,203,116,1) 100%);
+  height: calc(100vh - 50px);
+
+  .audiocall-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .game-audiocall {
+      display: none;
+    }
+
+    .question-container {
+      min-height: 460px;
+      height: 460px;
+      color: white;
+      text-align: center;
+    }
+
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+
+      .stars {
+        position: relative;
+
+        .stars-count {
+          font-size: 1em;
+          color: white;
+          padding-left: 25px;
+
+          &::before {
+            content: '';
+            display: block;
+            position: absolute;
+            background: url('../../../assets/white-star.png');
+            background-size: contain;
+            left: 0;
+            width: 18px;
+            height: 18px;
+          }
+        }
+
+        .add-stars {
+          visibility: hidden;
+          transform: translateY(50px);
+          color: rgb(240, 229, 83);
+          text-shadow: 0 0 15px rgba(240, 229, 83, 0.83), 0 0 10px rgba(240, 229, 83, 0.83);
+          font-size: 1.5em;
+          font-weight: 600;
+          opacity: 1;
+          transition-property: opacity, font-size, transform;
+          transition-duration: 1s;
+        }
+      }
+
+      .exit-game {
+        background: url('../../../assets/exit.svg');
+        background-size: contain;
+        width: 15px;
+        height: 15px;
+        cursor: pointer;
+        transition: .5s;
+
+        &:hover {
+          transform: scale(1.2);
+        }
+      }
+    }
+
+    .game-footer {
+      position: relative;
+
+      .progress-status {
+        display: flex;
+        justify-content: center;
+
+        @media (max-width: 780px) {
+          flex-wrap: wrap;
+        }
+    
+        li {
+          margin: 10px 5px;
+          list-style-type: none;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background-color: #d6d6d6; 
+        }
+
+        .correct {
+          background-color: rgb(92, 197, 82);
+        }
+
+        .incorrect {
+          background-color: rgb(236, 78, 78);
+        }
+      }
+
+      .fullscreen-btn {
+        position: absolute;
+        right: 0;
+        top: 8px;
+        background: url('../../../assets/nofull.svg');
+        background-size: contain;
+        width: 15px;
+        height: 15px;
+        transition: .5s;
+        cursor: pointer;
+
+        &:hover {
+          transform: scale(1.2);
+        }
+      }
+
+      .nofull {
+        background: url('../../../assets/full.svg');
+        background-size: contain;
+        width: 15px;
+        height: 15px;
+        transition: .5s;
+
+        &:hover {
+          transform: scale(1.2);
+        }
+      }
+    }
+  }
+
+  .exit-modal {
+    display: flex;
+    position: absolute;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    margin-top: -150vh;
+    background-color: white;
+    width: 30vw;
+    height: 30vh;
+    border-radius: 10px;
+    box-shadow: 2px 4px 7px -2px rgba(34, 60, 80, 0.2);
+    transition: .5s;
+
+    .exit-modal_buttons {
+
+      button {
+        padding: 5px 15px;
+
+        &:first-child {
+          margin-right: 10px;
+        }
+      }
+    }
+  }
+}
